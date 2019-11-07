@@ -62,7 +62,7 @@ void iconButton::paintEvent ( QPaintEvent * event)
 	QPainter painter(this);
 	painter.drawPixmap(event->rect(), pixmatpList[curIndex]);
 }
- 
+/* 
 void iconButton::enterEvent(QEvent *event)
 {
 	if (pixmatpList.size() > 1)
@@ -72,7 +72,7 @@ void iconButton::enterEvent(QEvent *event)
 	update();
 	QPushButton::enterEvent(event);
 }
- 
+*/
 void iconButton::leaveEvent(QEvent *event)
 {
 	curIndex = 0;
