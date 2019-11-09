@@ -1,3 +1,5 @@
+#include <QThread>
+#include <QXmlStreamReader>
 
 #include "mainwindow.h"
 
@@ -24,13 +26,13 @@ enum ColorIndex {
 
 void InkWidget::paintEvent(QPaintEvent *e)
 {
-	INK_PUMP * pump = new INK_PUMP;
-	GetPrinterParam(UI_CMD::CMD_MECHINE_INK_PUMP, pump);
-
+	e = e;
+	//QPainter painter(this);
+	//painter.drawPixmap(event->rect(), pixmatpList[curIndex]);
 	int xCoord[8];
 	const int yCoord = 0;
 	const int ColorNum = 6;
-	const int lenght = height();
+	//const int lenght = height();
 	const int rect_width = width() / ColorNum * 3 / 4;
 	const int rect_height = height() - yCoord;
 
@@ -41,88 +43,102 @@ void InkWidget::paintEvent(QPaintEvent *e)
 	QPainter painter(this);
 	painter.setPen(QPen(QColor(221, 227, 227), 1));
 
-	float colData = 1.0 - (float)pump->InkQuantity[BLACK] / 100;
-	QLinearGradient gradient0(xCoord[BLACK], yCoord, xCoord[BLACK], yCoord + rect_height);
-	
-	//gradient0.setSpread(QGradient::RepeatSpread);
-	gradient0.setColorAt(0, RGB_WHITE);
-	gradient0.setColorAt(colData-0.01, RGB_WHITE);
-	gradient0.setColorAt(colData, RGB_BLACK);
-	gradient0.setColorAt(1, RGB_BLACK);
-
-	//QRect(xCoord[BLACK], yCoord, xCoord[BLACK], yCoord + rect_height);
-	//QRect(xCoord[BLACK], yCoord, xCoord[BLACK], yCoord + rect_height * colData);
-	//gradient0.setColorAt(0, RGB_BLACK);
-	//gradient0.setColorAt(1, RGB_BLACK);
-	
-	painter.setBrush(gradient0);
+	painter.setBrush(*gradient0);
 	painter.drawRect(xCoord[BLACK], yCoord, rect_width, rect_height);
-	//QString persent = QString::number(pump->InkQuantity[BLACK]) + "%";
-	//label1->setText(persent);
 
-	colData = 1.0 - (float)pump->InkQuantity[CYAN] / 100;
-	QLinearGradient gradient1(xCoord[CYAN], yCoord, xCoord[CYAN], yCoord + rect_height);
-	
-	gradient1.setSpread(QGradient::RepeatSpread);
-	gradient1.setColorAt(0, RGB_WHITE);
-	gradient1.setColorAt(1, RGB_CYAN);
-	gradient1.setColorAt(colData-0.01, RGB_WHITE);
-	gradient1.setColorAt(colData, RGB_CYAN);
-	
-	painter.setBrush(gradient1);
+	painter.setBrush(*gradient1);
 	painter.drawRect(xCoord[CYAN], yCoord, rect_width, rect_height);
 	//persent = QString::number(pump->InkQuantity[CYAN]) + "%";
 	//label2->setText(persent);
 
-       	colData = 1.0 - (float)pump->InkQuantity[2] / 100;
-	QLinearGradient gradient2(370, yCoord, 370, 440);
-	gradient2.setSpread(QGradient::RepeatSpread);
-	gradient2.setColorAt(0, RGB_WHITE);
-	gradient2.setColorAt(colData - 0.01, RGB_WHITE);
-	gradient2.setColorAt(colData, RGB_MEGENTA);
-	gradient2.setColorAt(1, RGB_MEGENTA);
-	painter.setBrush(gradient2);
+	painter.setBrush(*gradient2);
 	painter.drawRect(xCoord[MEGENTA], yCoord, rect_width, rect_height);
 	//persent = QString::number(pump->InkQuantity[MEGENTA]) + "%";
 	//label3->setText(persent);
 
-	colData = 1.0 - (float)pump->InkQuantity[3] / 100;
-	QLinearGradient gradient3(370, yCoord, 370, 440);
-	gradient3.setSpread(QGradient::RepeatSpread);
-	gradient3.setColorAt(0, RGB_WHITE);
-	gradient3.setColorAt(colData - 0.01, RGB_WHITE);
-	gradient3.setColorAt(colData, RGB_YELLOW);
-	gradient3.setColorAt(1, RGB_YELLOW);
-	painter.setBrush(gradient3);
+	painter.setBrush(*gradient3);
 	painter.drawRect(xCoord[YELLO], yCoord, rect_width, rect_height);
 	//persent = QString::number(pump->InkQuantity[YELLO]) + "%";
 	//label4->setText(persent);
 
-	colData = 1.0 - (float)pump->InkQuantity[4] / 100;
-	QLinearGradient gradient4(370, yCoord, 370, 440);
-	gradient4.setSpread(QGradient::RepeatSpread);
-	gradient4.setColorAt(0, RGB_WHITE);
-	gradient4.setColorAt(colData - 0.01, RGB_WHITE);
-	gradient4.setColorAt(colData, RGB_LCYAN);
-	gradient4.setColorAt(1, RGB_LCYAN);
-	painter.setBrush(gradient4);
+	painter.setBrush(*gradient4);
 	painter.drawRect(xCoord[LIGHT_CYAN], yCoord, rect_width, rect_height);
 	//persent = QString::number(pump->InkQuantity[LIGHT_CYAN]) + "%";
 	//label5->setText(persent);
 
-
-	colData = 1.0 - (float)pump->InkQuantity[5] / 100;
-	QLinearGradient gradient5(370, yCoord, 370, 440);
-	gradient5.setSpread(QGradient::RepeatSpread);
-	gradient5.setColorAt(0, RGB_WHITE);
-	gradient5.setColorAt(colData - 0.01, RGB_WHITE);
-	gradient5.setColorAt(colData, RGB_LMEGENTA);
-	gradient5.setColorAt(1, RGB_LMEGENTA);
-	painter.setBrush(gradient5);
+	painter.setBrush(*gradient5);
 	painter.drawRect(xCoord[LIGHT_MEGENTA], yCoord, rect_width, rect_height);
 	//persent = QString::number(pump->InkQuantity[LIGHT_MEGENTA]) + "%";
 	//label6->setText(persent);
 }
+
+InkWidget::InkWidget(QWidget *parent) : QWidget(parent)
+{
+	INK_PUMP * pump = new INK_PUMP;
+	GetPrinterParam(UI_CMD::CMD_MECHINE_INK_PUMP, pump);
+
+	int xCoord[8];
+	const int yCoord = 0;
+	const int ColorNum = 6;
+	//const int lenght = height();
+	const int rect_width = width() / ColorNum * 3 / 4;
+	const int rect_height = height() - yCoord;
+
+	for(int c = 0; c < ColorNum; c++){
+		xCoord[c] = c * width() / ColorNum;
+	}
+
+	float colData = 1.0 - (float)pump->InkQuantity[BLACK] / 100;
+	gradient0 = new QLinearGradient(xCoord[BLACK], yCoord, xCoord[BLACK], yCoord + rect_height);
+	
+	gradient0->setSpread(QGradient::RepeatSpread);
+	gradient0->setColorAt(0, RGB_WHITE);
+	gradient0->setColorAt(colData-0.01, RGB_WHITE);
+	gradient0->setColorAt(colData, RGB_BLACK);
+	gradient0->setColorAt(1, RGB_BLACK);
+
+	colData = 1.0 - (float)pump->InkQuantity[CYAN] / 100;
+	gradient1 = new QLinearGradient(xCoord[CYAN], yCoord, xCoord[CYAN], yCoord + rect_height);
+	
+	gradient1->setSpread(QGradient::RepeatSpread);
+	gradient1->setColorAt(0, RGB_WHITE);
+	gradient1->setColorAt(1, RGB_CYAN);
+	gradient1->setColorAt(colData-0.01, RGB_WHITE);
+	gradient1->setColorAt(colData, RGB_CYAN);
+	
+       	colData = 1.0 - (float)pump->InkQuantity[2] / 100;
+	gradient2 = new QLinearGradient(370, yCoord, 370, 440);
+	gradient2->setSpread(QGradient::RepeatSpread);
+	gradient2->setColorAt(0, RGB_WHITE);
+	gradient2->setColorAt(colData - 0.01, RGB_WHITE);
+	gradient2->setColorAt(colData, RGB_MEGENTA);
+	gradient2->setColorAt(1, RGB_MEGENTA);
+
+	colData = 1.0 - (float)pump->InkQuantity[3] / 100;
+	gradient3 = new QLinearGradient(370, yCoord, 370, 440);
+	gradient3->setSpread(QGradient::RepeatSpread);
+	gradient3->setColorAt(0, RGB_WHITE);
+	gradient3->setColorAt(colData - 0.01, RGB_WHITE);
+	gradient3->setColorAt(colData, RGB_YELLOW);
+	gradient3->setColorAt(1, RGB_YELLOW);
+
+	colData = 1.0 - (float)pump->InkQuantity[4] / 100;
+	gradient4 = new QLinearGradient(370, yCoord, 370, 440);
+	gradient4->setSpread(QGradient::RepeatSpread);
+	gradient4->setColorAt(0, RGB_WHITE);
+	gradient4->setColorAt(colData - 0.01, RGB_WHITE);
+	gradient4->setColorAt(colData, RGB_LCYAN);
+	gradient4->setColorAt(1, RGB_LCYAN);
+
+	colData = 1.0 - (float)pump->InkQuantity[5] / 100;
+	gradient5 = new QLinearGradient(370, yCoord, 370, 440);
+	gradient5->setSpread(QGradient::RepeatSpread);
+	gradient5->setColorAt(0, RGB_WHITE);
+	gradient5->setColorAt(colData - 0.01, RGB_WHITE);
+	gradient5->setColorAt(colData, RGB_LMEGENTA);
+	gradient5->setColorAt(1, RGB_LMEGENTA);
+}
+
 enum Status{
 	READY		= 0,
 	UPDATE		= 1,
@@ -163,14 +179,68 @@ static QString StatusLabel[] = {
 	"REMOTE",	//23
 };
 
-void mainDialog::GetPrintStatus()
+void FindErrorExplain(unsigned int err, QString& explain)
 {
+	QString hexstr = "hex" +  QString::number(err, 16);
+	QString inputFilePath("./error_code.xml");
+
+	if (!QFile::exists(inputFilePath)){
+		qDebug() << "invalied path";
+		explain = "unknow error: " + hexstr;
+		return;
+	}
+	QFile inputFile(inputFilePath);
+	if (!inputFile.open(QIODevice::ReadOnly)){
+		qDebug() << "open failed";
+		explain = "unknow error: " + hexstr;
+		return;
+	}
+	QXmlStreamReader reader(&inputFile);
+	while (!reader.atEnd())
+	{
+		if (reader.error()){
+			break;
+		}else{
+			if(reader.isStartElement()){
+				if(reader.name() == hexstr){
+					explain = reader.readElementText();
+					break;
+				}
+			}
+			reader.readNext();
+		}
+	}
+
+	if(explain == ""){
+		explain = "unknow error: " + hexstr;
+	}
+}
+
+void mainDialog::ProcessPrintStatus()
+{
+	static STATUS  oldstatus;
+
 	STATUS  status;
 	GetPrinterStatus(&status);
-	int s = status.error_code >> 24 & 0xFF;
-	if(s == READY){
+	if(status.error_code == oldstatus.error_code){
+		return;
+	}
+	/* if the status is same to the last one, return without do anything */
+	int s = status.error_code >> 24;
+	int os = oldstatus.error_code >> 24;
+	if(s < 24){
 		statusLabel->setText(StatusLabel[s]);
+	}else{
+		statusLabel->setText("Unkown Error");
+	}
 
+	QString info;
+	FindErrorExplain(status.error_code, info);
+	if(s > 0 && s != ERROR){
+		messageLabel->setText(info);
+	}
+
+	if(s == READY){
 		INK_PUMP * pump = (INK_PUMP*)&status;
 
 		if(memcpy(&InkPump, pump, sizeof(INK_PUMP))){
@@ -179,36 +249,43 @@ void mainDialog::GetPrintStatus()
 			pumpLineEdit->setText(QString::number(pump->InkSupplyPressure));
 		}
 	}else if(s == ERROR){
-		statusLabel->setText(StatusLabel[s]);
 		if(status.error_code & SOFTWARE){
-			int r = QMessageBox::warning(this, tr("ERROR"), tr("click yes to clean the error\n"),
-				QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
-			if (r == QMessageBox::Yes) {
+			int r = QMessageBox::warning(this, 
+				tr("ERROR"), info, QMessageBox::Cancel);
+			if (r == QMessageBox::Cancel) {
 				ClearPrinterStatus(status.error_code);
 			}
 		}
-	}else if(s < 24){
-		statusLabel->setText(StatusLabel[s]);
-	}else {
-		statusLabel->setText("Unkown Error");
+	}else if(s == OFFLINE){
+		qDebug() << "disable move button";
+		Tool->setMoveEnabled(false);
+	}else if(s == PRINTING){
+		Tool->GetAbortButton()->setEnabled();
+		Tool->GetPauseButton()->setEnabled();
+		Tool->setMoveEnabled(false);
+	}else if(s == MOVING){
+		qDebug() << "moving...";
 	}
-/*
-    QString errorParam;
-    if(0 != currentStatus)
-    {
-        QString str = QString(status.context);
-        if(0 == str.size())
-        {
-            errorParam = QString("unknown error:") + QString::number(status.error_code, 16);
-        }
-        else
-        {
-            errorParam = QString(status.context) + QString(":") + QString::number(status.error_code, 16);
-        }
-        ui->labelCurStatus->setText(errorParam);
-    }
-*/
+
+	oldstatus.error_code = status.error_code;
 }
+
+class PrintThread : public QThread {
+public:
+	PrintThread(QString &files){
+		PrintFiles = files;
+	}
+protected:
+	virtual void run(){
+		//PRINT_MODER mode;
+		//JOB_INFO  job;
+		if(PrintImage(PrintFiles.toStdString().c_str(), NULL, NULL) != 0){
+			qDebug() << "print job error";
+		}
+	}
+private:
+	QString PrintFiles;
+};
 
 void mainDialog::OpenFile()
 {
@@ -222,12 +299,9 @@ void mainDialog::OpenFile()
 	if(fileDialog->exec()){
 		filename = fileDialog->selectedFiles()[0];
 		qDebug() << "selected file is" << filename;
-		
-		//PRINT_MODER mode;
-		//JOB_INFO  job;
-		if(PrintImage(filename.toStdString().c_str(), NULL, NULL) != 0){
-			qDebug() << "print job error";
-		}
+	
+		PrintThread * thread = new PrintThread(filename);	
+		thread->start();
 	}
 }
 

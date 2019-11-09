@@ -28,11 +28,19 @@ class QTableWidget;
 
 class InkWidget : public QWidget {
 public:
-	InkWidget(QWidget *parent = NULL) : QWidget(parent)
-	{
-	
-	}
+	InkWidget(QWidget *parent = NULL);
 	void paintEvent(QPaintEvent *e);
+private:
+	INK_PUMP * pump;
+
+	QLinearGradient * gradient0;
+	QLinearGradient * gradient1;
+	QLinearGradient * gradient2;
+	QLinearGradient * gradient3;
+	QLinearGradient * gradient4;
+	QLinearGradient * gradient5;
+	QLinearGradient * gradient6;
+
 };
 /*
 void SplitSemicolon(char * s, QStringList & str)
@@ -66,6 +74,9 @@ public:
 		toolLayout->addWidget(Tool->GetPauseButton());
 		toolLayout->addWidget(Tool->GetAbortButton());
 		toolLayout->addWidget(Tool->GetExitButton());
+
+		Tool->GetAbortButton()->setDisabled();
+		Tool->GetPauseButton()->setDisabled();
 
 		connect(Tool->GetExitButton(), SIGNAL(clicked()), this, SLOT(close()));
 
@@ -183,14 +194,16 @@ public:
 		setLayout->addWidget(pumpLineEdit,	2, 3);
 
 		QTimer * StatusTimer = new QTimer(this);
+		connect(StatusTimer, SIGNAL(timeout()), this,  SLOT(ProcessPrintStatus()));
 		StatusTimer->start(1000);
-		connect(StatusTimer, SIGNAL(timeout()), this,  SLOT(GetPrintStatus()));
+
+		ProcessPrintStatus();
 
 		setBox->setLayout(setLayout);
 	}
 public slots:
 	void OpenFile();
-	void GetPrintStatus();
+	void ProcessPrintStatus();
 private:
 	InkWidget * inkWidget;
 	UiSetting *menuDialog;

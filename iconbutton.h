@@ -1,6 +1,7 @@
 #ifndef NEW_PUSH_BUTTON_H
 #define NEW_PUSH_BUTTON_H
 
+#include <QDebug>
 #include <QIcon>
 #include <QPushButton>
 /*
@@ -14,12 +15,20 @@ private:
 
 #ifndef CLOSEBUTTON_H
 #define CLOSEBUTTON_H
- 
+
+#include <QLabel>
 #include <QPushButton>
 #include <QString>
 #include <QWidget>
  
-class iconButton : public QPushButton
+//#define	WITH_QLABEL
+
+class iconButton :
+#ifdef	WITH_QLABEL
+	public QLabel
+#else
+	public QPushButton
+#endif
 {
 	Q_OBJECT
 
@@ -34,6 +43,28 @@ public:
 	QList<QPixmap> *getPixmapList(void){return &pixmatpList;}
 	void setcurIndex(int index){curIndex = index; update();}
 	int getcurIndex(void){return curIndex;}
+	
+	void setDisabled(){
+#ifdef	WITH_QLABEL
+		setPixmap(pixmatpList[1]);
+		update();
+#else
+		curIndex = 2;
+
+		qDebug() << "set disabled: " << curIndex;
+		QPushButton::setEnabled(false);
+#endif
+	}
+	void setEnabled(){
+#ifdef	WITH_QLABEL
+		setPixmap(pixmatpList[1]);
+		update();
+#else
+		curIndex = 0;
+		qDebug() << "set enabled: " << curIndex;
+		QPushButton::setEnabled(true);
+#endif
+	}
 
 private:
 
@@ -43,13 +74,18 @@ private:
 						     
 protected:
 	
+	QIcon icon;
 	QList<QPixmap> pixmatpList;
 	
 	int curIndex;
-							    
+signals:
+	void keyPressed(void);
+	void keyReleased(void);	
 protected:
+#ifndef	WITH_QLABEL
 	virtual void paintEvent ( QPaintEvent * event);
-	//virtual void enterEvent(QEvent *event);
+#endif
+	virtual void enterEvent(QEvent *event);
 	virtual void leaveEvent ( QEvent * event );
 	virtual void mousePressEvent ( QMouseEvent * event ) ;
 	virtual void mouseReleaseEvent ( QMouseEvent * event );

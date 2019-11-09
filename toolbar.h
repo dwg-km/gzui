@@ -1,6 +1,9 @@
 #ifndef TOOL_BAR_H
 #define TOOL_BAR_H
 
+#include <QDebug>
+#include <QThread>
+
 #include "iconbutton.h"
 
 #include "ui_interface.h"
@@ -11,7 +14,7 @@
 		Add####Button();
 	void Add####Button(){
 		QVector<QString> icon**** = {
-			"../resource/****.png",
+			"../resource/----.png",
 			"../resource/2.png",
 			"../resource/th.png"
 		};
@@ -22,6 +25,39 @@
 	}
 */
 
+class MotionThread : public QThread{
+public:
+	MotionThread(UI_CMD cmd, MOVE * move){
+		Cmd = cmd;
+		if(move){
+			move = new MOVE;
+			memcpy(Move, move, sizeof(MOVE));	
+		}else{
+			Move = NULL;
+		}	
+	}
+	virtual void run(){
+		int ret = SendMotionCmd(Cmd, Move);
+		if(ret == 0){
+			switch(Cmd){
+			case CMD_MOTION_MEASURE_MEDIA:
+				qDebug() << "measure okay";
+				break;
+			default:
+				qDebug() << "unknow move cmd";
+				break;
+			}	
+		}
+	}
+	virtual ~MotionThread(){
+		if(Move){
+			delete Move;
+		}
+	}
+private:
+	UI_CMD Cmd;
+	MOVE * Move;
+};
 
 class ToolBar : public QWidget {
 	Q_OBJECT
@@ -60,6 +96,8 @@ private:
 	iconButton * nozzleButton;
 	iconButton * originButton;
 
+public:
+	void setMoveEnabled(bool enable);
 public:
 	ToolBar(){
 		leftButton = NULL;
@@ -138,8 +176,8 @@ public:
 		};
 		if(leftButton == NULL){
 			leftButton = new iconButton(iconleft);
-			connect(leftButton, SIGNAL(clicked()), this, SLOT(MoveLeft()));
-			connect(leftButton, SIGNAL(released()), this, SLOT(MoveXStop()));
+			connect(leftButton, SIGNAL(keyPressed()), this, SLOT(MoveLeft()));
+			connect(leftButton, SIGNAL(keyReleased()), this, SLOT(MoveXStop()));
 		}
 	}
 	iconButton * GetLeftButton(){
@@ -153,8 +191,8 @@ public:
 		};
 		if(rightButton == NULL){
 			rightButton = new iconButton(iconright);
-			connect(rightButton, SIGNAL(clicked()), this, SLOT(MoveRight()));
-			connect(rightButton, SIGNAL(released()), this, SLOT(MoveXStop()));
+			connect(rightButton, SIGNAL(keyPressed()), this, SLOT(MoveRight()));
+			connect(rightButton, SIGNAL(keyReleased()), this, SLOT(MoveXStop()));
 		}
 	}
 	iconButton * GetRightButton(){
@@ -168,8 +206,8 @@ public:
 		};
 		if(upButton == NULL){
 			upButton = new iconButton(iconup);
-			connect(upButton, SIGNAL(clicked()), this, SLOT(MoveForward()));
-			connect(upButton, SIGNAL(released()), this, SLOT(MoveYStop()));
+			connect(upButton, SIGNAL(keyPressed()), this, SLOT(MoveForward()));
+			connect(upButton, SIGNAL(keyReleased()), this, SLOT(MoveYStop()));
 		}
 	}
 	iconButton * GetUpButton(){
@@ -183,8 +221,8 @@ public:
 		};
 		if(downButton == NULL){
 			downButton = new iconButton(icondown);
-			connect(downButton, SIGNAL(clicked()), this, SLOT(MoveBackward()));
-			connect(downButton, SIGNAL(released()), this, SLOT(MoveYStop()));
+			connect(downButton, SIGNAL(keyPressed()), this, SLOT(MoveBackward()));
+			connect(downButton, SIGNAL(keyReleased()), this, SLOT(MoveYStop()));
 		}
 	}
 	iconButton * GetDownButton(){
@@ -198,7 +236,7 @@ public:
 		};
 		if(gohomeButton == NULL){
 			gohomeButton = new iconButton(icongohome);
-			connect(gohomeButton, SIGNAL(released()), this, SLOT(GoHome()));
+			connect(gohomeButton, SIGNAL(clicked()), this, SLOT(GoHome()));
 		}
 	}
 	iconButton * GetGoHomeButton(){
@@ -430,7 +468,10 @@ public:
 			"../resource/2.png",
 			"../resource/th.png"
 		};
-		measureButton = new iconButton(iconmeasure);
+		if(measureButton == NULL){
+			measureButton = new iconButton(iconmeasure);
+			connect(measureButton, SIGNAL(clicked()), this, SLOT(Measure()));
+		}
 	}
 	iconButton * GetMeasureButton(){
 		return measureButton;
@@ -514,6 +555,12 @@ private slots:
 		move.Dir = 0;
 
 		SendMotionCmd(UI_CMD::CMD_MOTION_MOVETO, &move);
+	}
+	void Measure(){
+		MotionThread * measure = new MotionThread(UI_CMD::CMD_MOTION_MEASURE_MEDIA, 0);
+		measure->start();
+
+		qDebug() << "measure";
 	}
 };
 

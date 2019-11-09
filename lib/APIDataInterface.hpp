@@ -201,11 +201,12 @@ struct PRODUCT_MODEL{
 };
 
 struct INK_PUMP{
+	int Id;
 	float InkSupplyPressure;
 	float InkCyclePressure;
 	int PumpEnable;
 	unsigned short InkQuantity[16];
-	int rev[5];
+	int rev[4];
 };
 
 

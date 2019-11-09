@@ -241,6 +241,8 @@ public:
 		return Dirty;
 	}
 	virtual void showEvent(QShowEvent * event){
+		event = event;
+
 		LoadPrintDir();
 		LoadPrintSpeed();
 		LoadFlash();
@@ -249,6 +251,7 @@ public:
 		LoadFeather();
 	}
 	virtual void hideEvent(QHideEvent * event){
+		event = event;
 		STRIP strip = Strip;
 		//memset(&strip, 0, sizeof(STRIP));
 		strip.Position = typeBox->currentIndex();

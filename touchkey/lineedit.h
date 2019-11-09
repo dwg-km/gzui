@@ -4,6 +4,7 @@
 #include <QDebug>
 #include <QLineEdit>
 #include <QValidator>
+#include <QFocusEvent>
 
 #include "touchkey.h"
 
@@ -37,6 +38,9 @@ public:
 		setFocusPolicy(Qt::ClickFocus);
 	}
 	virtual void focusInEvent(QFocusEvent *event){
+		if(event->lostFocus()){
+			return;
+		}
 		touchkey->setPointEnable(false);
 		touchkey->setRet(this);
 		touchkey->exec();
@@ -70,6 +74,9 @@ public:
 		setFocusPolicy(Qt::ClickFocus);
 	}
 	virtual void focusInEvent(QFocusEvent *event){
+		if(event->lostFocus()){
+			return;
+		}
 		touchkey->setPointEnable(true);
 		touchkey->setRet(this);
 		touchkey->exec();
