@@ -79,6 +79,8 @@ public:
 		Tool->GetPauseButton()->setDisabled();
 
 		connect(Tool->GetExitButton(), SIGNAL(clicked()), this, SLOT(close()));
+		connect(Tool->GetPauseButton(), SIGNAL(clicked()), this, SLOT(Pause()));
+		connect(Tool->GetAbortButton(), SIGNAL(clicked()), this, SLOT(Abort()));
 
 		menuDialog = new UiSetting();
 		connect(Tool->GetMenuButton(),SIGNAL(clicked()),menuDialog,SLOT(show()));
@@ -131,7 +133,8 @@ public:
 		menuLayout->addWidget(uvLabel,				5, 1, 1, 1);
 		menuLayout->addWidget(warningLabel,			5, 2, 1, 1);
 
-		connect(Tool->GetPrintButton(),SIGNAL(clicked()), this, SLOT(OpenFile()));
+		connect(Tool->GetPrintButton(),SIGNAL(clicked()), this, SLOT(Print()));
+		connect(Tool->GetNozzleButton(),SIGNAL(clicked()), this, SLOT(PrintNozzleCheck()));
 	}
 	void LayoutMoveButtons(){
 		moveBox = new QGroupBox;
@@ -202,8 +205,12 @@ public:
 		setBox->setLayout(setLayout);
 	}
 public slots:
-	void OpenFile();
+	void Print();
+	void Pause();
+	void Abort();
 	void ProcessPrintStatus();
+	void PrintNozzleCheck();
+
 private:
 	InkWidget * inkWidget;
 	UiSetting *menuDialog;

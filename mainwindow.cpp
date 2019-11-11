@@ -218,7 +218,7 @@ void FindErrorExplain(unsigned int err, QString& explain)
 
 void mainDialog::ProcessPrintStatus()
 {
-	static STATUS  oldstatus;
+	static STATUS  oldstatus = {(unsigned int)~0};
 
 	STATUS  status;
 	GetPrinterStatus(&status);
@@ -239,10 +239,16 @@ void mainDialog::ProcessPrintStatus()
 	if(s > 0 && s != ERROR){
 		messageLabel->setText(info);
 	}
+	if((s != PRINTING) && (s != PAUSE) /* || (s == ABORT) */){
+		Tool->GetAbortButton()->setDisabled();
+		Tool->GetPauseButton()->setDisabled();
+	}
 
 	if(s == READY){
 		INK_PUMP * pump = (INK_PUMP*)&status;
-
+		
+		Tool->setMoveEnabled(true);
+		
 		if(memcpy(&InkPump, pump, sizeof(INK_PUMP))){
 			memcpy(&InkPump, pump, sizeof(INK_PUMP));
 			cycleLineEdit->setText(QString::number(pump->InkCyclePressure));
@@ -257,8 +263,15 @@ void mainDialog::ProcessPrintStatus()
 			}
 		}
 	}else if(s == OFFLINE){
-		qDebug() << "disable move button";
-		Tool->setMoveEnabled(false);
+		if(status.error_code & MOTION_BOARD){
+			Tool->setMoveEnabled(false);
+		}else if (status.error_code & HEAD_BOARD){
+			int r = QMessageBox::critical(this, 
+				tr("ERROR"), info, QMessageBox::Cancel | QMessageBox::Yes);
+			if (r == QMessageBox::Cancel) {
+				ClearPrinterStatus(status.error_code);
+			}
+		}
 	}else if(s == PRINTING){
 		Tool->GetAbortButton()->setEnabled();
 		Tool->GetPauseButton()->setEnabled();
@@ -287,7 +300,7 @@ private:
 	QString PrintFiles;
 };
 
-void mainDialog::OpenFile()
+void mainDialog::Print()
 {
 	QFileDialog *fileDialog = new QFileDialog();
 	fileDialog->setWindowTitle("选择文件");
@@ -305,4 +318,18 @@ void mainDialog::OpenFile()
 	}
 }
 
+void mainDialog::PrintNozzleCheck()
+{
+	PrintCalibration(CMD_MECHINE_CHECK_NOZZLE, 0, 0, 0);
+}
+
+void mainDialog::Pause()
+{
+	PrintPause();
+}
+
+void mainDialog::Abort()
+{
+	PrintAbort();
+}
 
