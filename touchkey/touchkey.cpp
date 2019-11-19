@@ -37,8 +37,8 @@ void TouchKey::setRet(QLineEdit * line){
 	if(line){
 		label = line;
 		str = "";
-		//str = label->text();
-		//m_edit->setText(str);
+		str = label->text();
+		m_edit->setText(str);
 	}
 }
 
@@ -47,14 +47,14 @@ void TouchKey::add()
 	if(label){
 		if(str != ""){
 			label->setText(str);
-		}else{
+		}
+		else{
 			label->setText("0");
 		}
-		label->clearFocus();
+	//	label->clearFocus();
 		//label->repaint();
 		label = NULL;
-	}
-	
+	}	
 	close();
 }
 /*

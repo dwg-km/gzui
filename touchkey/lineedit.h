@@ -38,12 +38,15 @@ public:
 		setFocusPolicy(Qt::ClickFocus);
 	}
 	virtual void focusInEvent(QFocusEvent *event){
-		if(event->lostFocus()){
-			return;
-		}
+		QLineEdit::focusInEvent(event);
+		//if(event->lostFocus()){
+		//	return;
+		//}
+		
 		touchkey->setPointEnable(false);
 		touchkey->setRet(this);
 		touchkey->exec();
+		clearFocus();
 	}
 /*
 	virtual void setText(const QString& str){
@@ -74,12 +77,14 @@ public:
 		setFocusPolicy(Qt::ClickFocus);
 	}
 	virtual void focusInEvent(QFocusEvent *event){
-		if(event->lostFocus()){
-			return;
-		}
+		QLineEdit::focusInEvent(event);
+		//if(event->lostFocus()){
+		//	return;
+		//}
 		touchkey->setPointEnable(true);
 		touchkey->setRet(this);
 		touchkey->exec();
+		clearFocus();
 	}
 private :
 	TouchKey *touchkey;
