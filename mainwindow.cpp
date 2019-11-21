@@ -3,6 +3,7 @@
 
 #include "mainwindow.h"
 
+#include "exec.h"
 #include "ui_interface.h"
 #include "APIDataInterface.hpp"
 
@@ -333,3 +334,14 @@ void mainDialog::Abort()
 	PrintAbort();
 }
 
+void mainDialog::PowerOff()
+{
+	int r = QMessageBox::warning(this, 
+		tr("Poweroff"), 
+		"Are you sure to turn off your computer?", \
+		QMessageBox::Cancel | QMessageBox::Ok);
+
+	if(r == QMessageBox::Ok){
+		exec_cmd(SHOTDOWN);
+	}
+}

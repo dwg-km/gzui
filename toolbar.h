@@ -9,21 +9,22 @@
 #include "ui_interface.h"
 #include "APIDataInterface.hpp"
 /*
-	iconButton * ****Button;
-		****Button = NULL;
+	iconButton * ====Button;
+		====Button = NULL;
 		Add####Button();
 	void Add####Button(){
-		QVector<QString> icon**** = {
-			"../resource/----.png",
-			"../resource/2.png",
-			"../resource/th.png"
+		QVector<QString> icon==== = {
+			"resources/====.png",
+			"resources/2.png",
+			"resources/th.png"
 		};
 		****Button = new iconButton(icon****);
 	}
 	iconButton * Get####Button(){
-		return ****Button;
+		return ====Button;
 	}
 */
+
 
 class MotionThread : public QThread{
 public:
@@ -72,6 +73,8 @@ private:
 	iconButton * menuButton;
 
 	iconButton * caliButton;
+	iconButton * waveButton;
+
 	iconButton * mechineButton;
 	iconButton * uvButton;
 	iconButton * inkButton;
@@ -132,6 +135,8 @@ public:
 		nozzleButton = NULL;
 		originButton = NULL;
 
+		waveButton = NULL;
+
 		AddLeftButton();
 		AddRightButton();
 		AddUpButton();
@@ -166,13 +171,14 @@ public:
 		AddMeasureButton();
 		AddNozzleButton();
 		AddOriginButton();
+
+
+		AddWaveButton();
 	}
 
 	void AddLeftButton(){
 		QVector<QString> iconleft = {
-			"../resource/moveleft.png",
-			"../resource/2.png",
-			"../resource/th.png"
+			"resources/moveleft.png"
 		};
 		if(leftButton == NULL){
 			leftButton = new iconButton(iconleft);
@@ -185,9 +191,7 @@ public:
 	}
 	void AddRightButton(){
 		QVector<QString> iconright = {
-			"../resource/moveright.png",
-			"../resource/2.png",
-			"../resource/th.png"
+			"resources/moveright.png"
 		};
 		if(rightButton == NULL){
 			rightButton = new iconButton(iconright);
@@ -200,9 +204,7 @@ public:
 	}
 	void AddUpButton(){
 		QVector<QString> iconup = {
-			"../resource/moveup.png",
-			"../resource/2.png",
-			"../resource/th.png"
+			"resources/moveup.png"
 		};
 		if(upButton == NULL){
 			upButton = new iconButton(iconup);
@@ -215,9 +217,7 @@ public:
 	}
 	void AddDownButton(){
 		QVector<QString> icondown = {
-			"../resource/movedown.png",
-			"../resource/2.png",
-			"../resource/th.png"
+			"resources/movedown.png"
 		};
 		if(downButton == NULL){
 			downButton = new iconButton(icondown);
@@ -230,9 +230,7 @@ public:
 	}
 	void AddGoHomeButton(){
 		QVector<QString> icongohome = {
-			"../resource/gohome.png",
-			"../resource/2.png",
-			"../resource/th.png"
+			"resources/gohome.png"
 		};
 		if(gohomeButton == NULL){
 			gohomeButton = new iconButton(icongohome);
@@ -244,9 +242,7 @@ public:
 	}
 	void AddMenuButton(){
 		QVector<QString> iconmenu = {
-			"../resource/menu.png",
-			"../resource/2.png",
-			"../resource/th.png"
+			"resources/menu.png"
 		};
 		menuButton = new iconButton(iconmenu);
 	}
@@ -255,9 +251,7 @@ public:
 	}
 	void AddHomeButton(){
 		QVector<QString> iconhome = {
-			"../resource/home.png",
-			"../resource/2.png",
-			"../resource/th.png"
+			"resources/home.png"
 		};
 		homeButton = new iconButton(iconhome);
 	}
@@ -266,9 +260,7 @@ public:
 	}
 	void AddCaliButton(){
 		QVector<QString> iconcali = {
-	    		"../resource/cali.png",
-	    		"../resource/2.png",
-	    		"../resource/th.png"
+	    		"resources/cali.png"
 	    	};
 	    	caliButton = new iconButton(iconcali);
 	}
@@ -277,9 +269,7 @@ public:
 	}
 	void AddUvButton(){
 	    	QVector<QString> iconmechine = {
-	    		"../resource/mechine.png",
-	    		"../resource/2.png",
-	    		"../resource/th.png"
+	    		"resources/mechine.png"
 	    	};
 	    	mechineButton = new iconButton(iconmechine);
 	}
@@ -288,9 +278,7 @@ public:
 	}
 	void AddMechineButton(){
 	    	QVector<QString> iconuv = {
-	    		"../resource/uv.png",
-	    		"../resource/2.png",
-	    		"../resource/th.png"
+	    		"resources/uv.png"
 	    	};
 	    	uvButton = new iconButton(iconuv);
 	}
@@ -299,9 +287,7 @@ public:
 	}
 	void AddInkButton(){
 	    	QVector<QString> iconink = {
-	    		"../resource/ink.png",
-	    		"../resource/2.png",
-	    		"../resource/th.png"
+	    		"resources/ink.png"
 	    	};
 	    	inkButton = new iconButton(iconink);
 	}
@@ -310,9 +296,7 @@ public:
 	}
 	void AddWarningButton(){
 	    	QVector<QString> iconwarning = {
-	    		"../resource/warning.png",
-	    		"../resource/2.png",
-	    		"../resource/th.png"
+	    		"resources/warning.png"
 	    	};
 	    	warningButton = new iconButton(iconwarning);
 	}
@@ -321,9 +305,7 @@ public:
 	}
 	void AddManagerButton(){
 	    	QVector<QString> iconmanager = {
-	    		"../resource/manager.png",
-	    		"../resource/2.png",
-	    		"../resource/th.png"
+	    		"resources/manager.png"
 	    	};
 	    	managerButton = new iconButton(iconmanager);
 	}
@@ -332,9 +314,7 @@ public:
 	}
 	void AddAdvanceButton(){
 	    	QVector<QString> iconadvance = {
-	    		"../resource/advance.png",
-	    		"../resource/2.png",
-	    		"../resource/th.png"
+	    		"resources/advance.png"
 	    	};
 	    	advanceButton = new iconButton(iconadvance);
 	}
@@ -343,9 +323,7 @@ public:
 	}
 	void AddBasesettingButton(){
 	    	QVector<QString> iconbasesetting = {
-	    		"../resource/basesetting.png",
-	    		"../resource/2.png",
-	    		"../resource/th.png"
+	    		"resources/basesetting.png"
 	    	};
 	    	basesettingButton = new iconButton(iconbasesetting);
 	}
@@ -354,9 +332,7 @@ public:
 	}
 	void AddCleanButton(){
 	    	QVector<QString> iconclean = {
-	    		"../resource/clean.png",
-	    		"../resource/2.png",
-	    		"../resource/th.png"
+	    		"resources/clean.png"
 	    	};
 	    	cleanButton = new iconButton(iconclean);
 	}
@@ -365,9 +341,7 @@ public:
 	}
 	void AddPoweroffButton(){
 	    	QVector<QString> iconpoweroff = {
-	    		"../resource/poweroff.png",
-	    		"../resource/2.png",
-	    		"../resource/th.png"
+	    		"resources/poweroff.png"
 	    	};
 	    	poweroffButton = new iconButton(iconpoweroff);
 	}
@@ -376,9 +350,7 @@ public:
 	}
 	void AddUpdateButton(){
 	    	QVector<QString> iconupdate = {
-	    		"../resource/update.png",
-	    		"../resource/2.png",
-	    		"../resource/th.png"
+	    		"resources/update.png"
 	    	};
 	    	updateButton = new iconButton(iconupdate);
 	}
@@ -387,9 +359,7 @@ public:
 	}
 	void AddBackupButton(){
 	    	QVector<QString> iconbackup = {
-	    		"../resource/backup.png",
-	    		"../resource/2.png",
-	    		"../resource/th.png"
+	    		"resources/backup.png"
 	    	};
 	    	backupButton = new iconButton(iconbackup);
 	}
@@ -398,9 +368,7 @@ public:
 	}
 	void AddPauseButton(){
 	    	QVector<QString> iconpause = {
-	    		"../resource/pause.png",
-	    		"../resource/2.png",
-	    		"../resource/th.png"
+	    		"resources/pause.png"
 	    	};
 	    	pauseButton = new iconButton(iconpause);
 	}
@@ -409,9 +377,7 @@ public:
 	}
 	void AddAbortButton(){
 	    	QVector<QString> iconabort = {
-	    		"../resource/abort.png",
-	    		"../resource/2.png",
-	    		"../resource/th.png"
+	    		"resources/abort.png"
 	    	};
 	    	abortButton = new iconButton(iconabort);
 	}
@@ -420,9 +386,7 @@ public:
 	}
 	void AddExitButton(){
 	    	QVector<QString> iconexit = {
-	    		"../resource/exit.png",
-	    		"../resource/2.png",
-	    		"../resource/th.png"
+	    		"resources/exit.png"
 	    	};
 	    	exitButton = new iconButton(iconexit);
 	}
@@ -431,9 +395,7 @@ public:
 	}
 	void AddPreviousButton(){
 	    	QVector<QString> iconprevious = {
-	    		"../resource/previous.png",
-	    		"../resource/2.png",
-	    		"../resource/th.png"
+	    		"resources/previous.png"
 	    	};
 	    	previousButton = new iconButton(iconprevious);
 	}
@@ -442,9 +404,7 @@ public:
 	}
 	void AddNextButton(){
 	    	QVector<QString> iconnext = {
-	    		"../resource/next.png",
-	    		"../resource/2.png",
-	    		"../resource/th.png"
+	    		"resources/next.png"
 	    	};
 	    	nextButton = new iconButton(iconnext);
 	}
@@ -453,9 +413,7 @@ public:
 	}
 	void AddPrintButton(){
 		QVector<QString> iconprint = {
-			"../resource/print.png",
-			"../resource/2.png",
-			"../resource/th.png"
+			"resources/print.png"
 		};
 		printButton = new iconButton(iconprint);
 	}
@@ -464,9 +422,7 @@ public:
 	}
 	void AddMeasureButton(){
 		QVector<QString> iconmeasure = {
-			"../resource/measure.png",
-			"../resource/2.png",
-			"../resource/th.png"
+			"resources/measure.png"
 		};
 		if(measureButton == NULL){
 			measureButton = new iconButton(iconmeasure);
@@ -478,9 +434,7 @@ public:
 	}
 	void AddNozzleButton(){
 		QVector<QString> iconnozzle = {
-			"../resource/nozzle.png",
-			"../resource/2.png",
-			"../resource/th.png"
+			"resources/nozzle.png"
 		};
 		nozzleButton = new iconButton(iconnozzle);
 	}
@@ -489,14 +443,21 @@ public:
 	}
 	void AddOriginButton(){
 		QVector<QString> iconorigin = {
-			"../resource/origin.png",
-			"../resource/2.png",
-			"../resource/th.png"
+			"resources/origin.png"
 		};
 		originButton = new iconButton(iconorigin);
 	}
 	iconButton * GetOriginButton(){
 		return originButton;
+	}
+	void AddWaveButton(){
+		QVector<QString> iconwave = {
+			"resources/wave.png"
+		};
+		waveButton = new iconButton(iconwave);
+	}
+	iconButton * GetWaveButton(){
+		return waveButton;
 	}
 
 private slots:

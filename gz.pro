@@ -23,6 +23,7 @@ HEADERS       = mainwindow.h \
 		lib/command.h
 
 SOURCES       = main.cpp \
+		menu.cpp \ 
 		iconbutton.cpp \
 		mainwindow.cpp \
 		toolbar.cpp \ 

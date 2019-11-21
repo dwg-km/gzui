@@ -81,6 +81,7 @@ public:
 		connect(Tool->GetExitButton(), SIGNAL(clicked()), this, SLOT(close()));
 		connect(Tool->GetPauseButton(), SIGNAL(clicked()), this, SLOT(Pause()));
 		connect(Tool->GetAbortButton(), SIGNAL(clicked()), this, SLOT(Abort()));
+		connect(Tool->GetPoweroffButton(), SIGNAL(clicked()), this, SLOT(PowerOff()));
 
 		menuDialog = new UiSetting();
 		connect(Tool->GetMenuButton(),SIGNAL(clicked()),menuDialog,SLOT(show()));
@@ -211,6 +212,7 @@ public slots:
 	void ProcessPrintStatus();
 	void PrintNozzleCheck();
 
+	void PowerOff();
 private:
 	InkWidget * inkWidget;
 	UiSetting *menuDialog;

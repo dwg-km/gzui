@@ -8,6 +8,7 @@ extern "C" {
 #define		REBOOT		0
 #define		SHOTDOWN	1
 #define		RESUME_BAK	2
+#define		UPDATE_PKG	3
 
 extern int exec_cmd(int cmd);
 
