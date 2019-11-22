@@ -342,7 +342,6 @@ void mainDialog::PowerOff()
 		QMessageBox::Cancel | QMessageBox::Ok);
 
 	if(r == QMessageBox::Ok){
-		//exec_cmd(SHOTDOWN);
-		system("./poweroff.sh");
+		system("poweroff");
 	}
 }
