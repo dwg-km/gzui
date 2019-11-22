@@ -3,12 +3,10 @@ FILE=$1
 SRC_PATH=tmp/
 DST_PATH=${HOME}/gzui/
 
-echo ${FILE}
-
-LIB="libpmd.so libexec.so "
-EXE="gz update.sh resume.sh poweroff.sh"
+LIB="libpmd.so"
+EXE="gz update.sh resume.sh"
 SETTING="setting hb_cfg.xml"
-CONFIG="hb_descp.xml ph_descp.xml resource"
+CONFIG="hb_descp.xml ph_descp.xml resources"
 
 if [ ! -d $SRC_PATH ];then
 	mkdir -p $SRC_PATH

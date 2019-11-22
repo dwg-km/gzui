@@ -16,7 +16,6 @@ HEADERS       = mainwindow.h \
 		UiTemplate.h \
 		touchkey/lineedit.h \
 		touchkey/touchkey.h \
-		lib/exec.h \
 		lib/ui_interface.h \
 		lib/APIDataInterface.hpp \
 		lib/Error.h \

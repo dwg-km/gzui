@@ -3,7 +3,6 @@
 
 #include "mainwindow.h"
 
-#include "exec.h"
 #include "ui_interface.h"
 #include "APIDataInterface.hpp"
 

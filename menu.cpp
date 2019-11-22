@@ -1,19 +1,16 @@
 
 #include "menu.h"
 
-#include "exec.h"
 
 void UiSetting::Backup()
 {
-
-	//exec_cmd(RESUME_BAK);
+	system("./backup.sh");
 }
 void UiSetting::Update()
 {
 	QFileDialog *fileDialog = new QFileDialog();
 	fileDialog->setWindowTitle("选择文件");
 	fileDialog->setDirectory(".");
-	fileDialog->setNameFilter(tr("Images(*.prn *.prt)"));
 	fileDialog->setFileMode(QFileDialog::ExistingFiles);
 	
 	QString filename;
@@ -21,6 +18,9 @@ void UiSetting::Update()
 		filename = fileDialog->selectedFiles()[0];
 		qDebug() << "selected file is" << filename;
 	
-		//exec_cmd(UPDATE_PKG);
+		QString cmd = "./update.sh ";
+		cmd += filename;
+		qDebug() << cmd;
+		system(cmd.toStdString().c_str());
 	}
 }

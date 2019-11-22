@@ -1,5 +1,5 @@
 PACKAGE_NAME=gzui
-SOURCE="../lib/libpmd.so ../lib/libexec.so gz update.sh resume.sh poweroff.sh setting hb_cfg.xml hb_descp.xml ph_descp.xml ../resource"
+SOURCE="../lib/libpmd.so gz ./update.sh ./resume.sh setting hb_cfg.xml hb_descp.xml ph_descp.xml ../resources"
 INSTALL=
 DST_PATH=${INSTALL}${PACKAGE_NAME}
 
