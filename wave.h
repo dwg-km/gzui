@@ -10,27 +10,8 @@ public:
 	{
 		toolLayout->addWidget(Tool->GetMenuButton());
 
-		//toolLayout->addWidget(Tool->GetLeftButton());
-		//toolLayout->addWidget(Tool->GetRightButton());
-		//toolLayout->addWidget(Tool->GetPauseButton());
-		//toolLayout->addWidget(Tool->GetAbortButton());
-
-		//toolLayout->addWidget(Tool->GetNextButton());
-		//toolLayout->addWidget(Tool->GetPreviousButton());
-		
 		connect(Tool->GetMenuButton(), SIGNAL(clicked()), this, SLOT(close()));
 
-
-		/*
-		QLabel *  = new QLabel;
-		QLineEdit * = new QLineEditi;
-		namedLabel->setBuddy(namedLineEdit);
-		
-		QWidget * widget = new QWidget(this);
-		
-		widget->
-		*/
-		
 		widgetlist =  new QTabWidget;
 
 		//AddMachineCheckWidget();

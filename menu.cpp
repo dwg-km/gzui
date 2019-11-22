@@ -6,7 +6,7 @@
 void UiSetting::Backup()
 {
 
-	exec_cmd(RESUME_BAK);
+	//exec_cmd(RESUME_BAK);
 }
 void UiSetting::Update()
 {
@@ -21,6 +21,6 @@ void UiSetting::Update()
 		filename = fileDialog->selectedFiles()[0];
 		qDebug() << "selected file is" << filename;
 	
-		exec_cmd(UPDATE_PKG);
+		//exec_cmd(UPDATE_PKG);
 	}
 }
