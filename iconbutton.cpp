@@ -52,10 +52,10 @@ iconButton::iconButton(QVector<QString> &list, QWidget *parent, QString bkGrnd)
 
 	const QImage image(list[0]);
 	icon = QPixmap::fromImage(image);
-	pixmatpList[1] = 
-		icon.pixmap(QSize(60, 60), QIcon::Selected, QIcon::Off);
-	pixmatpList[2] = 
-		icon.pixmap(QSize(60, 60), QIcon::Disabled, QIcon::Off);
+	pixmatpList.push_back( 
+		icon.pixmap(QSize(60, 60), QIcon::Selected, QIcon::Off));
+	pixmatpList.push_back( 
+		icon.pixmap(QSize(60, 60), QIcon::Disabled, QIcon::Off));
 }
  
 void iconButton::setPixmapList(QVector<QString> &list)

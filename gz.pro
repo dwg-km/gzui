@@ -16,13 +16,13 @@ HEADERS       = mainwindow.h \
 		UiTemplate.h \
 		touchkey/lineedit.h \
 		touchkey/touchkey.h \
-		lib/exec.h \
 		lib/ui_interface.h \
 		lib/APIDataInterface.hpp \
 		lib/Error.h \
 		lib/command.h
 
 SOURCES       = main.cpp \
+		menu.cpp \ 
 		iconbutton.cpp \
 		mainwindow.cpp \
 		toolbar.cpp \ 
@@ -35,4 +35,4 @@ SUBDIRS		= lib \
 
 
 
-unix:!macx: LIBS += ../lib/libpmd.so ../lib/libexec.so
+unix:!macx: LIBS += ../lib/libpmd.so 

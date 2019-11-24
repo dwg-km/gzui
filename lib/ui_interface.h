@@ -18,6 +18,8 @@
 #include "command.h"
 #include "APIDataInterface.hpp"
 
+extern const char * GetPmVersion();
+
 extern int CreatePrinter(char* path);
 extern int DestroyPrinter(void *handle);
 

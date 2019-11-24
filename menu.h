@@ -10,6 +10,7 @@
 #include <QComboBox>
 #include <QRadioButton>
 
+#include "wave.h"
 #include "cali.h"
 #include "toolbar.h"
 #include "UiTemplate.h"
@@ -354,17 +355,20 @@ private:
 
 class UiSetting : public UiTemplate
 {
+	Q_OBJECT
 public:
 	UiSetting(QWidget *parent = NULL)
 	    : UiTemplate(parent)
 	{
 		caliDialog = new CaliDialog();
+		waveDialog = new WaveDialog();
 
 		statusLabel->setText("Menu");
 
 		//layout tool bar
 		toolLayout->addWidget(Tool->GetHomeButton());
 		toolLayout->addWidget(Tool->GetCaliButton());
+		toolLayout->addWidget(Tool->GetWaveButton());
 		toolLayout->addWidget(Tool->GetBackupButton());
 		toolLayout->addWidget(Tool->GetUpdateButton());
 
@@ -374,10 +378,13 @@ public:
 		//toolLayout->addWidget(Tool->GetUpButton());
 		//toolLayout->addWidget(Tool->GetDownButton());
 		
-		connect(Tool->GetCaliButton(), SIGNAL(clicked()), caliDialog, SLOT(show()));
-
 		connect(Tool->GetHomeButton(), SIGNAL(clicked()), this, SLOT(close()));
 
+		connect(Tool->GetCaliButton(), SIGNAL(clicked()), caliDialog, SLOT(show()));
+		connect(Tool->GetWaveButton(), SIGNAL(clicked()), waveDialog, SLOT(show()));
+
+		connect(Tool->GetBackupButton(),SIGNAL(clicked()), this, SLOT(Backup()));
+		connect(Tool->GetUpdateButton(),SIGNAL(clicked()), this, SLOT(Update()));
 		/*
 		int x = 0;
 		int y = 2;
@@ -438,10 +445,14 @@ public:
 		widgetlist->addTab(widget, "Ink");
 	}
 
+public slots:
+	void Backup();
+	void Update();
 private:
 	QTabWidget * widgetlist;
 
 	CaliDialog * caliDialog;
+	WaveDialog * waveDialog;
 };
 
 #endif

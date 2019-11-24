@@ -333,3 +333,14 @@ void mainDialog::Abort()
 	PrintAbort();
 }
 
+void mainDialog::PowerOff()
+{
+	int r = QMessageBox::warning(this, 
+		tr("Poweroff"), 
+		"Are you sure to turn off your computer?", \
+		QMessageBox::Cancel | QMessageBox::Ok);
+
+	if(r == QMessageBox::Ok){
+		system("poweroff");
+	}
+}
