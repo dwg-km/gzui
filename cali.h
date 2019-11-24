@@ -35,6 +35,7 @@ public:
 			label->setAlignment(Qt::AlignCenter);
 			horLayout->addWidget(label, j + 1, 0);
 		}
+
 		for(int i = 0; i < colnum; i++){
 			QLabel *label = new QLabel();
 			//label->setFixedHeight(40);
@@ -53,8 +54,6 @@ public:
 		}
 		
 		setLayout(horLayout);
-
-		//connect(print, SIGNAL(clicked()), this, SLOT(on_print_clicked()));
 	}
 	void UpdataContext(int * data){
 		int colnum = property->PrinterColorNum;   //列数
@@ -64,12 +63,18 @@ public:
 				QString text = QString::number(data[j * colnum + i]);
 				matrix[j * colnum + i]->setText(text);
 			}
-		}	
+		}
+	}
+	int CheckDirty(){
+	
+		return 0;
+	}
+	QPushButton * GetPrintButton(){
+		return printButton;
 	}
 private:
 	struct MECHAINE* property;
 	QVector<QLineEdit *> matrix;
-public:
 	QPushButton *printButton;
 };
 
@@ -104,8 +109,8 @@ public:
 		
 		leftGroup = new LineEditGroup("left", property, this);
 		rightGroup = new LineEditGroup("right", property, this);
-		connect(leftGroup->printButton, SIGNAL(clicked()), this, SLOT(PrintLeftCali()));
-		connect(rightGroup->printButton, SIGNAL(clicked()), this, SLOT(PrintRightCali()));
+		connect(leftGroup->GetPrintButton(), SIGNAL(clicked()), this, SLOT(PrintLeftCali()));
+		connect(rightGroup->GetPrintButton(), SIGNAL(clicked()), this, SLOT(PrintRightCali()));
 
 		gridLayout->addWidget(resComBox,	0, 1, 1, 1);
 		gridLayout->addWidget(speedComBox,	0, 2, 1, 1);
@@ -139,17 +144,21 @@ public:
 	}
 public slots:
 	void PrintLeftCali(){
-		int data[64];
-		SaveCalibrationParam(UI_CMD::CMD_CALI_HORIZON_RIGHT,
+		if(leftGroup->CheckDirty()){
+			int data[64];
+			SaveCalibrationParam(UI_CMD::CMD_CALI_HORIZON_RIGHT,
 				res, speed,  data, 0);
+		}
 
 		PrintCalibration(UI_CMD::CMD_CALI_HORIZON_RIGHT,
 				res, speed, 0);
 	}
 	void PrintRightCali(){
-		int data[64];
-		SaveCalibrationParam(UI_CMD::CMD_CALI_HORIZON_RIGHT,
+		if(leftGroup->CheckDirty()){
+			int data[64];
+			SaveCalibrationParam(UI_CMD::CMD_CALI_HORIZON_RIGHT,
 				res, speed,  data, 0);
+		}
 
 		PrintCalibration(UI_CMD::CMD_CALI_HORIZON_RIGHT,
 				res, speed, 0);
