@@ -17,11 +17,11 @@ public:
 	{
 		QGridLayout * horLayout = new QGridLayout;
 
-		QPushButton *left = new QPushButton(this);
-		left->setText(tr("PRINT"));
-		left->resize(72, 28);
-		left->setStyleSheet("background-color: rgb(9, 148, 220)");
-		horLayout->addWidget(left, 0, 0, 1, 1);
+		printButton = new QPushButton(this);
+		printButton->setText(tr("PRINT"));
+		printButton->resize(72, 28);
+		printButton->setStyleSheet("background-color: rgb(9, 148, 220)");
+		horLayout->addWidget(printButton, 0, 0, 1, 1);
 
 		QString color = property->PrintColor;
 		QStringList colorList;
@@ -54,7 +54,7 @@ public:
 		
 		setLayout(horLayout);
 
-		//connect(left, SIGNAL(clicked()), this, SLOT(on_left_clicked()));
+		//connect(print, SIGNAL(clicked()), this, SLOT(on_print_clicked()));
 	}
 	void UpdataContext(int * data){
 		int colnum = property->PrinterColorNum;   //列数
@@ -69,6 +69,8 @@ public:
 private:
 	struct MECHAINE* property;
 	QVector<QLineEdit *> matrix;
+public:
+	QPushButton *printButton;
 };
 
 class HorizontalWidget : public QWidget{
@@ -90,16 +92,20 @@ public:
 			}
 		}
 		res = resComBox->currentText().toInt();
-		connect(resComBox, SIGNAL(currentTextChanged(const QString&)), this, SLOT(ResChanged(const QString&)));
+		connect(resComBox, SIGNAL(currentTextChanged(const QString&)),
+				this, SLOT(ResChanged(const QString&)));
 		
 		speedComBox->addItem("低速");
 		speedComBox->addItem("中速");
 		speedComBox->addItem("高速");
 		speed = speedComBox->currentIndex();
-		connect(speedComBox, SIGNAL(currentIndexChanged(int)), this, SLOT(SpeedChanged(int)));
+		connect(speedComBox, SIGNAL(currentIndexChanged(int)), 
+				this, SLOT(SpeedChanged(int)));
 		
 		leftGroup = new LineEditGroup("left", property, this);
 		rightGroup = new LineEditGroup("right", property, this);
+		connect(leftGroup->printButton, SIGNAL(clicked()), this, SLOT(PrintLeftCali()));
+		connect(rightGroup->printButton, SIGNAL(clicked()), this, SLOT(PrintRightCali()));
 
 		gridLayout->addWidget(resComBox,	0, 1, 1, 1);
 		gridLayout->addWidget(speedComBox,	0, 2, 1, 1);
@@ -131,6 +137,7 @@ public:
 	virtual void hideEvent(QHideEvent * event){
 
 	}
+public slots:
 	void PrintLeftCali(){
 		int data[64];
 		SaveCalibrationParam(UI_CMD::CMD_CALI_HORIZON_RIGHT,
@@ -147,7 +154,6 @@ public:
 		PrintCalibration(UI_CMD::CMD_CALI_HORIZON_RIGHT,
 				res, speed, 0);
 	}
-public slots:
 	void ResChanged(const QString & text){
 		res = text.toInt();
 		qDebug() << "res changed " << res;
