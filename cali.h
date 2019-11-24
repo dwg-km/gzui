@@ -12,7 +12,7 @@
 class LineEditGroup : public QGroupBox {
 public:
 	LineEditGroup(QString name, MECHAINE * p, QWidget *parent = NULL) 
-		: QGroupBox(parent),
+		: QGroupBox(name),
 		property(p)
 	{
 		QGridLayout * horLayout = new QGridLayout;
@@ -117,7 +117,7 @@ public:
 		leftGroup->UpdataContext(data);
 
 		if(LoadCalibrationParam(UI_CMD::CMD_CALI_HORIZON_RIGHT, 
-			res, speed, data)){
+			res, speed, data) <= 0){
 			memset(data, 0, sizeof(data));
 		}
 		rightGroup->UpdataContext(data);
