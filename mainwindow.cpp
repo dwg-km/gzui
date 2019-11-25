@@ -260,7 +260,7 @@ void mainDialog::ProcessPrintStatus()
 		emit ready();
 	}else if(s == ERROR){
 		if(status.error_code & SOFTWARE){
-			int r = QMessageBox::warning(window, 
+			int r = QMessageBox::warning(NULL, 
 				tr("ERROR"), info, QMessageBox::Cancel);
 			if (r == QMessageBox::Cancel) {
 				ClearPrinterStatus(status.error_code);
@@ -271,7 +271,7 @@ void mainDialog::ProcessPrintStatus()
 		if(status.error_code & MOTION_BOARD){
 			Tool->setMoveEnabled(false);
 		}else if (status.error_code & HEAD_BOARD){
-			int r = QMessageBox::critical(window, 
+			int r = QMessageBox::critical(NULL, 
 				tr("ERROR"), info, QMessageBox::Cancel | QMessageBox::Yes);
 			if (r == QMessageBox::Cancel) {
 				ClearPrinterStatus(status.error_code);
@@ -347,7 +347,7 @@ void mainDialog::Abort()
 
 void mainDialog::PowerOff()
 {
-	int r = QMessageBox::warning(this, 
+	int r = QMessageBox::warning(NULL, 
 		tr("Poweroff"), 
 		"Are you sure to turn off your computer?", \
 		QMessageBox::Cancel | QMessageBox::Ok);
