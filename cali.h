@@ -100,9 +100,7 @@ private:
 class HorizontalWidget : public QWidget{
 	Q_OBJECT
 public:
-	HorizontalWidget(QWidget *parent = NULL) : QWidget(parent){
-		property = new MECHAINE;
-		GetPrinterProperty(property);
+	HorizontalWidget(struct MECHAINE* property, QWidget *parent = NULL) : QWidget(parent){
 
 		resComBox = new QComboBox;
 		speedComBox = new QComboBox;
@@ -136,8 +134,8 @@ public:
 		connect(leftGroup->GetPrintButton(), SIGNAL(clicked()), this, SLOT(PrintLeftCali()));
 		connect(rightGroup->GetPrintButton(), SIGNAL(clicked()), this, SLOT(PrintRightCali()));
 
-		gridLayout->addWidget(resComBox,	0, 1, 1, 1);
-		gridLayout->addWidget(speedComBox,	0, 2, 1, 1);
+		gridLayout->addWidget(resComBox,	0, 0, 1, 1);
+		gridLayout->addWidget(speedComBox,	0, 1, 1, 1);
 		gridLayout->addWidget(leftGroup,	1, 0, 1, 3);
 		gridLayout->addWidget(rightGroup,	2, 0, 1, 3);
 
@@ -199,7 +197,6 @@ public slots:
 		UpdataData();
 	}
 private:
-	struct MECHAINE* property;
 	int speed;
 	int res;
 
@@ -211,6 +208,129 @@ private:
 	QGridLayout * gridLayout;
 };
 
+class HeadHorizonWidget : public QWidget{
+	Q_OBJECT
+public:
+	HeadHorizonWidget(struct MECHAINE* property, QWidget *parent = NULL) : QWidget(parent){
+
+		colorComBox = new QComboBox;
+		resComBox = new QComboBox;
+		speedComBox = new QComboBox;
+		gridLayout = new QGridLayout;
+
+		int resolution[8] = {0};
+		int num = LoadPrintResList(resolution);
+		if(0 != num){
+			for(int i = 0; i < num; i++){
+				resComBox->addItem(QString::number(resolution[i]));
+			}
+		}
+		res = resComBox->currentText().toInt();
+		connect(resComBox, SIGNAL(currentTextChanged(const QString&)),
+				this, SLOT(ResChanged(const QString&)));
+		
+		speedComBox->addItem("低速");
+		speedComBox->addItem("中速");
+		speedComBox->addItem("高速");
+		speed = speedComBox->currentIndex();
+		connect(speedComBox, SIGNAL(currentIndexChanged(int)), 
+				this, SLOT(SpeedChanged(int)));
+		
+		colorIndex = 0;
+		QString color = property->PrintColor;
+		QStringList colorlist = color.split(";");
+		int colnum = property->ColumnPerHead;
+		int rownum = property->PrinterGroupNum;
+		QList<QString>::iterator iter;
+		for(iter = colorlist.begin(); iter != colorlist.end(); iter++){
+			colorComBox->addItem(*iter);
+		}
+		connect(colorComBox, SIGNAL(currentIndexChanged(int)),
+				this, SLOT(ColorChanged(int)));
+	
+		leftGroup = new LineEditGroup("left", colnum, rownum, NULL, this);
+		rightGroup = new LineEditGroup("right",  colnum, rownum, NULL, this);
+		connect(leftGroup->GetPrintButton(), SIGNAL(clicked()), this, SLOT(PrintLeftCali()));
+		connect(rightGroup->GetPrintButton(), SIGNAL(clicked()), this, SLOT(PrintRightCali()));
+
+		gridLayout->addWidget(resComBox,	0, 0, 1, 1);
+		gridLayout->addWidget(speedComBox,	0, 1, 1, 1);
+		gridLayout->addWidget(colorComBox,	0, 2, 1, 1);
+		gridLayout->addWidget(leftGroup,	1, 0, 1, 3);
+		gridLayout->addWidget(rightGroup,	2, 0, 1, 3);
+
+		setLayout(gridLayout);
+	}
+	void UpdataData(){
+		int data[64];
+		int cmd = UI_CMD::CMD_CALI_HORIZON_LEFT_SUB | (colorIndex & 0x0F);
+		if(LoadCalibrationParam(UI_CMD(cmd), res, speed, data) <= 0){
+			memset(data, 0, sizeof(data));
+		}
+		leftGroup->UpdataContext(data);
+
+		cmd = UI_CMD::CMD_CALI_HORIZON_RIGHT_SUB | (colorIndex & 0x0F);
+		if(LoadCalibrationParam(UI_CMD(cmd), res, speed, data) <= 0){
+			memset(data, 0, sizeof(data));
+		}
+		rightGroup->UpdataContext(data);
+	}
+	void SaveData(){
+	
+	}
+	virtual void showEvent(QShowEvent * event){
+		UpdataData();
+	}
+	virtual void hideEvent(QHideEvent * event){
+
+	}
+public slots:
+	void PrintLeftCali(){
+		int data[64];
+		int cmd = UI_CMD::CMD_CALI_HORIZON_LEFT_SUB | (colorIndex & 0x0F);
+		if(leftGroup->CheckDirty(data)){
+			SaveCalibrationParam(UI_CMD(cmd), res, speed,  data, 0);
+		}
+
+		PrintCalibration(UI_CMD(cmd), res, speed, 0);
+	}
+	void PrintRightCali(){
+		int data[64];
+		int cmd = UI_CMD::CMD_CALI_HORIZON_RIGHT_SUB | (colorIndex & 0x0F);
+		if(leftGroup->CheckDirty(data)){
+			SaveCalibrationParam(UI_CMD(cmd), res, speed,  data, 0);
+		}
+
+		PrintCalibration(UI_CMD(cmd), res, speed, 0);
+	}
+	void ResChanged(const QString & text){
+		res = text.toInt();
+		qDebug() << "res changed " << res;
+		UpdataData();
+	}
+	void SpeedChanged(int index){
+		speed = index;
+		//speed = speedComBox->currentIndex();
+		qDebug() << "speed changed " << speed;
+		UpdataData();
+	}
+	void ColorChanged(int index){
+		colorIndex = index;
+		UpdataData();
+	}
+private:
+	int speed;
+	int res;
+	int colorIndex;
+
+	QComboBox * colorComBox;
+	QComboBox * resComBox;
+	QComboBox * speedComBox;
+	LineEditGroup *leftGroup;
+	LineEditGroup *rightGroup;
+
+	QGridLayout * gridLayout;
+};
 class CaliDialog : public UiTemplate
 {
 	Q_OBJECT
@@ -244,12 +364,16 @@ public:
 		widget->
 		*/
 		
+		//property = new MECHAINE;
+		GetPrinterProperty(&property);
+
 		widgetlist =  new QTabWidget;
 
 		AddMachineCheckWidget();
 		
 		AddStepCaliWidget();
 		AddHorizontalCaliWidget();
+		AddHeadHorizonCaliWidget();
 		AddBidirectonCaliWidget();
 		AddVerticalCaliWidget();
 
@@ -280,11 +404,12 @@ public:
 		widgetlist->addTab(widget, "Step");
 	}
 	void AddHorizontalCaliWidget(){
-
-		//QWidget * widget = new QWidget;
-		//widgetlist->addTab(widget, "Horizontal");
-		QWidget * horWidget = new HorizontalWidget;
+		QWidget * horWidget = new HorizontalWidget(&property);
 		widgetlist->addTab(horWidget, "Horizontal");
+	}
+	void AddHeadHorizonCaliWidget(){
+		QWidget * headWidget = new HeadHorizonWidget(&property);
+		widgetlist->addTab(headWidget, "HeadHorizontal");
 	}
 	void AddBidirectonCaliWidget(){
 	
@@ -324,7 +449,7 @@ public slots:
 	}
 private:
 	QTabWidget * widgetlist;
-
+	struct MECHAINE property;
 };
 
 #endif

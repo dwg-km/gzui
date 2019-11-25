@@ -42,7 +42,7 @@ extern int PrintStepCalibration(const char * media, const char * model, int res)
 extern int SaveStepCalibration(const char * media, const char * model, int opt, int value);
 extern int LoadStepCalibration(const char * media, const char * model, int opt, int &value);
 
-extern int PrintCalibration(UI_CMD cmd, int option, int index, int type);
+extern int PrintCalibration(UI_CMD cmd, int res, int speed, int type);
 extern int LoadCalibrationParam(UI_CMD cmd, int res, int speed, int *data);
 extern int SaveCalibrationParam(UI_CMD cmd, int res, int speed, int *data, int len);
 
