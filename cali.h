@@ -189,6 +189,7 @@ private:
 
 class CaliDialog : public UiTemplate
 {
+	Q_OBJECT
 public:
 	CaliDialog(QWidget *parent = NULL) : UiTemplate(parent)
 	{
@@ -272,6 +273,31 @@ public:
 		widgetlist->addTab(widget, "Vertical");
 	}
 	
+public slots:
+	void SetReady(){
+		Tool->setMoveEnabled(true);
+		Tool->GetAbortButton()->setDisabled();
+		Tool->GetPauseButton()->setDisabled();
+		messageLabel->setText(tr("ready"));
+	}
+	void SetMoving(){
+		Tool->setMoveEnabled(false);
+		messageLabel->setText(tr("moving"));
+	}
+	void SetPause(){
+	}
+	void SetError(QString msg){
+		Tool->setMoveEnabled(false);
+		Tool->GetAbortButton()->setDisabled();
+		Tool->GetPauseButton()->setDisabled();
+		messageLabel->setText(msg);
+	}
+	void SetPrinting(QString msg){
+		Tool->GetAbortButton()->setEnabled();
+		Tool->GetPauseButton()->setEnabled();
+		Tool->setMoveEnabled(false);
+		messageLabel->setText(msg);
+	}
 private:
 	QTabWidget * widgetlist;
 

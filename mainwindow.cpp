@@ -1,4 +1,5 @@
 #include <QThread>
+#include <QApplication>
 #include <QXmlStreamReader>
 
 #include "mainwindow.h"
@@ -217,7 +218,10 @@ void FindErrorExplain(unsigned int err, QString& explain)
 }
 
 void mainDialog::ProcessPrintStatus()
-{
+{	QWidget * window = QApplication::activeWindow();
+	if(window != this){
+
+	}
 	static STATUS  oldstatus = {(unsigned int)~0};
 
 	STATUS  status;
@@ -245,39 +249,47 @@ void mainDialog::ProcessPrintStatus()
 	}
 
 	if(s == READY){
-		INK_PUMP * pump = (INK_PUMP*)&status;
-		
 		Tool->setMoveEnabled(true);
 		
+		INK_PUMP * pump = (INK_PUMP*)&status;
 		if(memcpy(&InkPump, pump, sizeof(INK_PUMP))){
 			memcpy(&InkPump, pump, sizeof(INK_PUMP));
 			cycleLineEdit->setText(QString::number(pump->InkCyclePressure));
 			pumpLineEdit->setText(QString::number(pump->InkSupplyPressure));
 		}
+		emit ready();
 	}else if(s == ERROR){
 		if(status.error_code & SOFTWARE){
-			int r = QMessageBox::warning(this, 
+			int r = QMessageBox::warning(window, 
 				tr("ERROR"), info, QMessageBox::Cancel);
 			if (r == QMessageBox::Cancel) {
 				ClearPrinterStatus(status.error_code);
 			}
 		}
+		emit error(info);
 	}else if(s == OFFLINE){
 		if(status.error_code & MOTION_BOARD){
 			Tool->setMoveEnabled(false);
 		}else if (status.error_code & HEAD_BOARD){
-			int r = QMessageBox::critical(this, 
+			int r = QMessageBox::critical(window, 
 				tr("ERROR"), info, QMessageBox::Cancel | QMessageBox::Yes);
 			if (r == QMessageBox::Cancel) {
 				ClearPrinterStatus(status.error_code);
+			}else{
+				Tool->setMoveEnabled(false);
 			}
 		}
+		emit error(info);
 	}else if(s == PRINTING){
 		Tool->GetAbortButton()->setEnabled();
 		Tool->GetPauseButton()->setEnabled();
 		Tool->setMoveEnabled(false);
+		emit printing(info);
 	}else if(s == MOVING){
 		qDebug() << "moving...";
+		emit moving();
+	}else if(s == PAUSE){
+		emit pause();
 	}
 
 	oldstatus.error_code = status.error_code;

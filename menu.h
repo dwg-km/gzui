@@ -358,7 +358,7 @@ class UiSetting : public UiTemplate
 	Q_OBJECT
 public:
 	UiSetting(QWidget *parent = NULL)
-	    : UiTemplate(parent)
+	    : UiTemplate()
 	{
 		caliDialog = new CaliDialog();
 		waveDialog = new WaveDialog();
@@ -385,6 +385,13 @@ public:
 
 		connect(Tool->GetBackupButton(),SIGNAL(clicked()), this, SLOT(Backup()));
 		connect(Tool->GetUpdateButton(),SIGNAL(clicked()), this, SLOT(Update()));
+
+		connect(parent, SIGNAL(ready()), caliDialog, SLOT(SetReady()));
+		connect(parent, SIGNAL(pause()), caliDialog, SLOT(SetPause()));
+		connect(parent, SIGNAL(moving()), caliDialog, SLOT(SetMoving()));
+		connect(parent, SIGNAL(error(QString)), caliDialog, SLOT(SetError(QString)));
+		connect(parent, SIGNAL(printing(QString)), caliDialog, SLOT(SetPrinting(QString)));
+
 		/*
 		int x = 0;
 		int y = 2;

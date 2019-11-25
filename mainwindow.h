@@ -83,7 +83,7 @@ public:
 		connect(Tool->GetAbortButton(), SIGNAL(clicked()), this, SLOT(Abort()));
 		connect(Tool->GetPoweroffButton(), SIGNAL(clicked()), this, SLOT(PowerOff()));
 
-		menuDialog = new UiSetting();
+		menuDialog = new UiSetting(this);
 		connect(Tool->GetMenuButton(),SIGNAL(clicked()),menuDialog,SLOT(show()));
 	}
 	void LayoutWidget(){
@@ -213,6 +213,12 @@ public slots:
 	void PrintNozzleCheck();
 
 	void PowerOff();
+signals:
+	void ready();
+	void pause();
+	void moving();
+	void error(QString msg);
+	void printing(QString msg);
 private:
 	InkWidget * inkWidget;
 	UiSetting *menuDialog;
