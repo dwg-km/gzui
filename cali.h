@@ -11,9 +11,11 @@
 
 class LineEditGroup : public QGroupBox {
 public:
-	LineEditGroup(QString name, MECHAINE * p, QWidget *parent = NULL) 
+	LineEditGroup(QString name, int x, int y, QStringList * color = NULL, QWidget *parent = NULL) 
 		: QGroupBox(name),
-		property(p)
+		colnum(x),
+		rownum(y),
+		Value(x * y, -1000)
 	{
 		QGridLayout * horLayout = new QGridLayout;
 
@@ -23,12 +25,6 @@ public:
 		printButton->setStyleSheet("background-color: rgb(9, 148, 220)");
 		horLayout->addWidget(printButton, 0, 0, 1, 1);
 
-		QString color = property->PrintColor;
-		QStringList colorList;
-		colorList = color.split(";");
-	
-		int colnum = property->PrinterColorNum;   //列数
-		int rownum = property->PrinterGroupNum; //行数
 		for(int j = 0; j < rownum; j++){
 			QLabel *label = new QLabel();
 			label->setText(QString::number(j));
@@ -39,7 +35,12 @@ public:
 		for(int i = 0; i < colnum; i++){
 			QLabel *label = new QLabel();
 			//label->setFixedHeight(40);
-			label->setText(colorList.at(i));
+			if(color){
+				label->setText(color->at(i));
+			}else{
+				label->setText(QString::number(i));
+			}
+
 			label->setAlignment(Qt::AlignCenter);
 			horLayout->addWidget(label, 0, i + 2, 1, 1);
 		}
@@ -56,24 +57,42 @@ public:
 		setLayout(horLayout);
 	}
 	void UpdataContext(int * data){
-		int colnum = property->PrinterColorNum;   //列数
-		int rownum = property->PrinterGroupNum; //行数
+		//int colnum = property->PrinterColorNum;   //列数
+		//int rownum = property->PrinterGroupNum; //行数
 		for(int j = 0; j < rownum; j++){
 			for(int i = 0; i < colnum; i++){
-				QString text = QString::number(data[j * colnum + i]);
-				matrix[j * colnum + i]->setText(text);
+				int index = j * colnum + i;
+				int value = data[index];
+				if(Value[index] != value){
+					Value[index] = value;
+					QString text = QString::number(value);
+					matrix[j * colnum + i]->setText(text);
+				}
 			}
 		}
 	}
-	int CheckDirty(){
+	int CheckDirty(int * data){
+		int dirty = 0;
+		for(int j = 0; j < rownum; j++){
+			for(int i = 0; i < colnum; i++){
+				int index = j * colnum + i;
+				int value = matrix[index]->text().toInt();
+				data[index] = Value[index];
+				if(Value[index] != value){
+					dirty = 1;
+				}
+			}
+		}
 	
-		return 0;
+		return dirty;
 	}
 	QPushButton * GetPrintButton(){
 		return printButton;
 	}
 private:
-	struct MECHAINE* property;
+	int colnum;
+	int rownum;
+	QVector<int> Value;
 	QVector<QLineEdit *> matrix;
 	QPushButton *printButton;
 };
@@ -107,8 +126,13 @@ public:
 		connect(speedComBox, SIGNAL(currentIndexChanged(int)), 
 				this, SLOT(SpeedChanged(int)));
 		
-		leftGroup = new LineEditGroup("left", property, this);
-		rightGroup = new LineEditGroup("right", property, this);
+		QString color = property->PrintColor;
+		QStringList colorlist = color.split(";");
+		int colnum = property->PrinterColorNum;
+		int rownum = property->PrinterGroupNum;
+	
+		leftGroup = new LineEditGroup("left", colnum, rownum, &colorlist, this);
+		rightGroup = new LineEditGroup("right",  colnum, rownum, &colorlist, this);
 		connect(leftGroup->GetPrintButton(), SIGNAL(clicked()), this, SLOT(PrintLeftCali()));
 		connect(rightGroup->GetPrintButton(), SIGNAL(clicked()), this, SLOT(PrintRightCali()));
 
@@ -144,8 +168,8 @@ public:
 	}
 public slots:
 	void PrintLeftCali(){
-		if(leftGroup->CheckDirty()){
-			int data[64];
+		int data[64];
+		if(leftGroup->CheckDirty(data)){
 			SaveCalibrationParam(UI_CMD::CMD_CALI_HORIZON_RIGHT,
 				res, speed,  data, 0);
 		}
@@ -154,8 +178,8 @@ public slots:
 				res, speed, 0);
 	}
 	void PrintRightCali(){
-		if(leftGroup->CheckDirty()){
-			int data[64];
+		int data[64];
+		if(leftGroup->CheckDirty(data)){
 			SaveCalibrationParam(UI_CMD::CMD_CALI_HORIZON_RIGHT,
 				res, speed,  data, 0);
 		}
