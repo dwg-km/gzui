@@ -21,19 +21,19 @@ public:
 
 		printButton = new QPushButton(this);
 		printButton->setText(tr("PRINT"));
-		printButton->resize(72, 28);
-		printButton->setStyleSheet("background-color: rgb(9, 148, 220)");
+		//printButton->resize(72, 28);
+		//printButton->setStyleSheet("background-color: rgb(9, 148, 220)");
 		horLayout->addWidget(printButton, 0, 0, 1, 1);
 
 		for(int j = 0; j < rownum; j++){
-			QLabel *label = new QLabel();
+			QLabel *label = new QLabel(this);
 			label->setText(QString::number(j));
 			label->setAlignment(Qt::AlignCenter);
 			horLayout->addWidget(label, j + 1, 0);
 		}
 
 		for(int i = 0; i < colnum; i++){
-			QLabel *label = new QLabel();
+			QLabel *label = new QLabel(this);
 			//label->setFixedHeight(40);
 			if(color){
 				label->setText(color->at(i));
@@ -85,6 +85,9 @@ public:
 		}
 	
 		return dirty;
+	}
+	int Size(){
+		return colnum * rownum;
 	}
 	QPushButton * GetPrintButton(){
 		return printButton;
@@ -169,7 +172,7 @@ public slots:
 		int data[64];
 		if(leftGroup->CheckDirty(data)){
 			SaveCalibrationParam(UI_CMD::CMD_CALI_HORIZON_RIGHT,
-				res, speed,  data, 0);
+				res, speed,  data, leftGroup->Size());
 		}
 
 		PrintCalibration(UI_CMD::CMD_CALI_HORIZON_RIGHT,
@@ -179,7 +182,7 @@ public slots:
 		int data[64];
 		if(leftGroup->CheckDirty(data)){
 			SaveCalibrationParam(UI_CMD::CMD_CALI_HORIZON_RIGHT,
-				res, speed,  data, 0);
+				res, speed,  data, rightGroup->Size());
 		}
 
 		PrintCalibration(UI_CMD::CMD_CALI_HORIZON_RIGHT,
@@ -289,7 +292,7 @@ public slots:
 		int data[64];
 		int cmd = UI_CMD::CMD_CALI_HORIZON_LEFT_SUB | (colorIndex & 0x0F);
 		if(leftGroup->CheckDirty(data)){
-			SaveCalibrationParam(UI_CMD(cmd), res, speed,  data, 0);
+			SaveCalibrationParam(UI_CMD(cmd), res, speed,  data, leftGroup->Size());
 		}
 
 		PrintCalibration(UI_CMD(cmd), res, speed, 0);
@@ -298,7 +301,7 @@ public slots:
 		int data[64];
 		int cmd = UI_CMD::CMD_CALI_HORIZON_RIGHT_SUB | (colorIndex & 0x0F);
 		if(leftGroup->CheckDirty(data)){
-			SaveCalibrationParam(UI_CMD(cmd), res, speed,  data, 0);
+			SaveCalibrationParam(UI_CMD(cmd), res, speed,  data, rightGroup->Size());
 		}
 
 		PrintCalibration(UI_CMD(cmd), res, speed, 0);

@@ -224,7 +224,7 @@ struct CLEAN{
 
 struct STATUS{
     unsigned int error_code;
-    char context[63];
+    char context[60];
 };
 
 enum PRINT_SPEED{
