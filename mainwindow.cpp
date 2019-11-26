@@ -38,13 +38,14 @@ void InkWidget::paintEvent(QPaintEvent *e)
 	e = e;
 	QPainter painter(this);
 
+	qDebug() << "paint ink event";
+
 	int h = 0;
-	int xCoord[8];
 	const int yCoord = height() * 0.1;
-	const int ColorNum = 6;
 	const int rect_width = width() / ColorNum * 3 / 4;
 	const int rect_height = height() * 0.9;
 
+	int xCoord[8];
 	for(int c = 0; c < ColorNum; c++){
 		xCoord[c] = c * width() / ColorNum;
 	}
@@ -64,11 +65,6 @@ void InkWidget::paintEvent(QPaintEvent *e)
 	painter.drawRect(xCoord[BLACK], height() - h, rect_width, h);
 	painter.drawText(xCoord[BLACK], height() - h, percent);
 	*/
-}
-
-InkWidget::InkWidget(QWidget *parent) : QWidget(parent)
-{
-	GetPrinterParam(UI_CMD::CMD_MECHINE_INK_PUMP, &InkPump);
 }
 
 enum Status{

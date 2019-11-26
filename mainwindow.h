@@ -28,11 +28,16 @@ class QTableWidget;
 
 class InkWidget : public QWidget {
 public:
-	InkWidget(QWidget *parent = NULL);
-	void paintEvent(QPaintEvent *e);
+	InkWidget(QWidget *parent = NULL) : QWidget(parent), ColorNum(6)
+	{
+		GetPrinterParam(UI_CMD::CMD_MECHINE_INK_PUMP, &InkPump);
+	}
+
+	virtual void paintEvent(QPaintEvent *e);
+
 private:
 	INK_PUMP InkPump;
-
+	const int ColorNum;
 };
 /*
 void SplitSemicolon(char * s, QStringList & str)
