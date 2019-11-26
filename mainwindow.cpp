@@ -10,134 +10,65 @@
 enum ColorIndex {
 	BLACK		= 0,
 	CYAN		= 1,
-	MEGENTA		= 2,
-	YELLO		= 3,
-	LIGHT_CYAN	= 4,
-	LIGHT_MEGENTA	= 5
+	MAGENTA		= 2,
+	YELLOW		= 3,
+	LCYAN		= 4,
+	LMAGENTA	= 5
 };
 
 #define		RGB_WHITE	QColor(255, 255, 255)
 #define		RGB_BLACK	QColor(35, 31, 32)
 #define		RGB_CYAN	QColor(0, 159, 221)
-#define		RGB_MEGENTA	QColor(194, 0, 144)
+#define		RGB_MAGENTA	QColor(194, 0, 144)
 #define		RGB_YELLOW	QColor(244, 231, 0)
-#define		RGB_LMEGENTA	QColor(231, 143, 194)
+#define		RGB_LMAGENTA	QColor(231, 143, 194)
 #define		RGB_LCYAN	QColor(140, 203, 226)
 
+#define		DRAW_COLOR_BAR(c)	do{\
+	QString percent = QString::number(InkPump.InkQuantity[c]) + "%";\
+	h =(double)InkPump.InkQuantity[c] / 100 * rect_height;\
+	painter.setBrush(QBrush(RGB_##c, Qt::SolidPattern));\
+	painter.drawRect(xCoord[c], height() - h, rect_width, h);\
+	painter.drawRect(xCoord[c], height() - h, rect_width, h);\
+	painter.drawText(xCoord[c], height() - h, percent);\
+}while(0)
 
 void InkWidget::paintEvent(QPaintEvent *e)
 {
 	e = e;
-	//QPainter painter(this);
-	//painter.drawPixmap(event->rect(), pixmatpList[curIndex]);
+	QPainter painter(this);
+
+	int h = 0;
 	int xCoord[8];
-	const int yCoord = 0;
+	const int yCoord = height() * 0.1;
 	const int ColorNum = 6;
-	//const int lenght = height();
 	const int rect_width = width() / ColorNum * 3 / 4;
-	const int rect_height = height() - yCoord;
+	const int rect_height = height() * 0.9;
 
 	for(int c = 0; c < ColorNum; c++){
 		xCoord[c] = c * width() / ColorNum;
 	}
 
-	QPainter painter(this);
-	painter.setPen(QPen(QColor(221, 227, 227), 1));
+	DRAW_COLOR_BAR(BLACK);
+	DRAW_COLOR_BAR(CYAN);
+	DRAW_COLOR_BAR(MAGENTA);
+	DRAW_COLOR_BAR(YELLOW);
+	DRAW_COLOR_BAR(LCYAN);
+	DRAW_COLOR_BAR(LMAGENTA);
 
-	painter.setBrush(*gradient0);
-	painter.drawRect(xCoord[BLACK], yCoord, rect_width, rect_height);
-
-	painter.setBrush(*gradient1);
-	painter.drawRect(xCoord[CYAN], yCoord, rect_width, rect_height);
-	//persent = QString::number(pump->InkQuantity[CYAN]) + "%";
-	//label2->setText(persent);
-
-	painter.setBrush(*gradient2);
-	painter.drawRect(xCoord[MEGENTA], yCoord, rect_width, rect_height);
-	//persent = QString::number(pump->InkQuantity[MEGENTA]) + "%";
-	//label3->setText(persent);
-
-	painter.setBrush(*gradient3);
-	painter.drawRect(xCoord[YELLO], yCoord, rect_width, rect_height);
-	//persent = QString::number(pump->InkQuantity[YELLO]) + "%";
-	//label4->setText(persent);
-
-	painter.setBrush(*gradient4);
-	painter.drawRect(xCoord[LIGHT_CYAN], yCoord, rect_width, rect_height);
-	//persent = QString::number(pump->InkQuantity[LIGHT_CYAN]) + "%";
-	//label5->setText(persent);
-
-	painter.setBrush(*gradient5);
-	painter.drawRect(xCoord[LIGHT_MEGENTA], yCoord, rect_width, rect_height);
-	//persent = QString::number(pump->InkQuantity[LIGHT_MEGENTA]) + "%";
-	//label6->setText(persent);
+	/*
+	QString percent = QString::number(InkPump.InkQuantity[BLACK]) + "%";
+	h =(double)pump->InkQuantity[BLACK] / 100 * rect_height;
+	painter.setBrush(QBrush(Qt::black, Qt::SolidPattern));
+	painter.drawRect(xCoord[BLACK], height() - h, rect_width, h);
+	painter.drawRect(xCoord[BLACK], height() - h, rect_width, h);
+	painter.drawText(xCoord[BLACK], height() - h, percent);
+	*/
 }
 
 InkWidget::InkWidget(QWidget *parent) : QWidget(parent)
 {
-	INK_PUMP * pump = new INK_PUMP;
-	GetPrinterParam(UI_CMD::CMD_MECHINE_INK_PUMP, pump);
-
-	int xCoord[8];
-	const int yCoord = 0;
-	const int ColorNum = 6;
-	//const int lenght = height();
-	const int rect_width = width() / ColorNum * 3 / 4;
-	const int rect_height = height() - yCoord;
-
-	for(int c = 0; c < ColorNum; c++){
-		xCoord[c] = c * width() / ColorNum;
-	}
-
-	float colData = 1.0 - (float)pump->InkQuantity[BLACK] / 100;
-	gradient0 = new QLinearGradient(xCoord[BLACK], yCoord, xCoord[BLACK], yCoord + rect_height);
-	
-	gradient0->setSpread(QGradient::RepeatSpread);
-	gradient0->setColorAt(0, RGB_WHITE);
-	gradient0->setColorAt(colData-0.01, RGB_WHITE);
-	gradient0->setColorAt(colData, RGB_BLACK);
-	gradient0->setColorAt(1, RGB_BLACK);
-
-	colData = 1.0 - (float)pump->InkQuantity[CYAN] / 100;
-	gradient1 = new QLinearGradient(xCoord[CYAN], yCoord, xCoord[CYAN], yCoord + rect_height);
-	
-	gradient1->setSpread(QGradient::RepeatSpread);
-	gradient1->setColorAt(0, RGB_WHITE);
-	gradient1->setColorAt(1, RGB_CYAN);
-	gradient1->setColorAt(colData-0.01, RGB_WHITE);
-	gradient1->setColorAt(colData, RGB_CYAN);
-	
-       	colData = 1.0 - (float)pump->InkQuantity[2] / 100;
-	gradient2 = new QLinearGradient(370, yCoord, 370, 440);
-	gradient2->setSpread(QGradient::RepeatSpread);
-	gradient2->setColorAt(0, RGB_WHITE);
-	gradient2->setColorAt(colData - 0.01, RGB_WHITE);
-	gradient2->setColorAt(colData, RGB_MEGENTA);
-	gradient2->setColorAt(1, RGB_MEGENTA);
-
-	colData = 1.0 - (float)pump->InkQuantity[3] / 100;
-	gradient3 = new QLinearGradient(370, yCoord, 370, 440);
-	gradient3->setSpread(QGradient::RepeatSpread);
-	gradient3->setColorAt(0, RGB_WHITE);
-	gradient3->setColorAt(colData - 0.01, RGB_WHITE);
-	gradient3->setColorAt(colData, RGB_YELLOW);
-	gradient3->setColorAt(1, RGB_YELLOW);
-
-	colData = 1.0 - (float)pump->InkQuantity[4] / 100;
-	gradient4 = new QLinearGradient(370, yCoord, 370, 440);
-	gradient4->setSpread(QGradient::RepeatSpread);
-	gradient4->setColorAt(0, RGB_WHITE);
-	gradient4->setColorAt(colData - 0.01, RGB_WHITE);
-	gradient4->setColorAt(colData, RGB_LCYAN);
-	gradient4->setColorAt(1, RGB_LCYAN);
-
-	colData = 1.0 - (float)pump->InkQuantity[5] / 100;
-	gradient5 = new QLinearGradient(370, yCoord, 370, 440);
-	gradient5->setSpread(QGradient::RepeatSpread);
-	gradient5->setColorAt(0, RGB_WHITE);
-	gradient5->setColorAt(colData - 0.01, RGB_WHITE);
-	gradient5->setColorAt(colData, RGB_LMEGENTA);
-	gradient5->setColorAt(1, RGB_LMEGENTA);
+	GetPrinterParam(UI_CMD::CMD_MECHINE_INK_PUMP, &InkPump);
 }
 
 enum Status{

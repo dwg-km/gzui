@@ -50,8 +50,6 @@ public:
 		update();
 #else
 		curIndex = 2;
-
-		qDebug() << "set disabled: " << curIndex;
 		QPushButton::setEnabled(false);
 #endif
 	}
@@ -61,7 +59,6 @@ public:
 		update();
 #else
 		curIndex = 0;
-		qDebug() << "set enabled: " << curIndex;
 		QPushButton::setEnabled(true);
 #endif
 	}

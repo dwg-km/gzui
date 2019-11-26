@@ -31,15 +31,7 @@ public:
 	InkWidget(QWidget *parent = NULL);
 	void paintEvent(QPaintEvent *e);
 private:
-	INK_PUMP * pump;
-
-	QLinearGradient * gradient0;
-	QLinearGradient * gradient1;
-	QLinearGradient * gradient2;
-	QLinearGradient * gradient3;
-	QLinearGradient * gradient4;
-	QLinearGradient * gradient5;
-	QLinearGradient * gradient6;
+	INK_PUMP InkPump;
 
 };
 /*
