@@ -402,7 +402,6 @@ public:
 		widgetlist->addTab(widget, "Mechanical");
 	}
 	void AddStepCaliWidget(){
-	
 		QWidget * widget = new QWidget;
 		widgetlist->addTab(widget, "Step");
 	}

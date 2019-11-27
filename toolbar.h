@@ -14,11 +14,9 @@
 		Add####Button();
 	void Add####Button(){
 		QVector<QString> icon==== = {
-			"resources/====.png",
-			"resources/2.png",
-			"resources/th.png"
+			"resources/====.png"
 		};
-		****Button = new iconButton(icon****);
+		====Button = new iconButton(icon====);
 	}
 	iconButton * Get####Button(){
 		return ====Button;
@@ -90,6 +88,7 @@ private:
 	iconButton * abortButton;
 	iconButton * pauseButton;
 	iconButton * exitButton;
+	iconButton * saveButton;
 
 	iconButton * nextButton;
 	iconButton * previousButton;
@@ -129,6 +128,7 @@ public:
 		exitButton = NULL;
 		nextButton = NULL;
 		previousButton = NULL;
+		saveButton = NULL;
 		
 		printButton = NULL;
 		measureButton = NULL;
@@ -160,6 +160,7 @@ public:
 		AddPoweroffButton();
 		AddUpdateButton();
 		AddBackupButton();
+		AddSaveButton();
 		 
 		AddAbortButton();
 		AddPauseButton();
@@ -458,6 +459,15 @@ public:
 	}
 	iconButton * GetWaveButton(){
 		return waveButton;
+	}
+	void AddSaveButton(){
+		QVector<QString> iconsave = {
+			"resources/save.png"
+		};
+		saveButton = new iconButton(iconsave);
+	}
+	iconButton * GetSaveButton(){
+		return saveButton;
 	}
 
 private slots:
