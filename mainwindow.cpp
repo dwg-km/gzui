@@ -56,15 +56,6 @@ void InkWidget::paintEvent(QPaintEvent *e)
 	DRAW_COLOR_BAR(YELLOW);
 	DRAW_COLOR_BAR(LCYAN);
 	DRAW_COLOR_BAR(LMAGENTA);
-
-	/*
-	QString percent = QString::number(InkPump.InkQuantity[BLACK]) + "%";
-	h =(double)pump->InkQuantity[BLACK] / 100 * rect_height;
-	painter.setBrush(QBrush(Qt::black, Qt::SolidPattern));
-	painter.drawRect(xCoord[BLACK], height() - h, rect_width, h);
-	painter.drawRect(xCoord[BLACK], height() - h, rect_width, h);
-	painter.drawText(xCoord[BLACK], height() - h, percent);
-	*/
 }
 
 enum Status{
