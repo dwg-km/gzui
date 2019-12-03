@@ -97,6 +97,94 @@ private:
 	QPushButton *printButton;
 };
 
+class VerticalWidget :public QWidget{
+	Q_OBJECT
+public:
+	VerticalWidget (struct MECHAINE* property, QWidget *parent = NULL) : QWidget(parent){
+	QGridLayout *layout = new QGridLayout;	
+
+   	QString color = property->PrintColor;
+    	QStringList colorList;
+	colorList = color.split(";");
+
+	int colnum = property->PrinterColorNum;
+	int rownum =property->PrinterGroupNum;
+	
+	int res ,speed = 0;
+
+	lineGroup = new LineEditGroup("Vertical", colnum, 1, &colorList, this);
+	connect(lineGroup->GetPrintButton(), SIGNAL(clicked()), this, SLOT(PrintVerticalCali()));
+
+	overlapGroup = new LineEditGroup("Overlap", colnum, rownum-1, &colorList, this);
+	connect(overlapGroup->GetPrintButton(), SIGNAL(clicked()), this, SLOT(PrintOverlapCali()));
+	UpdataData();	
+	//	for(int i = 0; i < colNum; i++)
+    		//{
+         	//	QLabel *label = new QLabel(this);
+       		//	label->setText(colorList.at(i));
+       		//	label->setAlignment(Qt::AlignCenter);
+		//	layout->addWidget(label,0,i,1,1);
+          	//	QLineEdit *edit = new QLineEdit(this);
+           	//	lineEdit.push_back(edit);
+		//	layout->addWidget(edit,1,i,1,1);
+   		 //}
+		layout->addWidget(lineGroup,0,1,1,3);
+		layout->addWidget(overlapGroup,1,1,1,3);
+		setLayout(layout);
+	}
+	void UpdataData(){
+		int data[64];
+ 		int res , speed =0;
+		if(LoadCalibrationParam(UI_CMD::CMD_CALI_VERTICAL, 
+			res, speed, data) <= 0){
+			memset(data, 0, sizeof(data));
+		}
+		lineGroup->UpdataContext(data);
+		res = speed=0;
+		if(LoadCalibrationParam(UI_CMD::CMD_CALI_OVERLAP, 
+			res, speed, data) <= 0){
+			memset(data, 0, sizeof(data));
+		}
+		overlapGroup->UpdataContext(data);
+
+	};
+	virtual void showEvent(QShowEvent * event){
+		UpdataData();
+	}
+ public slots:
+
+	void PrintVerticalCali(){
+		int data[64];
+		int res ,speed =0;
+		if(lineGroup->CheckDirty(data)){
+			SaveCalibrationParam(UI_CMD::CMD_CALI_VERTICAL,
+				res,speed,data,0);
+		  
+		}
+
+		PrintCalibration(UI_CMD::CMD_CALI_VERTICAL,
+				res, speed, 0);
+	}
+	void PrintOverlapCali(){
+		int data[64];
+		int res ,speed =0;
+		if(lineGroup->CheckDirty(data)){
+			SaveCalibrationParam(UI_CMD::CMD_CALI_OVERLAP,
+				res,speed,data,0);
+		  
+		}
+
+		PrintCalibration(UI_CMD::CMD_CALI_VERTICAL,res,speed,0);
+	}
+private:
+	QPushButton * print;
+	QVector<QLineEdit *>lineEdit;
+
+
+	LineEditGroup *overlapGroup;
+	LineEditGroup *lineGroup;
+};
+
 class HorizontalWidget : public QWidget{
 	Q_OBJECT
 public:
@@ -313,6 +401,7 @@ public slots:
 		//speed = speedComBox->currentIndex();
 		qDebug() << "speed changed " << speed;
 		UpdataData();
+
 	}
 	void ColorChanged(int index){
 		colorIndex = index;
@@ -330,6 +419,95 @@ private:
 	LineEditGroup *rightGroup;
 
 	QGridLayout * gridLayout;
+};
+class BiDirectionWidget : public QWidget{
+	Q_OBJECT
+public:
+	BiDirectionWidget(struct MECHAINE* property, QWidget *parent = NULL) : QWidget(parent){
+
+		resComBox = new QComboBox;
+		speedComBox = new QComboBox;
+		gridLayout = new QGridLayout;
+
+		int resolution[8] = {0};
+		int num = LoadPrintResList(resolution);
+		if(0 != num){
+			for(int i = 0; i < num; i++){
+				resComBox->addItem(QString::number(resolution[i]));
+			}
+		}
+		res = resComBox->currentText().toInt();
+		connect(resComBox, SIGNAL(currentTextChanged(const QString&)),
+				this, SLOT(ResChanged(const QString&)));
+		
+		speedComBox->addItem("低速");
+		speedComBox->addItem("中速");
+		speedComBox->addItem("高速");
+		speed = speedComBox->currentIndex();
+		connect(speedComBox, SIGNAL(currentIndexChanged(int)), 
+				this, SLOT(SpeedChanged(int)));
+		
+		int colnum = 1;
+		int rownum = 1;
+		QList<QString>::iterator iter;
+	
+		bidirectionGroup = new LineEditGroup("bidirection", colnum, rownum, NULL, this);
+		connect(bidirectionGroup->GetPrintButton(), SIGNAL(clicked()), this, SLOT(PrintBiDirection()));
+
+		gridLayout->addWidget(resComBox,	0, 0, 1, 1);
+		gridLayout->addWidget(speedComBox,	0, 1, 1, 1);
+		gridLayout->addWidget(bidirectionGroup,	1, 0, 1, 3);
+
+		setLayout(gridLayout);
+	}
+	void UpdataData(){
+		int data[64];
+		int cmd = UI_CMD::CMD_CALI_HORIZON_BIDRECTION;
+		if(LoadCalibrationParam(UI_CMD(cmd), res, speed, data) <= 0){
+			memset(data, 0, sizeof(data));
+		}
+		bidirectionGroup->UpdataContext(data);
+	}
+	void SaveData(){
+	
+	}
+	virtual void showEvent(QShowEvent * event){
+		UpdataData();
+	}
+	virtual void hideEvent(QHideEvent * event){
+
+	}
+public slots:
+	void PrinDirectionCali(){
+		int data[64];
+		int cmd = UI_CMD::CMD_CALI_HORIZON_BIDRECTION;
+		if(bidirectionGroup->CheckDirty(data)){
+			SaveCalibrationParam(UI_CMD(cmd), res, speed,  data, 0);
+		}
+
+		PrintCalibration(UI_CMD(cmd), res, speed, 0);
+	}
+	void ResChanged(const QString & text){
+		res = text.toInt();
+		qDebug() << "res changed " << res;
+		UpdataData();
+	}
+
+	void SpeedChanged(int index){
+		speed = index;
+		//speed = speedComBox->currentIndex();
+		qDebug() << "speed changed " << speed;
+		UpdataData();
+	}
+private:
+	int speed;
+	int res;
+
+	QComboBox * resComBox;
+	QComboBox * speedComBox;
+	LineEditGroup *bidirectionGroup;
+	QGridLayout * gridLayout;
+
 };
 class CaliDialog : public UiTemplate
 {
@@ -413,12 +591,12 @@ public:
 	}
 	void AddBidirectonCaliWidget(){
 	
-		QWidget * widget = new QWidget;
+		QWidget * widget = new BiDirectionWidget(&property);
 		widgetlist->addTab(widget, "Bidrection");
 	}
 	void AddVerticalCaliWidget(){
 	
-		QWidget * widget = new QWidget;
+		QWidget * widget = new VerticalWidget(&property);
 		widgetlist->addTab(widget, "Vertical");
 	}
 	

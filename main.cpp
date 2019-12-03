@@ -18,7 +18,7 @@ int main(int argc, char *argv[])
                         case 'v':
 			{
 				qDebug() << UI_VERSION;
-			       	qDebug() << GetPmVersion();
+			       	//qDebug() << GetPmVersion();
 				return 0;
 			}
 			default:
