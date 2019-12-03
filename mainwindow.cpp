@@ -274,3 +274,14 @@ void mainDialog::PowerOff()
 		system("poweroff");
 	}
 }
+
+void mainDialog::deviceAdded(QString uid)
+{
+	qDebug() << uid;
+}
+
+void mainDialog::deviceRemoved(QString uid)
+{
+	qDebug() << uid;
+}
+

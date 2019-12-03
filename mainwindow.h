@@ -13,9 +13,12 @@
 #include <QMessageBox>
 #include <QTableWidget>
 #include <QDialog>
+#include <QtDBus>
 
 #include "UiTemplate.h"
 #include "menu.h"
+
+#include "usbmanager.h"
 
 #include "ui_interface.h"
 #include "APIDataInterface.hpp"
@@ -67,9 +70,9 @@ public:
 	}
 	void LayoutToolBar(){
 		toolLayout->addWidget(Tool->GetMenuButton());
-		toolLayout->addWidget(Tool->GetPoweroffButton());
 		toolLayout->addWidget(Tool->GetPauseButton());
 		toolLayout->addWidget(Tool->GetAbortButton());
+		toolLayout->addWidget(Tool->GetPoweroffButton());
 		toolLayout->addWidget(Tool->GetExitButton());
 
 		Tool->GetAbortButton()->setDisabled();
@@ -107,30 +110,29 @@ public:
 		
 		QLabel * homeLabel = new QLabel(tr("打印作业"));
 		QLabel * managerLabel = new QLabel(tr("测纸宽"));
-		QLabel * advanceLabel = new QLabel(tr(""));
+		QLabel * originLabel = new QLabel(tr("设原点"));
 
+		QLabel * nozzleLabel = new QLabel(tr("测喷嘴"));
 		QLabel * cleanLabel = new QLabel(tr("喷头维护"));
-		QLabel * uvLabel = new QLabel(tr("测喷嘴"));
-		QLabel * warningLabel = new QLabel(tr("设原点"));
-	
+		QLabel * flashLabel = new QLabel(tr("喷嘴闪喷"));
 
 		menuLayout->addWidget(Tool->GetPrintButton(),		0, 0, 2, 1);
 		menuLayout->addWidget(Tool->GetMeasureButton(),		0, 1, 2, 1);
-		menuLayout->addWidget(Tool->GetWarningButton(),		0, 2, 2, 1);
+		menuLayout->addWidget(Tool->GetOriginButton(),		0, 2, 2, 1);
 
 		menuLayout->addWidget(homeLabel,			2, 0, 1, 1);
 		menuLayout->addWidget(managerLabel,			2, 1, 1, 1);
-		menuLayout->addWidget(advanceLabel,			2, 2, 1, 1);
+		menuLayout->addWidget(originLabel,			2, 2, 1, 1);
 
-		menuLayout->addWidget(Tool->GetCleanButton(),		3, 0, 2, 1);
-		menuLayout->addWidget(Tool->GetNozzleButton(),		3, 1, 2, 1);
-		menuLayout->addWidget(Tool->GetOriginButton(),		3, 2, 2, 1);
+		menuLayout->addWidget(Tool->GetNozzleButton(),		3, 0, 2, 1);
+		menuLayout->addWidget(Tool->GetCleanButton(),		3, 1, 2, 1);
+		menuLayout->addWidget(Tool->GetFlashButton(),		3, 2, 2, 1);
+
+		menuLayout->addWidget(nozzleLabel,			5, 0, 1, 1);
+		menuLayout->addWidget(cleanLabel,			5, 1, 1, 1);
+		menuLayout->addWidget(flashLabel,			5, 2, 1, 1);
+
 		toolBox->setLayout(menuLayout);
-
-		menuLayout->addWidget(cleanLabel,			5, 0, 1, 1);
-		menuLayout->addWidget(uvLabel,				5, 1, 1, 1);
-		menuLayout->addWidget(warningLabel,			5, 2, 1, 1);
-
 		connect(Tool->GetPrintButton(),SIGNAL(clicked()), this, SLOT(Print()));
 		connect(Tool->GetNozzleButton(),SIGNAL(clicked()), this, SLOT(PrintNozzleCheck()));
 	}
@@ -152,17 +154,20 @@ public:
 		setBox = new QGroupBox;
 		QGridLayout *setLayout = new QGridLayout;
 
-		QLabel *mediaLabel = new QLabel(tr("材料"));
-		QLabel *modelLabel = new QLabel(tr("模式"));
+		QLabel *mediaLabel = new QLabel(tr("打印材料"));
+		QLabel *modelLabel = new QLabel(tr("生产模式"));
 		QLabel *stepLabel = new QLabel(tr("进步量"));
 		QLabel *bidLabel = new QLabel(tr("双向值"));
-		QLabel *cycleLabel = new QLabel(tr("循环压"));
-		QLabel *pumpLabel = new QLabel(tr("供墨压"));
+		QLabel *cycleLabel = new QLabel(tr("循环压力"));
+		QLabel *pumpLabel = new QLabel(tr("供墨压力"));
 
 		IntLineEdit * stepLineEdit = new IntLineEdit;
 		IntLineEdit * bidLineEdit = new IntLineEdit;
 		cycleLineEdit = new QLineEdit;
 		pumpLineEdit = new QLineEdit;
+
+		cycleLineEdit->setEnabled(false);
+		pumpLineEdit->setEnabled(false);
 
 		char buf[256];
 		QComboBox * mediaBox = new QComboBox();
@@ -193,6 +198,24 @@ public:
 		setLayout->addWidget(cycleLineEdit,	2, 1);
 		setLayout->addWidget(pumpLabel,		2, 2);
 		setLayout->addWidget(pumpLineEdit,	2, 3);
+/*
+		QDBusConnection::systemBus().connect(
+				"org.freedesktop.Hal",
+				"/org/freedesktop/Hal/Manager",
+				"org.freedesktop.Hal.Manager",
+				"DeviceAdded",
+				this,
+				SLOT(deviceAdded(QString )));
+
+		QDBusConnection::systemBus().connect(
+				"org.freedesktop.Hal",
+				"/org/freedesktop/Hal/Manager",
+				"org.freedesktop.Hal.Manager",
+				"DeviceRemoved",
+				this,
+				SLOT(deviceRemoved(QString )));
+*/
+		usbmanager * usb = new usbmanager(this);
 
 		QTimer * StatusTimer = new QTimer(this);
 		connect(StatusTimer, SIGNAL(timeout()), this,  SLOT(ProcessPrintStatus()));
@@ -210,6 +233,8 @@ public slots:
 	void PrintNozzleCheck();
 
 	void PowerOff();
+	void deviceAdded(QString);
+	void deviceRemoved(QString);
 signals:
 	void ready();
 	void pause();
