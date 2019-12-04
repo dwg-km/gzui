@@ -285,3 +285,4 @@ void mainDialog::deviceRemoved(QString uid)
 	qDebug() << uid;
 }
 
+

@@ -1,11 +1,10 @@
 
-QT       += core gui dbus 
+QT       += core gui  
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets 
 
 CONFIG		+= debug
 
 INCLUDEPATH	= lib \
-		usb \
 		touchkey
 
 TEMPLATE      = app
@@ -20,9 +19,7 @@ HEADERS       = mainwindow.h \
 		lib/ui_interface.h \
 		lib/APIDataInterface.hpp \
 		lib/Error.h \
-		lib/command.h \
-		usb/haldevice.h  \
-		usb/usbmanager.h
+		lib/command.h 
 
 SOURCES       = main.cpp \
 		menu.cpp \ 
@@ -32,8 +29,7 @@ SOURCES       = main.cpp \
 		UiTemplate.cpp \
 		touchkey/linedit.cpp \
 		touchkey/touchkey.cpp \
-		usb/haldevice.cpp  \
-		usb/usbmanager.cpp
+		udisk_detect.cpp
 
 SUBDIRS		= lib \
 		touchkey 

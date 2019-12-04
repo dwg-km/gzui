@@ -13,12 +13,12 @@
 #include <QMessageBox>
 #include <QTableWidget>
 #include <QDialog>
-#include <QtDBus>
 
 #include "UiTemplate.h"
 #include "menu.h"
 
-#include "usbmanager.h"
+//#include <QtDBus>
+//#include "usbmanager.h"
 
 #include "ui_interface.h"
 #include "APIDataInterface.hpp"
@@ -28,6 +28,18 @@ class QLabel;
 class QLineEdit;
 class QPushButton;
 class QTableWidget;
+
+extern int udisk_thread();
+class uDiskThread : public QThread {
+public:
+	uDiskThread(){
+	}
+protected:
+	virtual void run(){
+		udisk_thread();
+	}
+private:
+};
 
 class InkWidget : public QWidget {
 public:
@@ -214,8 +226,10 @@ public:
 				"DeviceRemoved",
 				this,
 				SLOT(deviceRemoved(QString )));
-*/
 		usbmanager * usb = new usbmanager(this);
+*/
+		uDiskThread * usb = new uDiskThread();
+		usb->start();
 
 		QTimer * StatusTimer = new QTimer(this);
 		connect(StatusTimer, SIGNAL(timeout()), this,  SLOT(ProcessPrintStatus()));
