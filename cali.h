@@ -96,6 +96,87 @@ private:
 	QVector<QLineEdit *> matrix;
 	QPushButton *printButton;
 };
+class StepcalWidget : public QWidget{
+	Q_OBJECT
+public:
+	StepcalWidget (struct MECHAINE* property, QWidget *parent = NULL) : QWidget(parent){
+
+		QGridLayout * gridLayout = new QGridLayout;
+
+		printButton = new QPushButton;
+		printButton->setText(tr("PRINT"));
+		printButton->resize(72, 28);
+		printButton->setStyleSheet("background-color: rgb(9, 148, 220)");
+		gridLayout->addWidget(printButton, 2, 2);		
+
+		repairButton = new QPushButton;
+		repairButton->setText(tr("基准步进"));
+		gridLayout->addWidget(repairButton, 2, 0);		
+
+		modelComBox = new QComboBox;
+		passNumComBox = new QComboBox;
+		gridLayout->addWidget(printButton, 1, 2, 1, 1);
+	
+		for(int j = 1; j < 17; j++){
+			passNumComBox->addItem(QString::number(j));
+		
+		}
+		modelComBox->addItem("model0");
+		modelComBox->addItem("model1");
+		modelComBox->addItem("model2");
+
+		gridLayout->addWidget(modelComBox, 0, 1);
+		gridLayout->addWidget(passNumComBox, 0, 3);
+
+		QLabel *label1 = new QLabel(tr("打印模式"));
+		label1->setAlignment(Qt::AlignCenter);
+		gridLayout->addWidget(label1, 0, 0);
+
+		QLabel *label2 = new QLabel(tr("pass数"));
+		label2->setAlignment(Qt::AlignCenter);
+		gridLayout->addWidget(label2, 0, 2);
+
+		QLabel *label3 = new QLabel(tr("基准步进"));
+		label3->setAlignment(Qt::AlignCenter);
+		gridLayout->addWidget(label3, 1, 0);
+
+		QLabel *label4 = new QLabel(tr("repairNum"));
+		label4->setAlignment(Qt::AlignCenter);
+		gridLayout->addWidget(label4, 1, 2);
+		
+		stdStepNum =  new QLineEdit;
+		gridLayout->addWidget(stdStepNum, 1, 1);
+		repairStepNum = new QLineEdit;
+		gridLayout->addWidget(repairStepNum, 2, 1);
+		stepNum = new QLineEdit;
+		gridLayout->addWidget(stepNum, 1, 3);
+
+		setLayout(gridLayout);
+	}
+public slots:
+	void repairStep()
+	{
+
+	}
+	
+	void StepCaliPrint()
+	{
+		//SaveCalibrationParam(UI_CMD::CMD_CALI_STEP,
+		//		0,
+		//		modelComBox->currentText().toStdString().c_str(),0,0);
+		
+		//PrintCalibration(UI_CMD::CMD_CALI_STEP,0,0,0);
+	} 
+private:
+	QComboBox * modelComBox;
+	QPushButton * printButton;
+	QPushButton * repairButton;
+	QLineEdit * stdStepNum;
+	QLineEdit * stepNum;
+	QLineEdit * repairStepNum;
+	//QComboBox * modelComBox;
+	QComboBox * passNumComBox;
+};
 
 class VerticalWidget :public QWidget{
 	Q_OBJECT
@@ -578,7 +659,7 @@ public:
 	}
 	void AddStepCaliWidget(){
 	
-		QWidget * widget = new QWidget;
+		QWidget * widget = new StepcalWidget(&property);
 		widgetlist->addTab(widget, "Step");
 	}
 	void AddHorizontalCaliWidget(){
