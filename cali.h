@@ -21,19 +21,19 @@ public:
 
 		printButton = new QPushButton(this);
 		printButton->setText(tr("PRINT"));
-		printButton->resize(72, 28);
-		printButton->setStyleSheet("background-color: rgb(9, 148, 220)");
+		//printButton->resize(72, 28);
+		//printButton->setStyleSheet("background-color: rgb(9, 148, 220)");
 		horLayout->addWidget(printButton, 0, 0, 1, 1);
 
 		for(int j = 0; j < rownum; j++){
-			QLabel *label = new QLabel();
+			QLabel *label = new QLabel(this);
 			label->setText(QString::number(j));
 			label->setAlignment(Qt::AlignCenter);
 			horLayout->addWidget(label, j + 1, 0);
 		}
 
 		for(int i = 0; i < colnum; i++){
-			QLabel *label = new QLabel();
+			QLabel *label = new QLabel(this);
 			//label->setFixedHeight(40);
 			if(color){
 				label->setText(color->at(i));
@@ -86,6 +86,9 @@ public:
 	
 		return dirty;
 	}
+	int Size(){
+		return colnum * rownum;
+	}
 	QPushButton * GetPrintButton(){
 		return printButton;
 	}
@@ -103,55 +106,60 @@ public:
 
 		QGridLayout * gridLayout = new QGridLayout;
 
-		printButton = new QPushButton;
-		printButton->setText(tr("PRINT"));
-		printButton->resize(72, 28);
-		printButton->setStyleSheet("background-color: rgb(9, 148, 220)");
-		gridLayout->addWidget(printButton, 2, 2);		
+		passButton = new QPushButton;
+		passButton->setText(tr("精细校准"));
 
-		repairButton = new QPushButton;
-		repairButton->setText(tr("基准步进"));
-		gridLayout->addWidget(repairButton, 2, 0);		
+		baseButton = new QPushButton;
+		baseButton->setText(tr("基准步进"));
+		//baseButton->resize(72, 28);
+
+		calButton = new QPushButton;
+		calButton->setText(tr("->"));
+		//calButton->resize(72, 28);
 
 		modelComBox = new QComboBox;
 		passNumComBox = new QComboBox;
-		gridLayout->addWidget(printButton, 1, 2, 1, 1);
 	
 		for(int j = 1; j < 17; j++){
 			passNumComBox->addItem(QString::number(j));
-		
 		}
+		QLabel *passLabel = new QLabel(tr("pass数"));
+		passLabel->setAlignment(Qt::AlignCenter);
+
+		QLabel *modelLabel = new QLabel(tr("打印模式"));
+		modelLabel->setAlignment(Qt::AlignCenter);
+
 		modelComBox->addItem("model0");
 		modelComBox->addItem("model1");
 		modelComBox->addItem("model2");
 
-		gridLayout->addWidget(modelComBox, 0, 1);
-		gridLayout->addWidget(passNumComBox, 0, 3);
+		baseLineEdit =  new QLineEdit;
+		passLineEdit = new QLineEdit;
+		calLineEdit = new QLineEdit;
 
-		QLabel *label1 = new QLabel(tr("打印模式"));
-		label1->setAlignment(Qt::AlignCenter);
-		gridLayout->addWidget(label1, 0, 0);
+		gridLayout->addWidget(modelLabel,	0, 0);
+		gridLayout->addWidget(modelComBox,	0, 1);
 
-		QLabel *label2 = new QLabel(tr("pass数"));
-		label2->setAlignment(Qt::AlignCenter);
-		gridLayout->addWidget(label2, 0, 2);
+		gridLayout->addWidget(passLabel,	1, 0);
+		gridLayout->addWidget(passNumComBox,	1, 1);
 
-		QLabel *label3 = new QLabel(tr("基准步进"));
-		label3->setAlignment(Qt::AlignCenter);
-		gridLayout->addWidget(label3, 1, 0);
+		gridLayout->addWidget(baseButton,	2, 0);		
+		gridLayout->addWidget(baseLineEdit,	2, 1);
 
-		QLabel *label4 = new QLabel(tr("repairNum"));
-		label4->setAlignment(Qt::AlignCenter);
-		gridLayout->addWidget(label4, 1, 2);
-		
-		stdStepNum =  new QLineEdit;
-		gridLayout->addWidget(stdStepNum, 1, 1);
-		repairStepNum = new QLineEdit;
-		gridLayout->addWidget(repairStepNum, 2, 1);
-		stepNum = new QLineEdit;
-		gridLayout->addWidget(stepNum, 1, 3);
+		gridLayout->addWidget(passButton,	3, 0);		
+		gridLayout->addWidget(passLineEdit,	3, 1);
 
-		setLayout(gridLayout);
+		gridLayout->addWidget(calButton,	4, 0);		
+		gridLayout->addWidget(calLineEdit,	4, 1);
+
+		QGroupBox * groupBox = new QGroupBox;
+		groupBox->setFixedSize(450, 270);
+		groupBox->setLayout(gridLayout);
+	
+		QVBoxLayout *layout = new QVBoxLayout;
+		layout->setAlignment(Qt::AlignCenter);
+		layout->addWidget(groupBox);
+		setLayout(layout);
 	}
 public slots:
 	void repairStep()
@@ -169,11 +177,12 @@ public slots:
 	} 
 private:
 	QComboBox * modelComBox;
-	QPushButton * printButton;
-	QPushButton * repairButton;
-	QLineEdit * stdStepNum;
-	QLineEdit * stepNum;
-	QLineEdit * repairStepNum;
+	QPushButton * passButton;
+	QPushButton * baseButton;
+	QPushButton * calButton;
+	QLineEdit * baseLineEdit;
+	QLineEdit * passLineEdit;
+	QLineEdit * calLineEdit;
 	//QComboBox * modelComBox;
 	QComboBox * passNumComBox;
 };
@@ -338,7 +347,7 @@ public slots:
 		int data[64];
 		if(leftGroup->CheckDirty(data)){
 			SaveCalibrationParam(UI_CMD::CMD_CALI_HORIZON_RIGHT,
-				res, speed,  data, 0);
+				res, speed,  data, leftGroup->Size());
 		}
 
 		PrintCalibration(UI_CMD::CMD_CALI_HORIZON_RIGHT,
@@ -348,7 +357,7 @@ public slots:
 		int data[64];
 		if(leftGroup->CheckDirty(data)){
 			SaveCalibrationParam(UI_CMD::CMD_CALI_HORIZON_RIGHT,
-				res, speed,  data, 0);
+				res, speed,  data, rightGroup->Size());
 		}
 
 		PrintCalibration(UI_CMD::CMD_CALI_HORIZON_RIGHT,
@@ -458,7 +467,7 @@ public slots:
 		int data[64];
 		int cmd = UI_CMD::CMD_CALI_HORIZON_LEFT_SUB | (colorIndex & 0x0F);
 		if(leftGroup->CheckDirty(data)){
-			SaveCalibrationParam(UI_CMD(cmd), res, speed,  data, 0);
+			SaveCalibrationParam(UI_CMD(cmd), res, speed,  data, leftGroup->Size());
 		}
 
 		PrintCalibration(UI_CMD(cmd), res, speed, 0);
@@ -467,7 +476,7 @@ public slots:
 		int data[64];
 		int cmd = UI_CMD::CMD_CALI_HORIZON_RIGHT_SUB | (colorIndex & 0x0F);
 		if(leftGroup->CheckDirty(data)){
-			SaveCalibrationParam(UI_CMD(cmd), res, speed,  data, 0);
+			SaveCalibrationParam(UI_CMD(cmd), res, speed,  data, rightGroup->Size());
 		}
 
 		PrintCalibration(UI_CMD(cmd), res, speed, 0);
@@ -658,7 +667,6 @@ public:
 		widgetlist->addTab(widget, "Mechanical");
 	}
 	void AddStepCaliWidget(){
-	
 		QWidget * widget = new StepcalWidget(&property);
 		widgetlist->addTab(widget, "Step");
 	}

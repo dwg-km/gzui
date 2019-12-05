@@ -1,12 +1,12 @@
 
 FILE=$1
 SRC_PATH=tmp/
-DST_PATH=${HOME}/gzui/
+DST_PATH=/home/gz/gzui/
 
 LIB="libpmd.so"
 EXE="gz update.sh resume.sh"
 SETTING="setting hb_cfg.xml"
-CONFIG="hb_descp.xml ph_descp.xml resources"
+CONFIG="hb_descp.xml ph_descp.xml resources cali_config.xml error_code.xml fonts"
 
 if [ ! -d $SRC_PATH ];then
 	mkdir -p $SRC_PATH
@@ -16,7 +16,8 @@ if [ ! -d $DST_PATH ];then
 	mkdir -p $DST_PATH
 fi
 
-openssl des3 -d -k 123456 -in ${FILE} | tar -C ${SRC_PATH} -zxf  -
+#openssl des3 -d -k 123456 -in ${FILE} | tar -C ${SRC_PATH} -zxf  -
+tar -zxf ${FILE} -C ${SRC_PATH}
 
 SRC_PATH=${SRC_PATH}$(ls ${SRC_PATH})"/"
 echo ${SRC_PATH}

@@ -17,6 +17,9 @@
 #include "UiTemplate.h"
 #include "menu.h"
 
+//#include <QtDBus>
+//#include "usbmanager.h"
+
 #include "ui_interface.h"
 #include "APIDataInterface.hpp"
 
@@ -26,21 +29,30 @@ class QLineEdit;
 class QPushButton;
 class QTableWidget;
 
+extern int udisk_thread();
+class uDiskThread : public QThread {
+public:
+	uDiskThread(){
+	}
+protected:
+	virtual void run(){
+		udisk_thread();
+	}
+private:
+};
+
 class InkWidget : public QWidget {
 public:
-	InkWidget(QWidget *parent = NULL);
-	void paintEvent(QPaintEvent *e);
+	InkWidget(QWidget *parent = NULL) : QWidget(parent), ColorNum(6)
+	{
+		GetPrinterParam(UI_CMD::CMD_MECHINE_INK_PUMP, &InkPump);
+	}
+
+	virtual void paintEvent(QPaintEvent *e);
+
 private:
-	INK_PUMP * pump;
-
-	QLinearGradient * gradient0;
-	QLinearGradient * gradient1;
-	QLinearGradient * gradient2;
-	QLinearGradient * gradient3;
-	QLinearGradient * gradient4;
-	QLinearGradient * gradient5;
-	QLinearGradient * gradient6;
-
+	INK_PUMP InkPump;
+	const int ColorNum;
 };
 /*
 void SplitSemicolon(char * s, QStringList & str)
@@ -70,9 +82,9 @@ public:
 	}
 	void LayoutToolBar(){
 		toolLayout->addWidget(Tool->GetMenuButton());
-		toolLayout->addWidget(Tool->GetPoweroffButton());
 		toolLayout->addWidget(Tool->GetPauseButton());
 		toolLayout->addWidget(Tool->GetAbortButton());
+		toolLayout->addWidget(Tool->GetPoweroffButton());
 		toolLayout->addWidget(Tool->GetExitButton());
 
 		Tool->GetAbortButton()->setDisabled();
@@ -109,31 +121,30 @@ public:
 		QGridLayout *menuLayout = new QGridLayout;
 		
 		QLabel * homeLabel = new QLabel(tr("打印作业"));
-		QLabel * managerLabel = new QLabel(tr("测纸宽"));
-		QLabel * advanceLabel = new QLabel(tr(""));
+		QLabel * managerLabel = new QLabel(tr("测量纸宽"));
+		QLabel * originLabel = new QLabel(tr("设为原点"));
 
+		QLabel * nozzleLabel = new QLabel(tr("喷嘴检查"));
 		QLabel * cleanLabel = new QLabel(tr("喷头维护"));
-		QLabel * uvLabel = new QLabel(tr("测喷嘴"));
-		QLabel * warningLabel = new QLabel(tr("设原点"));
-	
+		QLabel * flashLabel = new QLabel(tr("喷嘴闪喷"));
 
 		menuLayout->addWidget(Tool->GetPrintButton(),		0, 0, 2, 1);
 		menuLayout->addWidget(Tool->GetMeasureButton(),		0, 1, 2, 1);
-		menuLayout->addWidget(Tool->GetWarningButton(),		0, 2, 2, 1);
+		menuLayout->addWidget(Tool->GetOriginButton(),		0, 2, 2, 1);
 
 		menuLayout->addWidget(homeLabel,			2, 0, 1, 1);
 		menuLayout->addWidget(managerLabel,			2, 1, 1, 1);
-		menuLayout->addWidget(advanceLabel,			2, 2, 1, 1);
+		menuLayout->addWidget(originLabel,			2, 2, 1, 1);
 
-		menuLayout->addWidget(Tool->GetCleanButton(),		3, 0, 2, 1);
-		menuLayout->addWidget(Tool->GetNozzleButton(),		3, 1, 2, 1);
-		menuLayout->addWidget(Tool->GetOriginButton(),		3, 2, 2, 1);
+		menuLayout->addWidget(Tool->GetNozzleButton(),		3, 0, 2, 1);
+		menuLayout->addWidget(Tool->GetCleanButton(),		3, 1, 2, 1);
+		menuLayout->addWidget(Tool->GetFlashButton(),		3, 2, 2, 1);
+
+		menuLayout->addWidget(nozzleLabel,			5, 0, 1, 1);
+		menuLayout->addWidget(cleanLabel,			5, 1, 1, 1);
+		menuLayout->addWidget(flashLabel,			5, 2, 1, 1);
+
 		toolBox->setLayout(menuLayout);
-
-		menuLayout->addWidget(cleanLabel,			5, 0, 1, 1);
-		menuLayout->addWidget(uvLabel,				5, 1, 1, 1);
-		menuLayout->addWidget(warningLabel,			5, 2, 1, 1);
-
 		connect(Tool->GetPrintButton(),SIGNAL(clicked()), this, SLOT(Print()));
 		connect(Tool->GetNozzleButton(),SIGNAL(clicked()), this, SLOT(PrintNozzleCheck()));
 	}
@@ -151,21 +162,42 @@ public:
 
 		moveBox->setLayout(moveLayout);
 	}
+	void LoadOrigin(){
+		GetPrinterParam(UI_CMD::CMD_MODE_ORIGIN, &Origin);
+
+		if(Origin.GetMode < 2){
+			orgComBox->setCurrentIndex(Origin.GetMode);
+		}
+		typeLabelEdit->setText(QString::number(Origin.Coord));
+	}
+	void SaveOrigin(){
+		//X像原点设置
+		ORIGIN_SET origin = Origin;
+		//memset(&origin, 0, sizeof(ORIGIN_SET));
+		origin.Coord = typeLabelEdit->text().toInt();
+		origin.GetMode = orgComBox->currentIndex();
+		if(memcmp(&Origin, &origin, sizeof(ORIGIN_SET))){
+			SetPrinterParam(UI_CMD::CMD_MODE_ORIGIN, &origin);
+		}
+	}
 	void LayoutSetting(){
 		setBox = new QGroupBox;
 		QGridLayout *setLayout = new QGridLayout;
 
-		QLabel *mediaLabel = new QLabel(tr("材料"));
-		QLabel *modelLabel = new QLabel(tr("模式"));
+		QLabel *mediaLabel = new QLabel(tr("打印材料"));
+		QLabel *modelLabel = new QLabel(tr("生产模式"));
 		QLabel *stepLabel = new QLabel(tr("进步量"));
 		QLabel *bidLabel = new QLabel(tr("双向值"));
-		QLabel *cycleLabel = new QLabel(tr("循环压"));
-		QLabel *pumpLabel = new QLabel(tr("供墨压"));
+		QLabel *cycleLabel = new QLabel(tr("循环压力"));
+		QLabel *pumpLabel = new QLabel(tr("供墨压力"));
 
 		IntLineEdit * stepLineEdit = new IntLineEdit;
 		IntLineEdit * bidLineEdit = new IntLineEdit;
 		cycleLineEdit = new QLineEdit;
 		pumpLineEdit = new QLineEdit;
+
+		cycleLineEdit->setEnabled(false);
+		pumpLineEdit->setEnabled(false);
 
 		char buf[256];
 		QComboBox * mediaBox = new QComboBox();
@@ -174,6 +206,8 @@ public:
         		QStringList mediaList = str.split(';');
 			mediaBox->addItems(mediaList);
 		}
+		connect(mediaBox, SIGNAL(currentTextChanged(QString&)), 
+				this, SLOT(mediaChanged(QString&)));
 
 		QComboBox * modelBox = new QComboBox();
 		if(LoadProductModels(buf) > 0){
@@ -181,21 +215,66 @@ public:
         		QStringList modelList = str.split(';');
 			modelBox->addItems(modelList);
 		}
+		connect(modelBox, SIGNAL(currentTextChanged(QString&)), 
+				this, SLOT(modelChanged(QString&)));
+		/*
+		*/
+		orgBox = new QGroupBox(tr("打印原点"));
+		orgLabel = new QLabel(tr("获取原点"));
+		orgComBox = new QComboBox();
+		getorgLabel = new QLabel(tr("打印原点"));
+		typeLabelEdit = new IntLineEdit;
+	
+		orgComBox->addItem(tr("手动"));
+		orgComBox->addItem(tr("自动"));
+		connect(orgBox, SIGNAL(currentIndexChanged(int)), 
+				this, SLOT(orginChanged(int)));
+		
+		LoadOrigin();
 
 		setLayout->addWidget(mediaLabel,	0, 0);
 		setLayout->addWidget(mediaBox,		0, 1);
 		setLayout->addWidget(modelLabel,	0, 2);
 		setLayout->addWidget(modelBox,		0, 3);
 
-		setLayout->addWidget(stepLabel,		1, 0);
-		setLayout->addWidget(stepLineEdit,	1, 1);
-		setLayout->addWidget(bidLabel,		1, 2);
-		setLayout->addWidget(bidLineEdit,	1, 3);
+		setLayout->addWidget(orgLabel,		1, 0);
+		setLayout->addWidget(orgComBox,		1, 1);
+		setLayout->addWidget(getorgLabel,	1, 2);
+		setLayout->addWidget(typeLabelEdit,	1, 3);
 
-		setLayout->addWidget(cycleLabel,	2, 0);
-		setLayout->addWidget(cycleLineEdit,	2, 1);
-		setLayout->addWidget(pumpLabel,		2, 2);
-		setLayout->addWidget(pumpLineEdit,	2, 3);
+		setLayout->addWidget(stepLabel,		2, 0);
+		setLayout->addWidget(stepLineEdit,	2, 1);
+		setLayout->addWidget(bidLabel,		2, 2);
+		setLayout->addWidget(bidLineEdit,	2, 3);
+
+		setLayout->addWidget(cycleLabel,	3, 0);
+		setLayout->addWidget(cycleLineEdit,	3, 1);
+		setLayout->addWidget(pumpLabel,		3, 2);
+		setLayout->addWidget(pumpLineEdit,	3, 3);
+		
+		//QGridLayout * orgLayout = new QGridLayout;
+		//orgBox->setLayout(orgLayout);
+		//grid->addWidget(orgBox,		2, 1, 1, 1);
+/*
+		QDBusConnection::systemBus().connect(
+				"org.freedesktop.Hal",
+				"/org/freedesktop/Hal/Manager",
+				"org.freedesktop.Hal.Manager",
+				"DeviceAdded",
+				this,
+				SLOT(deviceAdded(QString )));
+
+		QDBusConnection::systemBus().connect(
+				"org.freedesktop.Hal",
+				"/org/freedesktop/Hal/Manager",
+				"org.freedesktop.Hal.Manager",
+				"DeviceRemoved",
+				this,
+				SLOT(deviceRemoved(QString )));
+		usbmanager * usb = new usbmanager(this);
+*/
+		uDiskThread * usb = new uDiskThread();
+		usb->start();
 
 		QTimer * StatusTimer = new QTimer(this);
 		connect(StatusTimer, SIGNAL(timeout()), this,  SLOT(ProcessPrintStatus()));
@@ -206,6 +285,10 @@ public:
 		setBox->setLayout(setLayout);
 	}
 public slots:
+	void mediaChanged(QString&);
+	void modelChanged(QString&);
+	void originChanged(int);
+
 	void Print();
 	void Pause();
 	void Abort();
@@ -213,6 +296,8 @@ public slots:
 	void PrintNozzleCheck();
 
 	void PowerOff();
+	void deviceAdded(QString);
+	void deviceRemoved(QString);
 signals:
 	void ready();
 	void pause();
@@ -226,11 +311,18 @@ private:
 	QGroupBox * toolBox;
 	QGroupBox * moveBox;
 	QGroupBox * setBox;
+	QGroupBox * orgBox;
+
+	QLabel *orgLabel;
+	QLabel *getorgLabel;
+	IntLineEdit *typeLabelEdit;
+	QComboBox * orgComBox;
 
 	INK_PUMP InkPump;
 	QLineEdit * cycleLineEdit;
 	QLineEdit * pumpLineEdit;
 
+	ORIGIN_SET Origin;
 	struct MECHAINE Property;
 };
 

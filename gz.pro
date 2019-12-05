@@ -1,5 +1,5 @@
 
-QT       += core gui 
+QT       += core gui  
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets 
 
 CONFIG		+= debug
@@ -19,7 +19,7 @@ HEADERS       = mainwindow.h \
 		lib/ui_interface.h \
 		lib/APIDataInterface.hpp \
 		lib/Error.h \
-		lib/command.h
+		lib/command.h 
 
 SOURCES       = main.cpp \
 		menu.cpp \ 
@@ -28,7 +28,8 @@ SOURCES       = main.cpp \
 		toolbar.cpp \ 
 		UiTemplate.cpp \
 		touchkey/linedit.cpp \
-		touchkey/touchkey.cpp
+		touchkey/touchkey.cpp \
+		udisk_detect.cpp
 
 SUBDIRS		= lib \
 		touchkey 

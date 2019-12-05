@@ -22,7 +22,7 @@ UiTemplate::UiTemplate(QWidget *parent) :
 	statusLabel->setStyleSheet("QLabel {background-color: rgb(9, 148, 220); }");
 	statusLabel->setAlignment(Qt::AlignVCenter | Qt::AlignCenter);
 
-	messageLabel = new QLabel(tr("0 files found"));
+	messageLabel = new QLabel();
 	messageLabel->setFrameShape(QLabel::Panel);
 	messageLabel->setFrameShadow(QLabel::Sunken);
 
