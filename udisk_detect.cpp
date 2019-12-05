@@ -14,6 +14,8 @@
 
 #define UEVENT_BUFFER_SIZE 2048 
 
+static int DiskIndex = 0;
+
 static int init_hotplug_sock() 
 { 
     const int buffersize = 1024; 
@@ -74,6 +76,14 @@ int check_tty(const char * s)
 
 	return 0;
 }
+#define		RM_SHELL	\
+"path=$(mount | grep %s | cut -d ' ' -f3)\n\
+if [ $path ];then\n\
+	umount $path\n\
+	rmdir $path\n\
+fi\n\
+"
+
 int deal_one_line(char * const s)
 {
 	char * h = s;
@@ -99,13 +109,22 @@ int deal_one_line(char * const s)
 	if(header && device && *header && *device){
 		if(sd_check(device) == 0){
 			char cmd[128];
+			char dev[16];
+			char path[16];
+			sprintf(dev, "%s/%s", "/dev", device);
 			if(strcmp(header, "add") == 0){
-				sprintf(cmd, "%s %s%s %s", "mount", "/dev/", device, "/mnt");
+				sprintf(path, "%s%d", "/media/udisk", DiskIndex++);
+				sprintf(cmd, "%s %s", "mkdir", path);
+				printf("%s\n", cmd);
+				system(cmd);
+				sprintf(cmd, "%s %s %s", "mount", dev, path);
+				printf("%s\n", cmd);
+				system(cmd);
 			}else if(strcmp(header, "remove") == 0){
-				sprintf(cmd, "%s %s%s %s", "umount", "/dev/", device, "/mnt");
+				sprintf(cmd, RM_SHELL, dev);
+				printf("%s\n", cmd);
+				system(cmd);
 			}
-			printf("%s\n", cmd);
-			system(cmd);
 		}else if(check_tty(device) == 0){
 			if(strcmp(header, "add") == 0){
 				printf("add %s\n", device);
@@ -119,22 +138,20 @@ int deal_one_line(char * const s)
 }
 
 static char buf[UEVENT_BUFFER_SIZE * 2]; 
-int udisk_thread() 
-{ 
-    int hotplug_sock = init_hotplug_sock(); 
-    
-    while(1) 
-    { 
-        /* Netlink message buffer */ 
-	int len = recv(hotplug_sock, &buf, sizeof(buf), 0); 
-	char * s = buf;
-	int cnt = 0;
-	int n = 0;
-	//printf("recv len=%d : len %d\n", len, strlen(buf)); 
-	if(len > 0 && len <= UEVENT_BUFFER_SIZE){
-		deal_one_line(s);
+void udisk_thread() 
+{
+	system("rm -rf /media/udisk*");
+	int hotplug_sock = init_hotplug_sock();
+	while(1){
+		/* Netlink message buffer */
+		int len = recv(hotplug_sock, &buf, sizeof(buf), 0);
+		char * s = buf;
+		int cnt = 0;
+		int n = 0;
+		//printf("recv len=%d : len %d\n", len, strlen(buf));
+		if(len > 0 && len <= UEVENT_BUFFER_SIZE){
+			deal_one_line(s);
+		}
 	}
-    }
-    return 0; 
 }
 

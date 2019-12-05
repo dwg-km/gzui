@@ -13,6 +13,19 @@ void UiSetting::Update()
 	fileDialog->setDirectory(".");
 	fileDialog->setFileMode(QFileDialog::ExistingFiles);
 	
+	QDir dir("/media");
+	dir.setFilter(QDir::Dirs | QDir::Hidden | QDir::NoSymLinks | QDir::NoDotAndDotDot);
+	QFileInfoList list = dir.entryInfoList();
+	if(list.size() == 0){
+		fileDialog->setDirectory("/home");
+	}else if(list.size() == 1){
+		QString path = list.at(0).absoluteFilePath();
+		qDebug() << "file=" << path;
+		fileDialog->setDirectory(path);
+	}else{
+		fileDialog->setDirectory("/media");
+	}
+
 	QString filename;
 	if(fileDialog->exec()){
 		filename = fileDialog->selectedFiles()[0];
