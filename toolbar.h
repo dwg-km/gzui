@@ -81,6 +81,7 @@ private:
 	iconButton * advanceButton;
 	iconButton * managerButton;
 	iconButton * cleanButton;
+	iconButton * flashButton;
 
 	iconButton * poweroffButton;
 	iconButton * backupButton;
@@ -119,6 +120,7 @@ public:
 		warningButton = NULL;
 		advanceButton = NULL;
 		cleanButton = NULL;
+		flashButton = NULL;
 
 		poweroffButton = NULL;
 		backupButton = NULL;
@@ -150,6 +152,7 @@ public:
 		AddMechineButton();
 		AddUvButton();
 		AddInkButton();
+		AddFlashButton();
 		 
 		AddCleanButton();
 		AddAdvanceButton();
@@ -468,6 +471,15 @@ public:
 	}
 	iconButton * GetSaveButton(){
 		return saveButton;
+	}
+	void AddFlashButton(){
+		QVector<QString> iconflash = {
+			"resources/flash.png"
+		};
+		flashButton = new iconButton(iconflash);
+	}
+	iconButton * GetFlashButton(){
+		return flashButton;
 	}
 
 private slots:

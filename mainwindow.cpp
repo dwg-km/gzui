@@ -234,10 +234,26 @@ void mainDialog::Print()
 {
 	QFileDialog *fileDialog = new QFileDialog();
 	fileDialog->setWindowTitle("选择文件");
-	fileDialog->setDirectory(".");
 	fileDialog->setNameFilter(tr("Images(*.prn *.prt)"));
 	fileDialog->setFileMode(QFileDialog::ExistingFiles);
-	
+
+	QDir dir("/media");
+	dir.setFilter(QDir::Dirs | QDir::Hidden | QDir::NoSymLinks | QDir::NoDotAndDotDot);
+	//dir.setSorting(QDir::Size | QDir::Reversed);
+	QFileInfoList list = dir.entryInfoList();
+	//for (int i = 0; i < list.size(); ++i) {
+	//	QFileInfo fileInfo = list.at(i);
+	//}
+	if(list.size() == 0){
+		fileDialog->setDirectory("/home");
+	}else if(list.size() == 1){
+		QString path = list.at(0).absoluteFilePath();
+		qDebug() << "file=" << path;
+		fileDialog->setDirectory(path);
+	}else{
+		fileDialog->setDirectory("/media");
+	}
+
 	QString filename;
 	if(fileDialog->exec()){
 		filename = fileDialog->selectedFiles()[0];
@@ -271,6 +287,22 @@ void mainDialog::PowerOff()
 		QMessageBox::Cancel | QMessageBox::Ok);
 
 	if(r == QMessageBox::Ok){
+		//disable all the button
+		//close printer
+		//umount all the device
+
 		system("poweroff");
 	}
 }
+
+void mainDialog::deviceAdded(QString uid)
+{
+	qDebug() << uid;
+}
+
+void mainDialog::deviceRemoved(QString uid)
+{
+	qDebug() << uid;
+}
+
+
