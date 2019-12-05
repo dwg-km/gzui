@@ -121,10 +121,10 @@ public:
 		QGridLayout *menuLayout = new QGridLayout;
 		
 		QLabel * homeLabel = new QLabel(tr("打印作业"));
-		QLabel * managerLabel = new QLabel(tr("测纸宽"));
-		QLabel * originLabel = new QLabel(tr("设原点"));
+		QLabel * managerLabel = new QLabel(tr("测量纸宽"));
+		QLabel * originLabel = new QLabel(tr("设为原点"));
 
-		QLabel * nozzleLabel = new QLabel(tr("测喷嘴"));
+		QLabel * nozzleLabel = new QLabel(tr("喷嘴检查"));
 		QLabel * cleanLabel = new QLabel(tr("喷头维护"));
 		QLabel * flashLabel = new QLabel(tr("喷嘴闪喷"));
 
@@ -206,6 +206,8 @@ public:
         		QStringList mediaList = str.split(';');
 			mediaBox->addItems(mediaList);
 		}
+		connect(mediaBox, SIGNAL(currentTextChanged(QString&)), 
+				this, SLOT(mediaChanged(QString&)));
 
 		QComboBox * modelBox = new QComboBox();
 		if(LoadProductModels(buf) > 0){
@@ -213,6 +215,8 @@ public:
         		QStringList modelList = str.split(';');
 			modelBox->addItems(modelList);
 		}
+		connect(modelBox, SIGNAL(currentTextChanged(QString&)), 
+				this, SLOT(modelChanged(QString&)));
 		/*
 		*/
 		orgBox = new QGroupBox(tr("打印原点"));
@@ -223,6 +227,8 @@ public:
 	
 		orgComBox->addItem(tr("手动"));
 		orgComBox->addItem(tr("自动"));
+		connect(orgBox, SIGNAL(currentIndexChanged(int)), 
+				this, SLOT(orginChanged(int)));
 		
 		LoadOrigin();
 
@@ -279,6 +285,10 @@ public:
 		setBox->setLayout(setLayout);
 	}
 public slots:
+	void mediaChanged(QString&);
+	void modelChanged(QString&);
+	void originChanged(int);
+
 	void Print();
 	void Pause();
 	void Abort();
