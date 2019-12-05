@@ -170,7 +170,15 @@ public:
 		}
 		typeLabelEdit->setText(QString::number(Origin.Coord));
 	}
-	void LayoutOrigin(){
+	void SaveOrigin(){
+		//X像原点设置
+		ORIGIN_SET origin = Origin;
+		//memset(&origin, 0, sizeof(ORIGIN_SET));
+		origin.Coord = typeLabelEdit->text().toInt();
+		origin.GetMode = orgComBox->currentIndex();
+		if(memcmp(&Origin, &origin, sizeof(ORIGIN_SET))){
+			SetPrinterParam(UI_CMD::CMD_MODE_ORIGIN, &origin);
+		}
 	}
 	void LayoutSetting(){
 		setBox = new QGroupBox;
@@ -206,14 +214,6 @@ public:
 			modelBox->addItems(modelList);
 		}
 		/*
-		//X像原点设置
-		ORIGIN_SET origin = Origin;
-		//memset(&origin, 0, sizeof(ORIGIN_SET));
-		origin.Coord = typeLabelEdit->text().toInt();
-		origin.GetMode = orgComBox->currentIndex();
-		if(memcmp(&Origin, &origin, sizeof(ORIGIN_SET))){
-			SetPrinterParam(UI_CMD::CMD_MODE_ORIGIN, &origin);
-		}
 		*/
 		orgBox = new QGroupBox(tr("打印原点"));
 		orgLabel = new QLabel(tr("获取原点"));
@@ -223,6 +223,8 @@ public:
 	
 		orgComBox->addItem(tr("手动"));
 		orgComBox->addItem(tr("自动"));
+		
+		LoadOrigin();
 
 		setLayout->addWidget(mediaLabel,	0, 0);
 		setLayout->addWidget(mediaBox,		0, 1);

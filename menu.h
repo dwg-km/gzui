@@ -72,6 +72,18 @@ public:
 			radio_unidir->setChecked(true);
 		}
 	}
+	void LayoutPrintReverse(){
+		revBox = new QGroupBox(tr("反向打印"));
+		
+	       	x_rev = new QRadioButton(tr("扫描"));
+		y_rev = new QRadioButton(tr("步进"));
+
+		QHBoxLayout * hbox = new QHBoxLayout;
+		hbox->addWidget(x_rev);
+		hbox->addWidget(y_rev);
+		
+		revBox->setLayout(hbox);
+	}
 	void LayoutPrintSpeed(){
 		speedBox = new QGroupBox("Speed");
 		speedLabel = new QLabel(tr("扫描速度"));
@@ -191,6 +203,7 @@ public:
 		Dirty = 0;
 
 		LayoutPrintDir();
+		LayoutPrintReverse();
 		LayoutStrip();
 		LayoutPrintSpeed();
 		LayoutFeatherCfg();
@@ -199,11 +212,15 @@ public:
 		grid = new QGridLayout;
 
 		grid->addWidget(dirBox,		0, 0, 1, 1);
-		grid->addWidget(stripBox,	0, 1, 2, 1);
-		grid->addWidget(featherBox,	0, 2, 2, 1);
+		grid->addWidget(revBox,		1, 0, 1, 1);
 
-		grid->addWidget(speedBox,	2, 0, 1, 1);
-		grid->addWidget(flashBox,	2, 2, 1, 1);
+		grid->addWidget(speedBox,	0, 1, 1, 1);
+		grid->addWidget(flashBox,	1, 1, 1, 1);
+
+		grid->addWidget(stripBox,	0, 2, 2, 1);
+
+		//grid->addWidget(featherBox,	0, 2, 2, 1);
+
 
 		setLayout(grid);
 	}
@@ -272,8 +289,11 @@ private:
 	BASE_SETTING BaseSetting;
 
 	QGroupBox * dirBox;
+	QGroupBox * revBox;
 	QRadioButton * radio_unidir;
 	QRadioButton * radio_bidir;
+	QRadioButton * x_rev;
+	QRadioButton * y_rev;
 
 	QGroupBox * speedBox;
 	QComboBox * speedComBox;
