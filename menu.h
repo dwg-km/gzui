@@ -164,34 +164,6 @@ public:
 		smallLabelEdit->setText(QString::number(FeatherCfg.Percent[Low]));
 		fastLabelEdit->setText(QString::number(FeatherCfg.Percent[Quick]));
 	}
-	void LayoutOrigin(){
-		orgBox = new QGroupBox(tr("打印原点"));
-		orgLabel = new QLabel(tr("获取原点"));
-		orgComBox = new QComboBox();
-		getorgLabel = new QLabel(tr("打印原点"));
-		typeLabelEdit = new IntLineEdit;
-	
-		orgComBox->addItem(tr("手动"));
-		orgComBox->addItem(tr("自动"));
-
-		QGridLayout * orgLayout = new QGridLayout;
-
-		orgLayout->addWidget(orgLabel, 0, 0);
-		orgLayout->addWidget(orgComBox, 0, 1);
-		orgLayout->addWidget(getorgLabel, 1, 0);
-		orgLayout->addWidget(typeLabelEdit, 1, 1);
-
-		orgBox->setLayout(orgLayout);
-	}
-	void LoadOrigin(){
-		GetPrinterParam(UI_CMD::CMD_MODE_ORIGIN, &Origin);
-
-		if(Origin.GetMode < 2){
-			orgComBox->setCurrentIndex(Origin.GetMode);
-		}
-		typeLabelEdit->setText(QString::number(Origin.Coord));
-	
-	}
 	void LayoutFlash(){
 		flashBox = new QGroupBox(tr("闪喷"));
 		flashRadio = new QRadioButton(tr("空闲闪喷"));
@@ -222,7 +194,6 @@ public:
 		LayoutStrip();
 		LayoutPrintSpeed();
 		LayoutFeatherCfg();
-		LayoutOrigin();
 		LayoutFlash();
 
 		grid = new QGridLayout;
@@ -232,7 +203,6 @@ public:
 		grid->addWidget(featherBox,	0, 2, 2, 1);
 
 		grid->addWidget(speedBox,	2, 0, 1, 1);
-		grid->addWidget(orgBox,		2, 1, 1, 1);
 		grid->addWidget(flashBox,	2, 2, 1, 1);
 
 		setLayout(grid);
@@ -248,7 +218,6 @@ public:
 		LoadPrintSpeed();
 		LoadFlash();
 		LoadStrip();
-		LoadOrigin();
 		LoadFeather();
 	}
 	virtual void hideEvent(QHideEvent * event){
@@ -262,14 +231,6 @@ public:
 			SetPrinterParam(UI_CMD::CMD_MAINTAIN_STRIP, &strip);
 		}
 
-		//X像原点设置
-		ORIGIN_SET origin = Origin;
-		//memset(&origin, 0, sizeof(ORIGIN_SET));
-		origin.Coord = typeLabelEdit->text().toInt();
-		origin.GetMode = orgComBox->currentIndex();
-		if(memcmp(&Origin, &origin, sizeof(ORIGIN_SET))){
-			SetPrinterParam(UI_CMD::CMD_MODE_ORIGIN, &origin);
-		}
 
 		//羽化设置
 		FEATHER_CFG cfg = FeatherCfg;
@@ -307,19 +268,12 @@ private:
 
 	FLASH Flash;
 	STRIP Strip;
-	ORIGIN_SET Origin;
 	FEATHER_CFG FeatherCfg;
 	BASE_SETTING BaseSetting;
 
 	QGroupBox * dirBox;
 	QRadioButton * radio_unidir;
 	QRadioButton * radio_bidir;
-
-	QGroupBox * orgBox;
-	QLabel *orgLabel;
-	QComboBox * orgComBox;
-	QLabel *getorgLabel;
-	IntLineEdit *typeLabelEdit;
 
 	QGroupBox * speedBox;
 	QComboBox * speedComBox;

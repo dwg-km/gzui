@@ -148,6 +148,16 @@ public:
 
 		moveBox->setLayout(moveLayout);
 	}
+	void LoadOrigin(){
+		GetPrinterParam(UI_CMD::CMD_MODE_ORIGIN, &Origin);
+
+		if(Origin.GetMode < 2){
+			orgComBox->setCurrentIndex(Origin.GetMode);
+		}
+		typeLabelEdit->setText(QString::number(Origin.Coord));
+	}
+	void LayoutOrigin(){
+	}
 	void LayoutSetting(){
 		setBox = new QGroupBox;
 		QGridLayout *setLayout = new QGridLayout;
@@ -178,21 +188,48 @@ public:
         		QStringList modelList = str.split(';');
 			modelBox->addItems(modelList);
 		}
+		/*
+		//X像原点设置
+		ORIGIN_SET origin = Origin;
+		//memset(&origin, 0, sizeof(ORIGIN_SET));
+		origin.Coord = typeLabelEdit->text().toInt();
+		origin.GetMode = orgComBox->currentIndex();
+		if(memcmp(&Origin, &origin, sizeof(ORIGIN_SET))){
+			SetPrinterParam(UI_CMD::CMD_MODE_ORIGIN, &origin);
+		}
+		*/
+		orgBox = new QGroupBox(tr("打印原点"));
+		orgLabel = new QLabel(tr("获取原点"));
+		orgComBox = new QComboBox();
+		getorgLabel = new QLabel(tr("打印原点"));
+		typeLabelEdit = new IntLineEdit;
+	
+		orgComBox->addItem(tr("手动"));
+		orgComBox->addItem(tr("自动"));
 
 		setLayout->addWidget(mediaLabel,	0, 0);
 		setLayout->addWidget(mediaBox,		0, 1);
 		setLayout->addWidget(modelLabel,	0, 2);
 		setLayout->addWidget(modelBox,		0, 3);
 
-		setLayout->addWidget(stepLabel,		1, 0);
-		setLayout->addWidget(stepLineEdit,	1, 1);
-		setLayout->addWidget(bidLabel,		1, 2);
-		setLayout->addWidget(bidLineEdit,	1, 3);
+		setLayout->addWidget(orgLabel,		1, 0);
+		setLayout->addWidget(orgComBox,		1, 1);
+		setLayout->addWidget(getorgLabel,	1, 2);
+		setLayout->addWidget(typeLabelEdit,	1, 3);
 
-		setLayout->addWidget(cycleLabel,	2, 0);
-		setLayout->addWidget(cycleLineEdit,	2, 1);
-		setLayout->addWidget(pumpLabel,		2, 2);
-		setLayout->addWidget(pumpLineEdit,	2, 3);
+		setLayout->addWidget(stepLabel,		2, 0);
+		setLayout->addWidget(stepLineEdit,	2, 1);
+		setLayout->addWidget(bidLabel,		2, 2);
+		setLayout->addWidget(bidLineEdit,	2, 3);
+
+		setLayout->addWidget(cycleLabel,	3, 0);
+		setLayout->addWidget(cycleLineEdit,	3, 1);
+		setLayout->addWidget(pumpLabel,		3, 2);
+		setLayout->addWidget(pumpLineEdit,	3, 3);
+		
+		//QGridLayout * orgLayout = new QGridLayout;
+		//orgBox->setLayout(orgLayout);
+		//grid->addWidget(orgBox,		2, 1, 1, 1);
 
 		QTimer * StatusTimer = new QTimer(this);
 		connect(StatusTimer, SIGNAL(timeout()), this,  SLOT(ProcessPrintStatus()));
@@ -223,11 +260,18 @@ private:
 	QGroupBox * toolBox;
 	QGroupBox * moveBox;
 	QGroupBox * setBox;
+	QGroupBox * orgBox;
+
+	QLabel *orgLabel;
+	QLabel *getorgLabel;
+	IntLineEdit *typeLabelEdit;
+	QComboBox * orgComBox;
 
 	INK_PUMP InkPump;
 	QLineEdit * cycleLineEdit;
 	QLineEdit * pumpLineEdit;
 
+	ORIGIN_SET Origin;
 	struct MECHAINE Property;
 };
 
