@@ -207,8 +207,8 @@ public:
 		int base_step = 0;
 		std::string media = mediaComBox->currentText().toStdString();
 
-		if(LoadStepCalibration(media.c_str(), 0, 0, base_step) <= 0){
-
+		if(LoadStepCalibration(media.c_str(), 0, 0, base_step)){
+			base_step = 0;
 		}
 		baseGroupBox->UpdataContext(base_step);
 	}
@@ -218,8 +218,8 @@ public:
 
 		std::string media = mediaComBox->currentText().toStdString();
 		std::string model = modelComBox->currentText().toStdString();
-		if(LoadStepCalibration(media.c_str(), model.c_str(), pass, pass_step) <= 0){
-
+		if(LoadStepCalibration(media.c_str(), model.c_str(), pass, pass_step)){
+			pass_step = 0;
 		}
 		passGroupBox->UpdataContext(pass_step);
 	};
@@ -253,12 +253,12 @@ public slots:
 	void BaseStepPrint()
 	{
 		int base_step = 0;
-		const char * media = mediaComBox->currentText().toStdString().c_str();
+		std::string media = mediaComBox->currentText().toStdString();
 		if(baseGroupBox->CheckDirty(base_step)){
-			SaveStepCalibration(media, 0, 0, 0);
+			SaveStepCalibration(media.c_str(), 0, 0, 0);
 		}
 		
-		PrintStepCalibration(media, 0, 0);
+		PrintStepCalibration(media.c_str(), 0, 0);
 	} 
 private:
 	int Index;
