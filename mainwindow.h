@@ -206,8 +206,8 @@ public:
         		QStringList mediaList = str.split(';');
 			mediaBox->addItems(mediaList);
 		}
-		connect(mediaBox, SIGNAL(currentTextChanged(QString&)), 
-				this, SLOT(mediaChanged(QString&)));
+		connect(mediaBox, SIGNAL(currentTextChanged(const QString&)), 
+				this, SLOT(mediaChanged(const QString&)));
 
 		QComboBox * modelBox = new QComboBox();
 		if(LoadProductModels(buf) > 0){
@@ -215,8 +215,8 @@ public:
         		QStringList modelList = str.split(';');
 			modelBox->addItems(modelList);
 		}
-		connect(modelBox, SIGNAL(currentTextChanged(QString&)), 
-				this, SLOT(modelChanged(QString&)));
+		connect(modelBox, SIGNAL(currentTextChanged(const QString&)), 
+				this, SLOT(modelChanged(const QString&)));
 		/*
 		*/
 		orgBox = new QGroupBox(tr("打印原点"));
@@ -227,8 +227,8 @@ public:
 	
 		orgComBox->addItem(tr("手动"));
 		orgComBox->addItem(tr("自动"));
-		connect(orgBox, SIGNAL(currentIndexChanged(int)), 
-				this, SLOT(orginChanged(int)));
+		connect(orgComBox, SIGNAL(currentIndexChanged(int)), 
+				this, SLOT(originChanged(int)));
 		
 		LoadOrigin();
 
@@ -285,8 +285,8 @@ public:
 		setBox->setLayout(setLayout);
 	}
 public slots:
-	void mediaChanged(QString&);
-	void modelChanged(QString&);
+	void mediaChanged(const QString&);
+	void modelChanged(const QString&);
 	void originChanged(int);
 
 	void Print();

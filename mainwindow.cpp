@@ -305,11 +305,11 @@ void mainDialog::deviceRemoved(QString uid)
 	qDebug() << uid;
 }
 
-void mainDialog::mediaChanged(QString& media)
+void mainDialog::mediaChanged(const QString& media)
 {
 	SelectMedia(media.toStdString().c_str());
 }
-void mainDialog::modelChanged(QString& model)
+void mainDialog::modelChanged(const QString& model)
 {
 	SelectProductModel(model.toStdString().c_str());
 }
