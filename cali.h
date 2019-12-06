@@ -99,67 +99,96 @@ private:
 	QVector<QLineEdit *> matrix;
 	QPushButton *printButton;
 };
+class StepGroupBox : public QGroupBox {
+	Q_OBJECT
+public:
+	StepGroupBox(QString name, QWidget *parent = NULL) : QGroupBox(name)
+       	{
+		QGridLayout * layout = new QGridLayout;
+
+		QLabel * baseLabel = new QLabel("步进值");
+		baseLineEdit =  new QLineEdit;
+		baseButton = new QPushButton;
+		baseButton->setText(name);
+		//baseButton->resize(72, 28);
+	
+		QLabel *adjustLabel = new QLabel(tr("校准值"));
+		adjustLineEdit = new QLineEdit;
+		adjustButton = new QPushButton("=>");
+		adjustButton->setStyleSheet("background-color: rgb(9, 148, 220)");
+
+		layout->addWidget(adjustLabel,		0, 0);		
+		layout->addWidget(adjustLineEdit,		0, 1);
+
+		layout->addWidget(adjustButton,		0, 4);		
+
+		layout->addWidget(baseLabel,			0, 6);		
+		layout->addWidget(baseLineEdit,			0, 7);
+
+		layout->addWidget(baseButton,		0, 9);		
+
+		//baseGroupBox = new QGroupBox(tr("基准步进"));
+		setLayout(layout);
+		//setAlignment(Qt::AlignBottom);
+		QString groupStyle = "QGroupBox { border: 1px solid silver; border-radius: 6px; margin-top: 6px; }";
+		//QString titleStyle = "QGroupBox::title {subcontrol-origin: margin; subcontrol-position: top center;   padding: 0 2px; }";
+		//QString titleStyle = "QGroupBox::title {subcontrol-origin: margin; subcontrol-position: top center; padding: 0 3px;\
+		//       	background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #FF0ECE, stop: 1 #FFFFFF); }";
+		setStyleSheet(groupStyle);
+		//setStyleSheet(titleStyle);
+	}
+
+private:
+	QLineEdit * baseLineEdit;
+	QPushButton * baseButton;
+	QLineEdit * adjustLineEdit;
+	QPushButton * adjustButton;
+};
+
 class StepcalWidget : public QWidget{
 	Q_OBJECT
 public:
 	StepcalWidget (struct MECHAINE* property, QWidget *parent = NULL) : QWidget(parent){
-
 		QGridLayout * gridLayout = new QGridLayout;
 
-		passButton = new QPushButton;
-		passButton->setText(tr("精细校准"));
-
-		baseButton = new QPushButton;
-		baseButton->setText(tr("基准步进"));
-		//baseButton->resize(72, 28);
-
-		calButton = new QPushButton;
-		calButton->setText(tr("->"));
-		//calButton->resize(72, 28);
+		char buf[256];
+		QComboBox * mediaComBox = new QComboBox();
+		if(LoadMediaList(buf) > 0){
+			QString str = buf;
+        		QStringList mediaList = str.split(';');
+			mediaComBox->addItems(mediaList);
+		}
+		connect(mediaComBox, SIGNAL(currentTextChanged(QString&)), 
+				this, SLOT(mediaChanged(QString&)));
 
 		modelComBox = new QComboBox;
-		passNumComBox = new QComboBox;
-	
-		for(int j = 1; j < 17; j++){
-			passNumComBox->addItem(QString::number(j));
+		if(LoadProductModels(buf) > 0){
+			QString str = buf;
+        		QStringList modelList = str.split(';');
+			modelComBox->addItems(modelList);
 		}
-		QLabel *passLabel = new QLabel(tr("pass数"));
-		passLabel->setAlignment(Qt::AlignCenter);
+		connect(modelComBox, SIGNAL(currentTextChanged(QString&)), 
+				this, SLOT(modelChanged(QString&)));
+		
+		passComBox = new QComboBox;
+		for(int j = 1; j < 17; j++){
+			QString text = QString::number(j) + " pass";
+			passComBox->addItem(text);
+		}
 
-		QLabel *modelLabel = new QLabel(tr("打印模式"));
-		modelLabel->setAlignment(Qt::AlignCenter);
+		baseGroupBox = new StepGroupBox(tr("基准步进"));
+		passGroupBox = new StepGroupBox(tr("精细步进"));
 
-		modelComBox->addItem("model0");
-		modelComBox->addItem("model1");
-		modelComBox->addItem("model2");
+		gridLayout->addWidget(mediaComBox,	0, 0, 1, 1);
+		gridLayout->addWidget(modelComBox,	0, 1, 1, 1);
 
-		baseLineEdit =  new QLineEdit;
-		passLineEdit = new QLineEdit;
-		calLineEdit = new QLineEdit;
+		gridLayout->addWidget(baseGroupBox,	1, 0, 1, 4);
 
-		gridLayout->addWidget(modelLabel,	0, 0);
-		gridLayout->addWidget(modelComBox,	0, 1);
+		gridLayout->addWidget(passComBox,	2, 0, 1, 1);
 
-		gridLayout->addWidget(passLabel,	1, 0);
-		gridLayout->addWidget(passNumComBox,	1, 1);
+		gridLayout->addWidget(passGroupBox,	3, 0, 1, 4);		
 
-		gridLayout->addWidget(baseButton,	2, 0);		
-		gridLayout->addWidget(baseLineEdit,	2, 1);
-
-		gridLayout->addWidget(passButton,	3, 0);		
-		gridLayout->addWidget(passLineEdit,	3, 1);
-
-		gridLayout->addWidget(calButton,	4, 0);		
-		gridLayout->addWidget(calLineEdit,	4, 1);
-
-		QGroupBox * groupBox = new QGroupBox;
-		groupBox->setFixedSize(450, 270);
-		groupBox->setLayout(gridLayout);
-	
-		QVBoxLayout *layout = new QVBoxLayout;
-		layout->setAlignment(Qt::AlignCenter);
-		layout->addWidget(groupBox);
-		setLayout(layout);
+		setLayout(gridLayout);
 	}
 public slots:
 	void repairStep()
@@ -176,15 +205,12 @@ public slots:
 		//PrintCalibration(UI_CMD::CMD_CALI_STEP,0,0,0);
 	} 
 private:
+	QGroupBox * baseGroupBox;
+	QGroupBox * passGroupBox;
+
+	QComboBox * mediaComBox;
 	QComboBox * modelComBox;
-	QPushButton * passButton;
-	QPushButton * baseButton;
-	QPushButton * calButton;
-	QLineEdit * baseLineEdit;
-	QLineEdit * passLineEdit;
-	QLineEdit * calLineEdit;
-	//QComboBox * modelComBox;
-	QComboBox * passNumComBox;
+	QComboBox * passComBox;
 };
 
 class VerticalWidget :public QWidget{
