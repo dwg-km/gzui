@@ -104,6 +104,7 @@ class StepGroupBox : public QGroupBox {
 public:
 	StepGroupBox(QString name, QWidget *parent = NULL) : QGroupBox(name)
        	{
+		Value = -1;
 		QGridLayout * layout = new QGridLayout;
 
 		QLabel * baseLabel = new QLabel("步进值");
@@ -137,8 +138,18 @@ public:
 		setStyleSheet(groupStyle);
 		//setStyleSheet(titleStyle);
 	}
+	void UpdataContext(int step){
+		if(Value != step){
+			Value = step;
+			baseLineEdit->setText(QString::number(step));
+		}
+	}
+	int CheckDirty(int &step){
+		return 0;
+	}
 
 private:
+	int Value;
 	QLineEdit * baseLineEdit;
 	QPushButton * baseButton;
 	QLineEdit * adjustLineEdit;
@@ -152,14 +163,14 @@ public:
 		QGridLayout * gridLayout = new QGridLayout;
 
 		char buf[256];
-		QComboBox * mediaComBox = new QComboBox();
+		mediaComBox = new QComboBox();
 		if(LoadMediaList(buf) > 0){
 			QString str = buf;
         		QStringList mediaList = str.split(';');
 			mediaComBox->addItems(mediaList);
 		}
-		connect(mediaComBox, SIGNAL(currentTextChanged(QString&)), 
-				this, SLOT(mediaChanged(QString&)));
+		connect(mediaComBox, SIGNAL(currentTextChanged(const QString&)), 
+				this, SLOT(mediaChanged(const QString&)));
 
 		modelComBox = new QComboBox;
 		if(LoadProductModels(buf) > 0){
@@ -167,46 +178,94 @@ public:
         		QStringList modelList = str.split(';');
 			modelComBox->addItems(modelList);
 		}
-		connect(modelComBox, SIGNAL(currentTextChanged(QString&)), 
-				this, SLOT(modelChanged(QString&)));
+		connect(modelComBox, SIGNAL(currentTextChanged(const QString&)), 
+				this, SLOT(modelChanged(const QString&)));
 		
 		passComBox = new QComboBox;
 		for(int j = 1; j < 17; j++){
 			QString text = QString::number(j) + " pass";
 			passComBox->addItem(text);
 		}
+		connect(passComBox, SIGNAL(currentIndexChanged(int)), 
+				this, SLOT(passChanged(int)));
 
 		baseGroupBox = new StepGroupBox(tr("基准步进"));
 		passGroupBox = new StepGroupBox(tr("精细步进"));
 
 		gridLayout->addWidget(mediaComBox,	0, 0, 1, 1);
-		gridLayout->addWidget(modelComBox,	0, 1, 1, 1);
 
 		gridLayout->addWidget(baseGroupBox,	1, 0, 1, 4);
 
-		gridLayout->addWidget(passComBox,	2, 0, 1, 1);
+		gridLayout->addWidget(modelComBox,	2, 0, 1, 1);
+		gridLayout->addWidget(passComBox,	2, 1, 1, 1);
 
 		gridLayout->addWidget(passGroupBox,	3, 0, 1, 4);		
 
 		setLayout(gridLayout);
 	}
-public slots:
-	void repairStep()
-	{
+	void UpdataBaseData(){
+		int base_step = 0;
+		std::string media = mediaComBox->currentText().toStdString();
 
+		if(LoadStepCalibration(media.c_str(), 0, 0, base_step) <= 0){
+
+		}
+		baseGroupBox->UpdataContext(base_step);
 	}
-	
-	void StepCaliPrint()
+	void UpdataPassData(){
+		int pass_step = 0;
+		const int pass = passComBox->currentIndex() + 1;
+
+		std::string media = mediaComBox->currentText().toStdString();
+		std::string model = modelComBox->currentText().toStdString();
+		if(LoadStepCalibration(media.c_str(), model.c_str(), pass, pass_step) <= 0){
+
+		}
+		passGroupBox->UpdataContext(pass_step);
+	};
+	virtual void showEvent(QShowEvent * event){
+		UpdataBaseData();
+		UpdataPassData();
+	}
+public slots:
+	void mediaChanged(const QString& media){
+		UpdataBaseData();
+		UpdataPassData();
+	}
+	void modelChanged(const QString& model){
+		UpdataPassData();
+	}
+	void passChanged(int index){
+		UpdataPassData();
+	}
+	void PassStepPrint()
 	{
-		//SaveCalibrationParam(UI_CMD::CMD_CALI_STEP,
-		//		0,
-		//		modelComBox->currentText().toStdString().c_str(),0,0);
+		int pass_step = 0;
+		const int pass = passComBox->currentIndex();
+		std::string media = mediaComBox->currentText().toStdString();
+		std::string model = modelComBox->currentText().toStdString();
+		if(baseGroupBox->CheckDirty(pass_step)){
+			SaveStepCalibration(media.c_str(), model.c_str(), pass, 0);
+		}
 		
-		//PrintCalibration(UI_CMD::CMD_CALI_STEP,0,0,0);
+		PrintStepCalibration(media.c_str(), model.c_str(), pass);
+	}
+	void BaseStepPrint()
+	{
+		int base_step = 0;
+		const char * media = mediaComBox->currentText().toStdString().c_str();
+		if(baseGroupBox->CheckDirty(base_step)){
+			SaveStepCalibration(media, 0, 0, 0);
+		}
+		
+		PrintStepCalibration(media, 0, 0);
 	} 
 private:
-	QGroupBox * baseGroupBox;
-	QGroupBox * passGroupBox;
+	int Index;
+	QString Media;
+	QString Model;
+	StepGroupBox * baseGroupBox;
+	StepGroupBox * passGroupBox;
 
 	QComboBox * mediaComBox;
 	QComboBox * modelComBox;
@@ -216,49 +275,35 @@ private:
 class VerticalWidget :public QWidget{
 	Q_OBJECT
 public:
-	VerticalWidget (struct MECHAINE* property, QWidget *parent = NULL) : QWidget(parent){
-	QGridLayout *layout = new QGridLayout;	
+	VerticalWidget (struct MECHAINE* property, QWidget *parent = NULL) : QWidget(parent)
+	{
+		QGridLayout *layout = new QGridLayout;	
 
-   	QString color = property->PrintColor;
-    	QStringList colorList;
-	colorList = color.split(";");
+ 	  	QString color = property->PrintColor;
+    		QStringList colorList;
+		colorList = color.split(";");
 
-	int colnum = property->PrinterColorNum;
-	int rownum =property->PrinterGroupNum;
+		int colnum = property->PrinterColorNum;
+		int rownum =property->PrinterGroupNum;
 	
-	int res ,speed = 0;
+		verticalGroup = new LineEditGroup("Vertical", colnum, 1, &colorList, this);
+		connect(verticalGroup->GetPrintButton(), SIGNAL(clicked()), this, SLOT(PrintVerticalCali()));
 
-	lineGroup = new LineEditGroup("Vertical", colnum, 1, &colorList, this);
-	connect(lineGroup->GetPrintButton(), SIGNAL(clicked()), this, SLOT(PrintVerticalCali()));
+		overlapGroup = new LineEditGroup("Overlap", colnum, rownum - 1, &colorList, this);
+		connect(overlapGroup->GetPrintButton(), SIGNAL(clicked()), this, SLOT(PrintOverlapCali()));
 
-	overlapGroup = new LineEditGroup("Overlap", colnum, rownum-1, &colorList, this);
-	connect(overlapGroup->GetPrintButton(), SIGNAL(clicked()), this, SLOT(PrintOverlapCali()));
-	UpdataData();	
-	//	for(int i = 0; i < colNum; i++)
-    		//{
-         	//	QLabel *label = new QLabel(this);
-       		//	label->setText(colorList.at(i));
-       		//	label->setAlignment(Qt::AlignCenter);
-		//	layout->addWidget(label,0,i,1,1);
-          	//	QLineEdit *edit = new QLineEdit(this);
-           	//	lineEdit.push_back(edit);
-		//	layout->addWidget(edit,1,i,1,1);
-   		 //}
-		layout->addWidget(lineGroup,0,1,1,3);
+		layout->addWidget(verticalGroup,0,1,1,3);
 		layout->addWidget(overlapGroup,1,1,1,3);
+
 		setLayout(layout);
 	}
 	void UpdataData(){
 		int data[64];
- 		int res , speed =0;
-		if(LoadCalibrationParam(UI_CMD::CMD_CALI_VERTICAL, 
-			res, speed, data) <= 0){
+		if(LoadCalibrationParam(UI_CMD::CMD_CALI_VERTICAL, 0, 0, data) <= 0){
 			memset(data, 0, sizeof(data));
 		}
-		lineGroup->UpdataContext(data);
-		res = speed=0;
-		if(LoadCalibrationParam(UI_CMD::CMD_CALI_OVERLAP, 
-			res, speed, data) <= 0){
+		verticalGroup->UpdataContext(data);
+		if(LoadCalibrationParam(UI_CMD::CMD_CALI_OVERLAP, 0, 0, data) <= 0){
 			memset(data, 0, sizeof(data));
 		}
 		overlapGroup->UpdataContext(data);
@@ -271,34 +316,25 @@ public:
 
 	void PrintVerticalCali(){
 		int data[64];
-		int res ,speed =0;
-		if(lineGroup->CheckDirty(data)){
+		if(verticalGroup->CheckDirty(data)){
 			SaveCalibrationParam(UI_CMD::CMD_CALI_VERTICAL,
-				res,speed,data,0);
-		  
+					0, 0,data, verticalGroup->Size());
 		}
 
-		PrintCalibration(UI_CMD::CMD_CALI_VERTICAL,
-				res, speed, 0);
+		PrintCalibration(UI_CMD::CMD_CALI_VERTICAL, 0, 0, 0);
 	}
 	void PrintOverlapCali(){
 		int data[64];
-		int res ,speed =0;
-		if(lineGroup->CheckDirty(data)){
+		if(overlapGroup->CheckDirty(data)){
 			SaveCalibrationParam(UI_CMD::CMD_CALI_OVERLAP,
-				res,speed,data,0);
-		  
+				0, 0, data, overlapGroup->Size());
 		}
 
-		PrintCalibration(UI_CMD::CMD_CALI_VERTICAL,res,speed,0);
+		PrintCalibration(UI_CMD::CMD_CALI_VERTICAL, 0, 0, 0);
 	}
 private:
-	QPushButton * print;
-	QVector<QLineEdit *>lineEdit;
-
-
 	LineEditGroup *overlapGroup;
-	LineEditGroup *lineGroup;
+	LineEditGroup *verticalGroup;
 };
 
 class HorizontalWidget : public QWidget{
@@ -594,7 +630,7 @@ public:
 
 	}
 public slots:
-	void PrinDirectionCali(){
+	void PrintBiDirection(){
 		int data[64];
 		int cmd = UI_CMD::CMD_CALI_HORIZON_BIDRECTION;
 		if(bidirectionGroup->CheckDirty(data)){
