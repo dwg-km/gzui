@@ -205,6 +205,9 @@ public:
 			QString str = buf;
         		QStringList mediaList = str.split(';');
 			mediaBox->addItems(mediaList);
+
+			GetCurrentMedia(buf);
+			mediaBox->setCurrentText(QString(buf));
 		}
 		connect(mediaBox, SIGNAL(currentTextChanged(const QString&)), 
 				this, SLOT(mediaChanged(const QString&)));
@@ -214,6 +217,9 @@ public:
 			QString str = buf;
         		QStringList modelList = str.split(';');
 			modelBox->addItems(modelList);
+
+			GetCurrentModel(buf);
+			modelBox->setCurrentText(QString(buf));
 		}
 		connect(modelBox, SIGNAL(currentTextChanged(const QString&)), 
 				this, SLOT(modelChanged(const QString&)));
