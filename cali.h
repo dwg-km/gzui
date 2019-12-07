@@ -205,8 +205,6 @@ public:
 	}
 	void UpdataBaseData(){
 		int base_step = 0;
-		std::string media = mediaComBox->currentText().toStdString();
-
 		if(LoadStepCalibration(media.c_str(), 0, 0, base_step)){
 			base_step = 0;
 		}
@@ -214,36 +212,33 @@ public:
 	}
 	void UpdataPassData(){
 		int pass_step = 0;
-		const int pass = passComBox->currentIndex() + 1;
-
-		std::string media = mediaComBox->currentText().toStdString();
-		std::string model = modelComBox->currentText().toStdString();
 		if(LoadStepCalibration(media.c_str(), model.c_str(), pass, pass_step)){
 			pass_step = 0;
 		}
 		passGroupBox->UpdataContext(pass_step);
 	};
 	virtual void showEvent(QShowEvent * event){
+		event = event;
 		UpdataBaseData();
 		UpdataPassData();
 	}
 public slots:
-	void mediaChanged(const QString& media){
+	void mediaChanged(const QString& s){
+		media = s.toStdString();
 		UpdataBaseData();
 		UpdataPassData();
 	}
-	void modelChanged(const QString& model){
+	void modelChanged(const QString& s){
+		model = s.toStdString();
 		UpdataPassData();
 	}
 	void passChanged(int index){
+		pass = index + 1;
 		UpdataPassData();
 	}
 	void PassStepPrint()
 	{
 		int pass_step = 0;
-		const int pass = passComBox->currentIndex();
-		std::string media = mediaComBox->currentText().toStdString();
-		std::string model = modelComBox->currentText().toStdString();
 		if(baseGroupBox->CheckDirty(pass_step)){
 			SaveStepCalibration(media.c_str(), model.c_str(), pass, 0);
 		}
@@ -253,7 +248,6 @@ public slots:
 	void BaseStepPrint()
 	{
 		int base_step = 0;
-		std::string media = mediaComBox->currentText().toStdString();
 		if(baseGroupBox->CheckDirty(base_step)){
 			SaveStepCalibration(media.c_str(), 0, 0, 0);
 		}
@@ -261,9 +255,9 @@ public slots:
 		PrintStepCalibration(media.c_str(), 0, 0);
 	} 
 private:
-	int Index;
-	QString Media;
-	QString Model;
+	int pass;
+	std::string media;
+	std::string model;
 	StepGroupBox * baseGroupBox;
 	StepGroupBox * passGroupBox;
 
@@ -310,6 +304,7 @@ public:
 
 	};
 	virtual void showEvent(QShowEvent * event){
+		event = event;
 		UpdataData();
 	}
  public slots:
@@ -399,9 +394,11 @@ public:
 	
 	}
 	virtual void showEvent(QShowEvent * event){
+		event = event;
 		UpdataData();
 	}
 	virtual void hideEvent(QHideEvent * event){
+		event = event;
 
 	}
 public slots:
@@ -519,9 +516,11 @@ public:
 	
 	}
 	virtual void showEvent(QShowEvent * event){
+		event = event;
 		UpdataData();
 	}
 	virtual void hideEvent(QHideEvent * event){
+		event = event;
 
 	}
 public slots:
@@ -624,9 +623,11 @@ public:
 	
 	}
 	virtual void showEvent(QShowEvent * event){
+		event = event;
 		UpdataData();
 	}
 	virtual void hideEvent(QHideEvent * event){
+		event = event;
 
 	}
 public slots:

@@ -34,6 +34,7 @@ void UiSetting::Update()
 		QString cmd = "./update.sh ";
 		cmd += filename;
 		qDebug() << cmd;
-		system(cmd.toStdString().c_str());
+		std::string str = cmd.toStdString();
+		system(str.c_str());
 	}
 }

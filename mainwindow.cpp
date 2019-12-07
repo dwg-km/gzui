@@ -222,7 +222,8 @@ protected:
 	virtual void run(){
 		//PRINT_MODER mode;
 		//JOB_INFO  job;
-		if(PrintImage(PrintFiles.toStdString().c_str(), NULL, NULL) != 0){
+		std::string str = PrintFiles.toStdString();
+		if(PrintImage(str.c_str(), NULL, NULL) != 0){
 			qDebug() << "print job error";
 		}
 	}
@@ -307,11 +308,13 @@ void mainDialog::deviceRemoved(QString uid)
 
 void mainDialog::mediaChanged(const QString& media)
 {
-	SelectMedia(media.toStdString().c_str());
+	std::string str = media.toStdString();
+	SelectMedia(str.c_str());
 }
 void mainDialog::modelChanged(const QString& model)
 {
-	SelectProductModel(model.toStdString().c_str());
+	std::string str = model.toStdString();
+	SelectProductModel(str.c_str());
 }
 void mainDialog::originChanged(int index)
 {
