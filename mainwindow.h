@@ -90,7 +90,7 @@ public:
 		Tool->GetAbortButton()->setDisabled();
 		Tool->GetPauseButton()->setDisabled();
 
-		connect(Tool->GetExitButton(), SIGNAL(clicked()), this, SLOT(close()));
+		connect(Tool->GetExitButton(), SIGNAL(clicked()), this, SLOT(Exit()));
 		connect(Tool->GetPauseButton(), SIGNAL(clicked()), this, SLOT(Pause()));
 		connect(Tool->GetAbortButton(), SIGNAL(clicked()), this, SLOT(Abort()));
 		connect(Tool->GetPoweroffButton(), SIGNAL(clicked()), this, SLOT(PowerOff()));
@@ -168,17 +168,7 @@ public:
 		if(Origin.GetMode < 2){
 			orgComBox->setCurrentIndex(Origin.GetMode);
 		}
-		typeLabelEdit->setText(QString::number(Origin.Coord));
-	}
-	void SaveOrigin(){
-		//X像原点设置
-		ORIGIN_SET origin = Origin;
-		//memset(&origin, 0, sizeof(ORIGIN_SET));
-		origin.Coord = typeLabelEdit->text().toInt();
-		origin.GetMode = orgComBox->currentIndex();
-		if(memcmp(&Origin, &origin, sizeof(ORIGIN_SET))){
-			SetPrinterParam(UI_CMD::CMD_MODE_ORIGIN, &origin);
-		}
+		originLineEdit->setText(QString::number(Origin.Coord));
 	}
 	void LayoutSetting(){
 		setBox = new QGroupBox;
@@ -205,6 +195,9 @@ public:
 			QString str = buf;
         		QStringList mediaList = str.split(';');
 			mediaBox->addItems(mediaList);
+
+			GetCurrentMedia(buf);
+			mediaBox->setCurrentText(QString(buf));
 		}
 		connect(mediaBox, SIGNAL(currentTextChanged(const QString&)), 
 				this, SLOT(mediaChanged(const QString&)));
@@ -214,21 +207,25 @@ public:
 			QString str = buf;
         		QStringList modelList = str.split(';');
 			modelBox->addItems(modelList);
+
+			GetCurrentModel(buf);
+			modelBox->setCurrentText(QString(buf));
 		}
 		connect(modelBox, SIGNAL(currentTextChanged(const QString&)), 
 				this, SLOT(modelChanged(const QString&)));
-		/*
-		*/
+
 		orgBox = new QGroupBox(tr("打印原点"));
 		orgLabel = new QLabel(tr("获取原点"));
 		orgComBox = new QComboBox();
 		getorgLabel = new QLabel(tr("打印原点"));
-		typeLabelEdit = new IntLineEdit;
+		originLineEdit = new IntLineEdit;
 	
 		orgComBox->addItem(tr("手动"));
 		orgComBox->addItem(tr("自动"));
 		connect(orgComBox, SIGNAL(currentIndexChanged(int)), 
-				this, SLOT(originChanged(int)));
+				this, SLOT(originChanged()));
+		connect(originLineEdit, SIGNAL(textChanged(const QString&)), 
+				this, SLOT(originChanged()));
 		
 		LoadOrigin();
 
@@ -240,7 +237,7 @@ public:
 		setLayout->addWidget(orgLabel,		1, 0);
 		setLayout->addWidget(orgComBox,		1, 1);
 		setLayout->addWidget(getorgLabel,	1, 2);
-		setLayout->addWidget(typeLabelEdit,	1, 3);
+		setLayout->addWidget(originLineEdit,	1, 3);
 
 		setLayout->addWidget(stepLabel,		2, 0);
 		setLayout->addWidget(stepLineEdit,	2, 1);
@@ -287,8 +284,9 @@ public:
 public slots:
 	void mediaChanged(const QString&);
 	void modelChanged(const QString&);
-	void originChanged(int);
+	void originChanged();
 
+	void Exit();
 	void Print();
 	void Pause();
 	void Abort();
@@ -315,7 +313,7 @@ private:
 
 	QLabel *orgLabel;
 	QLabel *getorgLabel;
-	IntLineEdit *typeLabelEdit;
+	IntLineEdit *originLineEdit;
 	QComboBox * orgComBox;
 
 	INK_PUMP InkPump;

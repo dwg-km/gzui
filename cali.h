@@ -102,56 +102,76 @@ private:
 class StepGroupBox : public QGroupBox {
 	Q_OBJECT
 public:
-	StepGroupBox(QString name, QWidget *parent = NULL) : QGroupBox(name)
+	StepGroupBox(QString name, QWidget *parent = NULL) :
+	       	QGroupBox(name),
+		Dirty(0),
+		Value(0)
        	{
-		Value = -1;
+		Value = -1000;
 		QGridLayout * layout = new QGridLayout;
 
-		QLabel * baseLabel = new QLabel("步进值");
-		baseLineEdit =  new QLineEdit;
-		baseButton = new QPushButton;
-		baseButton->setText(name);
-		//baseButton->resize(72, 28);
+		QLabel * caliLabel = new QLabel("步进值");
+		caliLineEdit =  new QLineEdit;
+		caliButton = new QPushButton;
+		caliButton->setText(name);
+		//caliButton->resize(72, 28);
 	
 		QLabel *adjustLabel = new QLabel(tr("校准值"));
 		adjustLineEdit = new QLineEdit;
 		adjustButton = new QPushButton("=>");
 		adjustButton->setStyleSheet("background-color: rgb(9, 148, 220)");
+		connect(adjustButton, SIGNAL(clicked()), this, SLOT(Convert()));
 
 		layout->addWidget(adjustLabel,		0, 0);		
-		layout->addWidget(adjustLineEdit,		0, 1);
+		layout->addWidget(adjustLineEdit,	0, 1);
 
-		layout->addWidget(adjustButton,		0, 4);		
+		layout->addWidget(adjustButton,		0, 2);		
 
-		layout->addWidget(baseLabel,			0, 6);		
-		layout->addWidget(baseLineEdit,			0, 7);
+		layout->addWidget(caliLabel,		0, 3);		
+		layout->addWidget(caliLineEdit,		0, 4);
 
-		layout->addWidget(baseButton,		0, 9);		
+		layout->addWidget(caliButton,		0, 5);		
 
-		//baseGroupBox = new QGroupBox(tr("基准步进"));
+		setStyleSheet("QGroupBox {\
+				border: 1px solid silver;\
+				border-radius: 6px;\
+				margin-top: 6px;}");
+
 		setLayout(layout);
-		//setAlignment(Qt::AlignBottom);
-		QString groupStyle = "QGroupBox { border: 1px solid silver; border-radius: 6px; margin-top: 6px; }";
-		//QString titleStyle = "QGroupBox::title {subcontrol-origin: margin; subcontrol-position: top center;   padding: 0 2px; }";
-		//QString titleStyle = "QGroupBox::title {subcontrol-origin: margin; subcontrol-position: top center; padding: 0 3px;\
-		//       	background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #FF0ECE, stop: 1 #FFFFFF); }";
-		setStyleSheet(groupStyle);
-		//setStyleSheet(titleStyle);
 	}
 	void UpdataContext(int step){
 		if(Value != step){
 			Value = step;
-			baseLineEdit->setText(QString::number(step));
+			caliLineEdit->setText(QString::number(step));
 		}
 	}
 	int CheckDirty(int &step){
+		step = caliLineEdit->text().toInt();
+		if(Value != step){
+			return 1;
+		}
+
 		return 0;
+	}
+	QPushButton * GetCaliButton(){
+		return caliButton;
+	}
+private slots:
+	void Convert(){
+		int step = caliLineEdit->text().toInt();
+		double adjust = adjustLineEdit->text().toDouble();
+
+		step += (int)(adjust * step / 1024 + 0.5);	
+
+		adjustLineEdit->setText(QString::number(0));
+		caliLineEdit->setText(QString::number(step));
 	}
 
 private:
+	int Dirty;
 	int Value;
-	QLineEdit * baseLineEdit;
-	QPushButton * baseButton;
+	QLineEdit * caliLineEdit;
+	QPushButton * caliButton;
 	QLineEdit * adjustLineEdit;
 	QPushButton * adjustButton;
 };
@@ -159,7 +179,10 @@ private:
 class StepcalWidget : public QWidget{
 	Q_OBJECT
 public:
-	StepcalWidget (struct MECHAINE* property, QWidget *parent = NULL) : QWidget(parent){
+	StepcalWidget (struct MECHAINE* property, QWidget *parent = NULL) :
+	       	QWidget(parent),
+		pass(0)
+	{
 		QGridLayout * gridLayout = new QGridLayout;
 
 		char buf[256];
@@ -168,6 +191,10 @@ public:
 			QString str = buf;
         		QStringList mediaList = str.split(';');
 			mediaComBox->addItems(mediaList);
+
+			GetCurrentMedia(buf);
+			media = buf;
+			mediaComBox->setCurrentText(QString(buf));
 		}
 		connect(mediaComBox, SIGNAL(currentTextChanged(const QString&)), 
 				this, SLOT(mediaChanged(const QString&)));
@@ -177,6 +204,10 @@ public:
 			QString str = buf;
         		QStringList modelList = str.split(';');
 			modelComBox->addItems(modelList);
+
+			GetCurrentModel(buf);
+			model = buf;
+			modelComBox->setCurrentText(QString(buf));
 		}
 		connect(modelComBox, SIGNAL(currentTextChanged(const QString&)), 
 				this, SLOT(modelChanged(const QString&)));
@@ -191,6 +222,10 @@ public:
 
 		baseGroupBox = new StepGroupBox(tr("基准步进"));
 		passGroupBox = new StepGroupBox(tr("精细步进"));
+		connect(baseGroupBox->GetCaliButton(), SIGNAL(clicked()), 
+				this, SLOT(BaseStepPrint()));
+		connect(passGroupBox->GetCaliButton(), SIGNAL(clicked()), 
+				this, SLOT(PassStepPrint()));
 
 		gridLayout->addWidget(mediaComBox,	0, 0, 1, 1);
 
@@ -205,8 +240,6 @@ public:
 	}
 	void UpdataBaseData(){
 		int base_step = 0;
-		std::string media = mediaComBox->currentText().toStdString();
-
 		if(LoadStepCalibration(media.c_str(), 0, 0, base_step)){
 			base_step = 0;
 		}
@@ -214,36 +247,33 @@ public:
 	}
 	void UpdataPassData(){
 		int pass_step = 0;
-		const int pass = passComBox->currentIndex() + 1;
-
-		std::string media = mediaComBox->currentText().toStdString();
-		std::string model = modelComBox->currentText().toStdString();
 		if(LoadStepCalibration(media.c_str(), model.c_str(), pass, pass_step)){
 			pass_step = 0;
 		}
 		passGroupBox->UpdataContext(pass_step);
 	};
 	virtual void showEvent(QShowEvent * event){
+		event = event;
 		UpdataBaseData();
 		UpdataPassData();
 	}
 public slots:
-	void mediaChanged(const QString& media){
+	void mediaChanged(const QString& s){
+		media = s.toStdString();
 		UpdataBaseData();
 		UpdataPassData();
 	}
-	void modelChanged(const QString& model){
+	void modelChanged(const QString& s){
+		model = s.toStdString();
 		UpdataPassData();
 	}
 	void passChanged(int index){
+		pass = index + 1;
 		UpdataPassData();
 	}
 	void PassStepPrint()
 	{
 		int pass_step = 0;
-		const int pass = passComBox->currentIndex();
-		std::string media = mediaComBox->currentText().toStdString();
-		std::string model = modelComBox->currentText().toStdString();
 		if(baseGroupBox->CheckDirty(pass_step)){
 			SaveStepCalibration(media.c_str(), model.c_str(), pass, 0);
 		}
@@ -253,7 +283,6 @@ public slots:
 	void BaseStepPrint()
 	{
 		int base_step = 0;
-		std::string media = mediaComBox->currentText().toStdString();
 		if(baseGroupBox->CheckDirty(base_step)){
 			SaveStepCalibration(media.c_str(), 0, 0, 0);
 		}
@@ -261,9 +290,9 @@ public slots:
 		PrintStepCalibration(media.c_str(), 0, 0);
 	} 
 private:
-	int Index;
-	QString Media;
-	QString Model;
+	int pass;
+	std::string media;
+	std::string model;
 	StepGroupBox * baseGroupBox;
 	StepGroupBox * passGroupBox;
 
@@ -310,6 +339,7 @@ public:
 
 	};
 	virtual void showEvent(QShowEvent * event){
+		event = event;
 		UpdataData();
 	}
  public slots:
@@ -399,9 +429,11 @@ public:
 	
 	}
 	virtual void showEvent(QShowEvent * event){
+		event = event;
 		UpdataData();
 	}
 	virtual void hideEvent(QHideEvent * event){
+		event = event;
 
 	}
 public slots:
@@ -519,9 +551,11 @@ public:
 	
 	}
 	virtual void showEvent(QShowEvent * event){
+		event = event;
 		UpdataData();
 	}
 	virtual void hideEvent(QHideEvent * event){
+		event = event;
 
 	}
 public slots:
@@ -624,9 +658,11 @@ public:
 	
 	}
 	virtual void showEvent(QShowEvent * event){
+		event = event;
 		UpdataData();
 	}
 	virtual void hideEvent(QHideEvent * event){
+		event = event;
 
 	}
 public slots:

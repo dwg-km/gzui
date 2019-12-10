@@ -71,16 +71,22 @@ public:
 		}else{
 			radio_unidir->setChecked(true);
 		}
+		if(BaseSetting.xReverse){
+			xCheckBox->setCheckState(Qt::Checked);
+		}
+		if(BaseSetting.yReverse){
+			yCheckBox->setCheckState(Qt::Checked);
+		}
 	}
 	void LayoutPrintReverse(){
 		revBox = new QGroupBox(tr("反向打印"));
 		
-	       	x_rev = new QRadioButton(tr("扫描"));
-		y_rev = new QRadioButton(tr("步进"));
+	       	xCheckBox = new QCheckBox(tr("扫描"));
+		yCheckBox = new QCheckBox(tr("步进"));
 
 		QHBoxLayout * hbox = new QHBoxLayout;
-		hbox->addWidget(x_rev);
-		hbox->addWidget(y_rev);
+		hbox->addWidget(xCheckBox);
+		hbox->addWidget(yCheckBox);
 		
 		revBox->setLayout(hbox);
 	}
@@ -89,18 +95,20 @@ public:
 		speedLabel = new QLabel(tr("扫描速度"));
 		speedComBox = new QComboBox();
 
-		QHBoxLayout * hbox = new QHBoxLayout;
+		QGridLayout * layout = new QGridLayout;
 
 		speedComBox->addItem(tr("高速"));
 		speedComBox->addItem(tr("中速"));
 		speedComBox->addItem(tr("低速"));
 
-		hbox->addWidget(speedLabel);
-		hbox->addWidget(speedComBox);
+		layout->addWidget(speedLabel, 0, 0);
+		layout->addWidget(speedComBox, 0, 1);
 
-		speedBox->setLayout(hbox);
+		speedBox->setLayout(layout);
 	}
 	void LoadPrintSpeed(){
+		GetPrinterParam(UI_CMD::CMD_MODE_SPEED, &PrintSpeed);
+		speedComBox->setCurrentIndex(PrintSpeed.CurSpeed);
 	
 	}
 
@@ -271,18 +279,23 @@ public:
 
 		BASE_SETTING basesetting = BaseSetting;
 		//memset(&basesetting, 0, sizeof(BASE_SETTING));
-		if(radio_bidir->isChecked()){
-			basesetting.Bidirection = 1;
-		}
-		//if(radio_x->isChecked()){
-		//	basesetting.xReverse = 1;
-		//}
+		basesetting.Bidirection = radio_bidir->isChecked() ? 1 : 0;
+		basesetting.xReverse = xCheckBox->isChecked() ? 1 : 0;
+		basesetting.yReverse = yCheckBox->isChecked() ? 1 : 0;
 		if(memcmp(&BaseSetting, &basesetting, sizeof(BASE_SETTING))){
 			SetPrinterParam(UI_CMD::CMD_MODE_BASE, &basesetting);
+		}
+
+		//save print speed
+		PRINT_MOVE speed = PrintSpeed;
+		speed.CurSpeed = speedComBox->currentIndex();
+		if(memcmp(&speed, &PrintSpeed, sizeof(PRINT_MOVE))){
+			SetPrinterParam(UI_CMD::CMD_MODE_SPEED, &speed);
 		}
 	}
 private:
 
+	PRINT_MOVE PrintSpeed;
 	FLASH Flash;
 	STRIP Strip;
 	FEATHER_CFG FeatherCfg;
@@ -292,8 +305,8 @@ private:
 	QGroupBox * revBox;
 	QRadioButton * radio_unidir;
 	QRadioButton * radio_bidir;
-	QRadioButton * x_rev;
-	QRadioButton * y_rev;
+	QCheckBox * xCheckBox;
+	QCheckBox * yCheckBox;
 
 	QGroupBox * speedBox;
 	QComboBox * speedComBox;
