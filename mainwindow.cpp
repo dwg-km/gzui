@@ -270,6 +270,11 @@ void mainDialog::PrintNozzleCheck()
 	PrintCalibration(CMD_MECHINE_CHECK_NOZZLE, 0, 0, 0);
 }
 
+void mainDialog::Exit(){
+	DestroyPrinter(0);
+	close();
+}
+
 void mainDialog::Pause()
 {
 	PrintPause();
@@ -292,6 +297,7 @@ void mainDialog::PowerOff()
 		//close printer
 		//umount all the device
 
+		Exit();
 		system("poweroff");
 	}
 }
@@ -311,13 +317,25 @@ void mainDialog::mediaChanged(const QString& media)
 	std::string str = media.toStdString();
 	SelectMedia(str.c_str());
 }
+
 void mainDialog::modelChanged(const QString& model)
 {
 	std::string str = model.toStdString();
 	SelectProductModel(str.c_str());
 }
-void mainDialog::originChanged(int index)
-{
 
+void mainDialog::originChanged()
+{
+	ORIGIN_SET origin = Origin;
+	origin.Coord = originLineEdit->text().toInt();
+	origin.GetMode = orgComBox->currentIndex();
+	if(origin.GetMode){
+		originLineEdit->setEnabled(false);
+	}else{
+		originLineEdit->setEnabled(true);
+	}
+	if(memcmp(&Origin, &origin, sizeof(ORIGIN_SET))){
+		SetPrinterParam(UI_CMD::CMD_MODE_ORIGIN, &origin);
+	}
 }
 

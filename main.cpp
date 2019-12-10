@@ -27,12 +27,10 @@ int main(int argc, char *argv[])
 	}
 
 	if(CreatePrinter(0)){
-		return -1;
+		return -1;	
 	}
 
 	QApplication app(argc, argv);
-
-
 
 	mainDialog dialog;
 	dialog.show();
