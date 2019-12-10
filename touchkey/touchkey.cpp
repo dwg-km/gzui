@@ -1,7 +1,6 @@
 
-
 #include "touchkey.h"
-
+#include <QMessageBox>
 TouchKey* TouchKey::touchkey;
 
 TouchKey::TouchKey() : 
@@ -45,18 +44,63 @@ void TouchKey::setRet(QLineEdit * line){
 void TouchKey::add()
 {
 	if(label){
-		if(str != ""){
-			label->setText(str);
-		}
-		else{
-			label->setText("0");
-		}
+		if(str == "")
+			str = "0";
+	//	if(str != ""){
+	//		label->setText(str);
+	//	}
+	//	else{
+	//		label->setText("0");
+	//	}
 	//	label->clearFocus();
 		//label->repaint();
-		label = NULL;
-	}	
-	close();
+	//	label = NULL;
+	
+		bool ret = 1;
+		if(typefloat){
+			float num = 0.0;
+	 		num = str.toFloat(&ret);
+			if(!ret){
+				QMessageBox  box;
+				box.setText("Please input a float number!");
+				box.exec();
+				str = "0";
+				label->setText("0");
+				m_edit->setText("0");
+			}
+			else{
+				QString data = QString::number(num,'g', 2);
+			       // QString data = QString("%1").arg(num);
+		 		label->setText(data);
+               			
+				label = NULL;
+				close();
+			}
+		}
+		else{
+			int num = 0;
+        		num = str.toInt(&ret , 10);
+		      
+			if(!ret){
+				QMessageBox  box;
+				box.setText("Please input a int number!");
+				box.exec();
+				label->setText("0");
+			}
+			else{
+
+				
+			        QString data = QString("%1").arg(num);
+		 		label->setText(data);
+				label = NULL;
+                 	 	close();
+			}
+		}
+	}
 }
+	
+	
+
 /*
 void TouchKey::show()
 {
@@ -116,7 +160,8 @@ void TouchKey::onCalculate()
 			str="";
 			m_edit->setText("");
 		}else if(buttontext == "."){
-			setPointEnable(false);
+			//setPointEnable(false);
+			//m_buttons[10]->setEnabled(false);
 			str += buttontext;
 		}else{
 			str += buttontext;

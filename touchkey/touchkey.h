@@ -25,15 +25,16 @@ public:
 	void show();
 	void setRet(QLineEdit * line);
 
+	void setPointEnable(bool enable){
+		m_buttons[10]->setEnabled(enable);
+                typefloat = enable;
+	}
 signals:
 	void ok();
 
 public slots:
 	void onCalculate();
 	void add();
-	void setPointEnable(bool enable){
-		m_buttons[10]->setEnabled(enable);
-	}
 	
 private:
 	TouchKey();
@@ -42,6 +43,7 @@ private:
 private:
 	QPushButton * m_buttons[15];
 	QString str;
+        bool typefloat;
 	QLineEdit * label;
 	QLineEdit * m_edit;
 };
