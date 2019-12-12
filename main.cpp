@@ -1,6 +1,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 
+#include <QProcess>
 #include <QApplication>
 
 #include "mainwindow.h"
@@ -34,6 +35,14 @@ int main(int argc, char *argv[])
 
 	mainDialog dialog;
 	dialog.show();
-	
-	return app.exec();
+
+	int ret = app.exec();
+
+	qDebug() << "exit";
+	if(ret == 773){
+		QProcess::startDetached(qApp->applicationFilePath(), QStringList());
+		return 0;
+	}
+
+	return ret;
 }

@@ -7,7 +7,7 @@ mkdir -p ${DST_PATH}
 cp -rf ${SOURCE} ${DST_PATH}
 #tar -zcf - ${PACKAGE_NAME} | openssl des3 -salt -k 123456 -out ${PACKAGE_NAME}.tar.gz
 tar -zcf  ${PACKAGE_NAME}.tar.gz ${PACKAGE_NAME}
-rm -rf ${INSTALL}
+rm -rf ${DST_PATH}
 
 
 
