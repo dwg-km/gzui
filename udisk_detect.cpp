@@ -140,7 +140,7 @@ int deal_one_line(char * const s)
 static char buf[UEVENT_BUFFER_SIZE * 2]; 
 void udisk_thread() 
 {
-	system("rm -rf /media/udisk*");
+	system("rmdir  /media/udisk*");
 	int hotplug_sock = init_hotplug_sock();
 	while(1){
 		/* Netlink message buffer */

@@ -1,7 +1,8 @@
 
 FILE=$1
-SRC_PATH=tmp/
-DST_PATH=/home/gz/gzui/
+BIN=tmp/
+SRC_PATH=${BIN}
+DST_PATH=${HOME}/gzui/
 
 LIB="libpmd.so"
 EXE="gz update.sh resume.sh"
@@ -62,4 +63,4 @@ do
 	fi
 done
 
-#rm -rf ${SRC_PATH}${FILE}
+rm -rf ${BIN}

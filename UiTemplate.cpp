@@ -8,7 +8,7 @@ UiTemplate::UiTemplate(QWidget *parent) :
 {
 	Tool = new ToolBar();
 
-	QPixmap *pixmap = new QPixmap("../resources/logo.png");
+	QPixmap *pixmap = new QPixmap("resources/logo.png");
 
 	logoLabel = new QLabel();
 	logoLabel->setPixmap(*pixmap);
