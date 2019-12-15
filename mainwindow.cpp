@@ -272,7 +272,8 @@ void mainDialog::PrintNozzleCheck()
 
 void mainDialog::Exit(){
 	DestroyPrinter(0);
-	close();
+	//close();
+	qApp->exit();
 }
 
 void mainDialog::Pause()
@@ -294,10 +295,14 @@ void mainDialog::PowerOff()
 
 	if(r == QMessageBox::Ok){
 		//disable all the button
+
 		//close printer
+		DestroyPrinter(0);
+
+		//disconnect all the remote user
+
 		//umount all the device
 
-		Exit();
 		system("poweroff");
 	}
 }

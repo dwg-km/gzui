@@ -1,3 +1,6 @@
+#include <QProcess>
+#include <QApplication>
+#include <QMessageBox>
 
 #include "menu.h"
 
@@ -36,5 +39,11 @@ void UiSetting::Update()
 		qDebug() << cmd;
 		std::string str = cmd.toStdString();
 		system(str.c_str());
+
+		int r = QMessageBox::warning(NULL, 
+			tr("Update"), "Update finished. click yes to restart", QMessageBox::Cancel | QMessageBox::Yes);
+		if (r == QMessageBox::Yes){
+			qApp->exit(773);
+		}
 	}
 }
