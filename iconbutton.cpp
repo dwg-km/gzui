@@ -113,7 +113,6 @@ void iconButton::mouseReleaseEvent(QMouseEvent *event)
 	curIndex = 1;
 	QPushButton::mouseReleaseEvent(event);
 #endif
-
 	emit keyReleased();
 }
  

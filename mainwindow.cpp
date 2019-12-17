@@ -205,7 +205,7 @@ void mainDialog::ProcessPrintStatus()
 		emit printing(info);
 	}else if(s == MOVING){
 		qDebug() << "moving...";
-		emit moving();
+		//emit moving();
 	}else if(s == PAUSE){
 		emit pause();
 	}

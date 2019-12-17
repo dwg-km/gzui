@@ -487,7 +487,7 @@ private slots:
 		MOVE move;
 		move.Axis = AXIS_X;
 		move.Distance = 0;
-		move.Dir = 0;
+		move.Dir = 1;
 
 		SendMotionCmd(UI_CMD::CMD_MOTION_MOVE, &move);
 	}
@@ -495,7 +495,7 @@ private slots:
 		MOVE move;
 		move.Axis = AXIS_X;
 		move.Distance = 0;
-		move.Dir = 1;
+		move.Dir = 0;
 
 		SendMotionCmd(UI_CMD::CMD_MOTION_MOVE, &move);
 	}
@@ -519,7 +519,7 @@ private slots:
 		MOVE move;
 		move.Axis = AXIS_Y;
 		move.Distance = 0;
-		move.Dir = 0;
+		move.Dir = 1;
 
 		SendMotionCmd(UI_CMD::CMD_MOTION_MOVE, &move);
 	}
@@ -542,8 +542,6 @@ private slots:
 	void Measure(){
 		MotionThread * measure = new MotionThread(UI_CMD::CMD_MOTION_MEASURE_MEDIA, 0);
 		measure->start();
-
-		qDebug() << "measure";
 	}
 };
 
