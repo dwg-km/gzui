@@ -752,6 +752,8 @@ public:
 		QPushButton *verticalButton = new QPushButton("Vertical");
 		QPushButton *overlapButton = new QPushButton("Overlap");
 		
+		connect(stepButton, SIGNAL(clicked()), this, SLOT(PrintStepCheck()));
+
 		int x = 0;
 		int y = 0;
 		mainLayout->addWidget(angleButton, y, x++);
@@ -811,6 +813,9 @@ public slots:
 		Tool->GetPauseButton()->setEnabled();
 		Tool->setMoveEnabled(false);
 		messageLabel->setText(msg);
+	}
+	void PrintStepCheck(){
+		PrintCalibration(UI_CMD::CMD_MECHINE_CHECK_STEP, 0, 0, 0);
 	}
 private:
 	QTabWidget * widgetlist;
