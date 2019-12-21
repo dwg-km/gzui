@@ -276,16 +276,6 @@ void mainDialog::Exit(){
 	qApp->exit();
 }
 
-void mainDialog::Pause()
-{
-	PrintPause();
-}
-
-void mainDialog::Abort()
-{
-	PrintAbort();
-}
-
 void mainDialog::PowerOff()
 {
 	int r = QMessageBox::warning(NULL, 

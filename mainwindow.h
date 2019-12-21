@@ -91,8 +91,6 @@ public:
 		Tool->GetPauseButton()->setDisabled();
 
 		connect(Tool->GetExitButton(), SIGNAL(clicked()), this, SLOT(Exit()));
-		connect(Tool->GetPauseButton(), SIGNAL(clicked()), this, SLOT(Pause()));
-		connect(Tool->GetAbortButton(), SIGNAL(clicked()), this, SLOT(Abort()));
 		connect(Tool->GetPoweroffButton(), SIGNAL(clicked()), this, SLOT(PowerOff()));
 
 		menuDialog = new UiSetting(this);
@@ -288,8 +286,6 @@ public slots:
 
 	void Exit();
 	void Print();
-	void Pause();
-	void Abort();
 	void ProcessPrintStatus();
 	void PrintNozzleCheck();
 

@@ -374,7 +374,10 @@ public:
 	    	QVector<QString> iconpause = {
 	    		"resources/pause.png"
 	    	};
-	    	pauseButton = new iconButton(iconpause);
+		if(pauseButton == NULL){
+	    		pauseButton = new iconButton(iconpause);
+			connect(pauseButton, SIGNAL(clicked()), this, SLOT(Pause()));
+		}
 	}
 	iconButton * GetPauseButton(){
 		return pauseButton;
@@ -383,7 +386,10 @@ public:
 	    	QVector<QString> iconabort = {
 	    		"resources/abort.png"
 	    	};
-	    	abortButton = new iconButton(iconabort);
+		if(abortButton == NULL){
+	    		abortButton = new iconButton(iconabort);
+			connect(abortButton, SIGNAL(clicked()), this, SLOT(Abort()));
+		}
 	}
 	iconButton * GetAbortButton(){
 		return abortButton;
@@ -542,6 +548,13 @@ private slots:
 	void Measure(){
 		MotionThread * measure = new MotionThread(UI_CMD::CMD_MOTION_MEASURE_MEDIA, 0);
 		measure->start();
+	}
+	void Pause(){
+		PrintPause();
+	}
+	
+	void Abort(){
+		PrintAbort();
 	}
 };
 
