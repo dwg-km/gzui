@@ -493,6 +493,7 @@ private slots:
 		MOVE move;
 		move.Axis = AXIS_X;
 		move.Distance = 0;
+		move.Speed = 0;
 		move.Dir = 1;
 
 		SendMotionCmd(UI_CMD::CMD_MOTION_MOVE, &move);
@@ -501,6 +502,7 @@ private slots:
 		MOVE move;
 		move.Axis = AXIS_X;
 		move.Distance = 0;
+		move.Speed = 0;
 		move.Dir = 0;
 
 		SendMotionCmd(UI_CMD::CMD_MOTION_MOVE, &move);
@@ -509,6 +511,7 @@ private slots:
 		MOVE move;
 		move.Axis = AXIS_X;
 		move.Distance = 0;
+		move.Speed = 0;
 		move.Dir = 0;
 
 		SendMotionCmd(UI_CMD::CMD_MOTION_MOVE_STOP, &move);
@@ -517,6 +520,7 @@ private slots:
 		MOVE move;
 		move.Axis = AXIS_Y;
 		move.Distance = 0;
+		move.Speed = 0;
 		move.Dir = 0;
 
 		SendMotionCmd(UI_CMD::CMD_MOTION_MOVE, &move);
@@ -525,6 +529,7 @@ private slots:
 		MOVE move;
 		move.Axis = AXIS_Y;
 		move.Distance = 0;
+		move.Speed = 0;
 		move.Dir = 1;
 
 		SendMotionCmd(UI_CMD::CMD_MOTION_MOVE, &move);
@@ -533,6 +538,7 @@ private slots:
 		MOVE move;
 		move.Axis = AXIS_Y;
 		move.Distance = 0;
+		move.Speed = 0;
 		move.Dir = 0;
 
 		SendMotionCmd(UI_CMD::CMD_MOTION_MOVE_STOP, &move);
@@ -541,6 +547,7 @@ private slots:
 		MOVE move;
 		move.Axis = AXIS_X;
 		move.Distance = 10;
+		move.Speed = 0;
 		move.Dir = 0;
 
 		SendMotionCmd(UI_CMD::CMD_MOTION_MOVETO, &move);
