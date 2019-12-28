@@ -144,6 +144,7 @@ public:
 
 		toolBox->setLayout(menuLayout);
 		connect(Tool->GetPrintButton(),SIGNAL(clicked()), this, SLOT(Print()));
+		connect(Tool->GetFlashButton(),SIGNAL(clicked()), this, SLOT(Flash()));
 		connect(Tool->GetNozzleButton(),SIGNAL(clicked()), this, SLOT(PrintNozzleCheck()));
 	}
 	void LayoutMoveButtons(){
@@ -285,6 +286,7 @@ public slots:
 	void originChanged();
 
 	void Exit();
+	void Flash();
 	void Print();
 	void ProcessPrintStatus();
 	void PrintNozzleCheck();

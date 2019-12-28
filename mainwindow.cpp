@@ -231,6 +231,10 @@ private:
 	QString PrintFiles;
 };
 
+void mainDialog::Flash()
+{
+	SendMotionCmd(UI_CMD::CMD_MOTION_FLASH, 0);
+}
 void mainDialog::Print()
 {
 	QFileDialog *fileDialog = new QFileDialog();
