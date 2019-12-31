@@ -104,8 +104,9 @@ private:
 class StepGroupBox : public QGroupBox {
 	Q_OBJECT
 public:
-	StepGroupBox(QString name, QWidget *parent = NULL) :
+	StepGroupBox(QString name, int y_res,  QWidget *parent = NULL) :
 	       	QGroupBox(name),
+		yRes(y_res),
 		Dirty(0),
 		Value(0)
        	{
@@ -178,7 +179,7 @@ private slots:
 		int base_step = 0;
 		LoadStepCalibration(media.c_str(), 0, 0, base_step);
 
-		step += (int)(adjust * base_step / 512);	
+		step += (int)(adjust * base_step / yRes);	
 
 		adjustLineEdit->setText("");
 		caliLineEdit->setText(QString::number(step));
@@ -203,6 +204,7 @@ private:
 	}
 
 private:
+	int yRes;
 	int Dirty;
 	int Value;
 	QLineEdit * caliLineEdit;
@@ -224,8 +226,8 @@ public:
 	{
 		QGridLayout * gridLayout = new QGridLayout;
 
-		baseGroupBox = new StepGroupBox(tr("基准步进"));
-		passGroupBox = new StepGroupBox(tr("精细步进"));
+		baseGroupBox = new StepGroupBox(tr("基准步进"), property->yResolution);
+		passGroupBox = new StepGroupBox(tr("精细步进"), property->yResolution);
 
 		char buf[256];
 		int pass = 0;
@@ -432,11 +434,11 @@ public slots:
 	void PrintLeftCali(){
 		int data[64];
 		if(leftGroup->CheckDirty(data)){
-			SaveCalibrationParam(UI_CMD::CMD_CALI_HORIZON_RIGHT,
+			SaveCalibrationParam(UI_CMD::CMD_CALI_HORIZON_LEFT,
 				res, speed,  data, leftGroup->Size());
 		}
 
-		PrintCalibration(UI_CMD::CMD_CALI_HORIZON_RIGHT,
+		PrintCalibration(UI_CMD::CMD_CALI_HORIZON_LEFT,
 				res, speed, 0);
 	}
 	void PrintRightCali(){
@@ -662,7 +664,7 @@ public slots:
 		int data[64];
 		int cmd = UI_CMD::CMD_CALI_HORIZON_BIDRECTION;
 		if(bidirectionGroup->CheckDirty(data)){
-			SaveCalibrationParam(UI_CMD(cmd), res, speed,  data, 0);
+			SaveCalibrationParam(UI_CMD(cmd), res, speed,  data, bidirectionGroup->Size());
 		}
 
 		PrintCalibration(UI_CMD(cmd), res, speed, 0);
@@ -699,9 +701,10 @@ public:
 
 		toolLayout->addWidget(Tool->GetLeftButton());
 		toolLayout->addWidget(Tool->GetRightButton());
-		//toolLayout->addWidget(Tool->GetHomeButton());
-		//toolLayout->addWidget(Tool->GetUpButton());
-		//toolLayout->addWidget(Tool->GetDownButton());
+		toolLayout->addWidget(Tool->GetOriginButton());
+		toolLayout->addWidget(Tool->GetUpButton());
+		toolLayout->addWidget(Tool->GetDownButton());
+
 		toolLayout->addWidget(Tool->GetPauseButton());
 		toolLayout->addWidget(Tool->GetAbortButton());
 
