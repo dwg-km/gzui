@@ -4,6 +4,7 @@
 #include <QComboBox>
 #include <QGroupBox>
 
+#include "lineedit.h"
 #include "UiTemplate.h"
 
 #include "ui_interface.h"
@@ -56,7 +57,7 @@ public:
 		
 		setLayout(horLayout);
 	}
-	void UpdataContext(int * data){
+	void UpdateContext(int * data){
 		//int colnum = property->PrinterColorNum;   //列数
 		//int rownum = property->PrinterGroupNum; //行数
 		for(int j = 0; j < rownum; j++){
@@ -99,11 +100,13 @@ private:
 	QVector<QLineEdit *> matrix;
 	QPushButton *printButton;
 };
+
 class StepGroupBox : public QGroupBox {
 	Q_OBJECT
 public:
-	StepGroupBox(QString name, QWidget *parent = NULL) :
+	StepGroupBox(QString name, int y_res,  QWidget *parent = NULL) :
 	       	QGroupBox(name),
+		yRes(y_res),
 		Dirty(0),
 		Value(0)
        	{
@@ -111,13 +114,14 @@ public:
 		QGridLayout * layout = new QGridLayout;
 
 		QLabel * caliLabel = new QLabel("步进值");
-		caliLineEdit =  new QLineEdit;
+		caliLineEdit =  new IntLineEdit;
 		caliButton = new QPushButton;
 		caliButton->setText(name);
 		//caliButton->resize(72, 28);
+		connect(caliButton, SIGNAL(clicked()), this, SLOT(Print()));
 	
 		QLabel *adjustLabel = new QLabel(tr("校准值"));
-		adjustLineEdit = new QLineEdit;
+		adjustLineEdit = new DoubleLineEdit;
 		adjustButton = new QPushButton("=>");
 		adjustButton->setStyleSheet("background-color: rgb(9, 148, 220)");
 		connect(adjustButton, SIGNAL(clicked()), this, SLOT(Convert()));
@@ -125,7 +129,7 @@ public:
 		layout->addWidget(adjustLabel,		0, 0);		
 		layout->addWidget(adjustLineEdit,	0, 1);
 
-		layout->addWidget(adjustButton,		0, 2);		
+		layout->addWidget(adjustButton,		0, 2);
 
 		layout->addWidget(caliLabel,		0, 3);		
 		layout->addWidget(caliLineEdit,		0, 4);
@@ -139,53 +143,97 @@ public:
 
 		setLayout(layout);
 	}
-	void UpdataContext(int step){
+	void Init(const std::string& s, const std::string& m, int index){
+		media = s;
+		model = m;
+		pass = index;
+
+		UpdateStepData();
+	}
+	void CheckDirty(){
+		int step = caliLineEdit->text().toInt();
 		if(Value != step){
 			Value = step;
-			caliLineEdit->setText(QString::number(step));
+			SaveStepCalibration(media.c_str(), 
+				(pass == 0) ? 0 : model.c_str(), pass, Value);
 		}
 	}
-	int CheckDirty(int &step){
-		step = caliLineEdit->text().toInt();
-		if(Value != step){
-			return 1;
-		}
 
-		return 0;
-	}
-	QPushButton * GetCaliButton(){
-		return caliButton;
-	}
 private slots:
+	void mediaChanged(const QString& s){
+		media = s.toStdString();
+		UpdateStepData();
+	}
+	void modelChanged(const QString& s){
+		model = s.toStdString();
+		UpdateStepData();
+	}
+	void passChanged(int index){
+		pass = index + 1;
+		UpdateStepData();
+	}
 	void Convert(){
 		int step = caliLineEdit->text().toInt();
 		double adjust = adjustLineEdit->text().toDouble();
 
-		step += (int)(adjust * step / 1024 + 0.5);	
+		int base_step = 0;
+		LoadStepCalibration(media.c_str(), 0, 0, base_step);
 
-		adjustLineEdit->setText(QString::number(0));
+		step += (int)(adjust * base_step / yRes);	
+
+		adjustLineEdit->setText("");
 		caliLineEdit->setText(QString::number(step));
+		qDebug() << "step=" << step << " adjust=" << adjust << " base=" << base_step;
+
+		CheckDirty();
+	}
+	void Print(){
+		CheckDirty();
+		PrintStepCalibration(media.c_str(), 
+			(pass == 0) ? 0 : model.c_str(), pass);
+	} 
+private:
+	void UpdateStepData(){
+		int base_step = 0;
+		LoadStepCalibration(media.c_str(), 
+			(pass == 0) ? 0 : model.c_str(), pass, base_step);
+		if(Value != base_step){
+			Value = base_step;
+			caliLineEdit->setText(QString::number(base_step));
+		}
 	}
 
 private:
+	int yRes;
 	int Dirty;
 	int Value;
 	QLineEdit * caliLineEdit;
 	QPushButton * caliButton;
 	QLineEdit * adjustLineEdit;
 	QPushButton * adjustButton;
+
+private:
+	int pass;
+	std::string media;
+	std::string model;
 };
 
 class StepcalWidget : public QWidget{
 	Q_OBJECT
 public:
 	StepcalWidget (struct MECHAINE* property, QWidget *parent = NULL) :
-	       	QWidget(parent),
-		pass(0)
+	       	QWidget(parent)
 	{
 		QGridLayout * gridLayout = new QGridLayout;
 
+		baseGroupBox = new StepGroupBox(tr("基准步进"), property->yResolution);
+		passGroupBox = new StepGroupBox(tr("精细步进"), property->yResolution);
+
 		char buf[256];
+		int pass = 0;
+		std::string media;
+		std::string model;
+
 		mediaComBox = new QComboBox();
 		if(LoadMediaList(buf) > 0){
 			QString str = buf;
@@ -197,7 +245,11 @@ public:
 			mediaComBox->setCurrentText(QString(buf));
 		}
 		connect(mediaComBox, SIGNAL(currentTextChanged(const QString&)), 
-				this, SLOT(mediaChanged(const QString&)));
+				baseGroupBox, SLOT(mediaChanged(const QString&)));
+		connect(mediaComBox, SIGNAL(currentTextChanged(const QString&)), 
+				passGroupBox, SLOT(mediaChanged(const QString&)));
+
+		baseGroupBox->Init(media, model, 0);
 
 		modelComBox = new QComboBox;
 		if(LoadProductModels(buf) > 0){
@@ -210,22 +262,18 @@ public:
 			modelComBox->setCurrentText(QString(buf));
 		}
 		connect(modelComBox, SIGNAL(currentTextChanged(const QString&)), 
-				this, SLOT(modelChanged(const QString&)));
-		
+				passGroupBox, SLOT(modelChanged(const QString&)));
+
 		passComBox = new QComboBox;
 		for(int j = 1; j < 17; j++){
 			QString text = QString::number(j) + " pass";
 			passComBox->addItem(text);
 		}
 		connect(passComBox, SIGNAL(currentIndexChanged(int)), 
-				this, SLOT(passChanged(int)));
+				passGroupBox, SLOT(passChanged(int)));
 
-		baseGroupBox = new StepGroupBox(tr("基准步进"));
-		passGroupBox = new StepGroupBox(tr("精细步进"));
-		connect(baseGroupBox->GetCaliButton(), SIGNAL(clicked()), 
-				this, SLOT(BaseStepPrint()));
-		connect(passGroupBox->GetCaliButton(), SIGNAL(clicked()), 
-				this, SLOT(PassStepPrint()));
+		pass = passComBox->currentIndex() + 1;
+		passGroupBox->Init(media, model, pass);
 
 		gridLayout->addWidget(mediaComBox,	0, 0, 1, 1);
 
@@ -238,61 +286,7 @@ public:
 
 		setLayout(gridLayout);
 	}
-	void UpdataBaseData(){
-		int base_step = 0;
-		if(LoadStepCalibration(media.c_str(), 0, 0, base_step)){
-			base_step = 0;
-		}
-		baseGroupBox->UpdataContext(base_step);
-	}
-	void UpdataPassData(){
-		int pass_step = 0;
-		if(LoadStepCalibration(media.c_str(), model.c_str(), pass, pass_step)){
-			pass_step = 0;
-		}
-		passGroupBox->UpdataContext(pass_step);
-	};
-	virtual void showEvent(QShowEvent * event){
-		event = event;
-		UpdataBaseData();
-		UpdataPassData();
-	}
-public slots:
-	void mediaChanged(const QString& s){
-		media = s.toStdString();
-		UpdataBaseData();
-		UpdataPassData();
-	}
-	void modelChanged(const QString& s){
-		model = s.toStdString();
-		UpdataPassData();
-	}
-	void passChanged(int index){
-		pass = index + 1;
-		UpdataPassData();
-	}
-	void PassStepPrint()
-	{
-		int pass_step = 0;
-		if(baseGroupBox->CheckDirty(pass_step)){
-			SaveStepCalibration(media.c_str(), model.c_str(), pass, 0);
-		}
-		
-		PrintStepCalibration(media.c_str(), model.c_str(), pass);
-	}
-	void BaseStepPrint()
-	{
-		int base_step = 0;
-		if(baseGroupBox->CheckDirty(base_step)){
-			SaveStepCalibration(media.c_str(), 0, 0, 0);
-		}
-		
-		PrintStepCalibration(media.c_str(), 0, 0);
-	} 
 private:
-	int pass;
-	std::string media;
-	std::string model;
 	StepGroupBox * baseGroupBox;
 	StepGroupBox * passGroupBox;
 
@@ -326,21 +320,21 @@ public:
 
 		setLayout(layout);
 	}
-	void UpdataData(){
+	void UpdateData(){
 		int data[64];
 		if(LoadCalibrationParam(UI_CMD::CMD_CALI_VERTICAL, 0, 0, data) <= 0){
 			memset(data, 0, sizeof(data));
 		}
-		verticalGroup->UpdataContext(data);
+		verticalGroup->UpdateContext(data);
 		if(LoadCalibrationParam(UI_CMD::CMD_CALI_OVERLAP, 0, 0, data) <= 0){
 			memset(data, 0, sizeof(data));
 		}
-		overlapGroup->UpdataContext(data);
+		overlapGroup->UpdateContext(data);
 
 	};
 	virtual void showEvent(QShowEvent * event){
 		event = event;
-		UpdataData();
+		UpdateData();
 	}
  public slots:
 
@@ -411,26 +405,26 @@ public:
 
 		setLayout(gridLayout);
 	}
-	void UpdataData(){
+	void UpdateData(){
 		int data[64];
 		if(LoadCalibrationParam(UI_CMD::CMD_CALI_HORIZON_LEFT, 
 			res, speed, data) <= 0){
 			memset(data, 0, sizeof(data));
 		}
-		leftGroup->UpdataContext(data);
+		leftGroup->UpdateContext(data);
 
 		if(LoadCalibrationParam(UI_CMD::CMD_CALI_HORIZON_RIGHT, 
 			res, speed, data) <= 0){
 			memset(data, 0, sizeof(data));
 		}
-		rightGroup->UpdataContext(data);
+		rightGroup->UpdateContext(data);
 	}
 	void SaveData(){
 	
 	}
 	virtual void showEvent(QShowEvent * event){
 		event = event;
-		UpdataData();
+		UpdateData();
 	}
 	virtual void hideEvent(QHideEvent * event){
 		event = event;
@@ -440,11 +434,11 @@ public slots:
 	void PrintLeftCali(){
 		int data[64];
 		if(leftGroup->CheckDirty(data)){
-			SaveCalibrationParam(UI_CMD::CMD_CALI_HORIZON_RIGHT,
+			SaveCalibrationParam(UI_CMD::CMD_CALI_HORIZON_LEFT,
 				res, speed,  data, leftGroup->Size());
 		}
 
-		PrintCalibration(UI_CMD::CMD_CALI_HORIZON_RIGHT,
+		PrintCalibration(UI_CMD::CMD_CALI_HORIZON_LEFT,
 				res, speed, 0);
 	}
 	void PrintRightCali(){
@@ -460,13 +454,13 @@ public slots:
 	void ResChanged(const QString & text){
 		res = text.toInt();
 		qDebug() << "res changed " << res;
-		UpdataData();
+		UpdateData();
 	}
 	void SpeedChanged(int index){
 		speed = index;
 		//speed = speedComBox->currentIndex();
 		qDebug() << "speed changed " << speed;
-		UpdataData();
+		UpdateData();
 	}
 private:
 	int speed;
@@ -533,26 +527,26 @@ public:
 
 		setLayout(gridLayout);
 	}
-	void UpdataData(){
+	void UpdateData(){
 		int data[64];
 		int cmd = UI_CMD::CMD_CALI_HORIZON_LEFT_SUB | (colorIndex & 0x0F);
 		if(LoadCalibrationParam(UI_CMD(cmd), res, speed, data) <= 0){
 			memset(data, 0, sizeof(data));
 		}
-		leftGroup->UpdataContext(data);
+		leftGroup->UpdateContext(data);
 
 		cmd = UI_CMD::CMD_CALI_HORIZON_RIGHT_SUB | (colorIndex & 0x0F);
 		if(LoadCalibrationParam(UI_CMD(cmd), res, speed, data) <= 0){
 			memset(data, 0, sizeof(data));
 		}
-		rightGroup->UpdataContext(data);
+		rightGroup->UpdateContext(data);
 	}
 	void SaveData(){
 	
 	}
 	virtual void showEvent(QShowEvent * event){
 		event = event;
-		UpdataData();
+		UpdateData();
 	}
 	virtual void hideEvent(QHideEvent * event){
 		event = event;
@@ -580,18 +574,18 @@ public slots:
 	void ResChanged(const QString & text){
 		res = text.toInt();
 		qDebug() << "res changed " << res;
-		UpdataData();
+		UpdateData();
 	}
 	void SpeedChanged(int index){
 		speed = index;
 		//speed = speedComBox->currentIndex();
 		qDebug() << "speed changed " << speed;
-		UpdataData();
+		UpdateData();
 
 	}
 	void ColorChanged(int index){
 		colorIndex = index;
-		UpdataData();
+		UpdateData();
 	}
 private:
 	int speed;
@@ -646,20 +640,20 @@ public:
 
 		setLayout(gridLayout);
 	}
-	void UpdataData(){
+	void UpdateData(){
 		int data[64];
 		int cmd = UI_CMD::CMD_CALI_HORIZON_BIDRECTION;
 		if(LoadCalibrationParam(UI_CMD(cmd), res, speed, data) <= 0){
 			memset(data, 0, sizeof(data));
 		}
-		bidirectionGroup->UpdataContext(data);
+		bidirectionGroup->UpdateContext(data);
 	}
 	void SaveData(){
 	
 	}
 	virtual void showEvent(QShowEvent * event){
 		event = event;
-		UpdataData();
+		UpdateData();
 	}
 	virtual void hideEvent(QHideEvent * event){
 		event = event;
@@ -670,7 +664,7 @@ public slots:
 		int data[64];
 		int cmd = UI_CMD::CMD_CALI_HORIZON_BIDRECTION;
 		if(bidirectionGroup->CheckDirty(data)){
-			SaveCalibrationParam(UI_CMD(cmd), res, speed,  data, 0);
+			SaveCalibrationParam(UI_CMD(cmd), res, speed,  data, bidirectionGroup->Size());
 		}
 
 		PrintCalibration(UI_CMD(cmd), res, speed, 0);
@@ -678,14 +672,14 @@ public slots:
 	void ResChanged(const QString & text){
 		res = text.toInt();
 		qDebug() << "res changed " << res;
-		UpdataData();
+		UpdateData();
 	}
 
 	void SpeedChanged(int index){
 		speed = index;
 		//speed = speedComBox->currentIndex();
 		qDebug() << "speed changed " << speed;
-		UpdataData();
+		UpdateData();
 	}
 private:
 	int speed;
@@ -707,9 +701,10 @@ public:
 
 		toolLayout->addWidget(Tool->GetLeftButton());
 		toolLayout->addWidget(Tool->GetRightButton());
-		//toolLayout->addWidget(Tool->GetHomeButton());
-		//toolLayout->addWidget(Tool->GetUpButton());
-		//toolLayout->addWidget(Tool->GetDownButton());
+		toolLayout->addWidget(Tool->GetOriginButton());
+		toolLayout->addWidget(Tool->GetUpButton());
+		toolLayout->addWidget(Tool->GetDownButton());
+
 		toolLayout->addWidget(Tool->GetPauseButton());
 		toolLayout->addWidget(Tool->GetAbortButton());
 
@@ -752,6 +747,8 @@ public:
 		QPushButton *verticalButton = new QPushButton("Vertical");
 		QPushButton *overlapButton = new QPushButton("Overlap");
 		
+		connect(stepButton, SIGNAL(clicked()), this, SLOT(PrintStepCheck()));
+
 		int x = 0;
 		int y = 0;
 		mainLayout->addWidget(angleButton, y, x++);
@@ -811,6 +808,9 @@ public slots:
 		Tool->GetPauseButton()->setEnabled();
 		Tool->setMoveEnabled(false);
 		messageLabel->setText(msg);
+	}
+	void PrintStepCheck(){
+		PrintCalibration(UI_CMD::CMD_MECHINE_CHECK_STEP, 0, 0, 0);
 	}
 private:
 	QTabWidget * widgetlist;

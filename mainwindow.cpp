@@ -207,7 +207,7 @@ void mainDialog::ProcessPrintStatus()
 		emit printing(info);
 	}else if(s == MOVING){
 		qDebug() << "moving...";
-		emit moving();
+		//emit moving();
 	}else if(s == PAUSE){
 		emit pause();
 	}
@@ -236,6 +236,10 @@ private:
 	QString PrintFiles;
 };
 
+void mainDialog::Flash()
+{
+	SendMotionCmd(UI_CMD::CMD_MOTION_FLASH, 0);
+}
 void mainDialog::Print()
 {
 	QFileDialog *fileDialog = new QFileDialog();
@@ -279,16 +283,6 @@ void mainDialog::Exit(){
 	DestroyPrinter(0);
 	//close();
 	qApp->exit();
-}
-
-void mainDialog::Pause()
-{
-	PrintPause();
-}
-
-void mainDialog::Abort()
-{
-	PrintAbort();
 }
 
 void mainDialog::PowerOff()

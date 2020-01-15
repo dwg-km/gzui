@@ -70,7 +70,7 @@ bool TouchKey::Construct()
 		"7", "8", "9",
 		"4", "5", "6",
 		"1", "2", "3",
-		"0", ".", "<-",
+		"0", ".", "-",
 		"C",  "OK",
 	};
 	
@@ -107,12 +107,13 @@ void TouchKey::onCalculate()
 	QPushButton* button = dynamic_cast<QPushButton*>(sender());//判断有哪一个按钮按下
 	if (button != NULL){
 		QString buttontext = button->text();
-		if (buttontext == "<-"){
-			if (str.length() > 0){
-				str.remove(str.length() - 1, 1);
-			}
-		}
-		else if(buttontext == "C"){
+		//if (buttontext == "<-"){
+		//	if (str.length() > 0){
+		//		str.remove(str.length() - 1, 1);
+		//	}
+		//}
+		//else 
+		if(buttontext == "C"){
 			str="";
 			m_edit->setText("");
 		}else if(buttontext == "."){

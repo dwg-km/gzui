@@ -377,7 +377,10 @@ public:
 	    	QVector<QString> iconpause = {
 	    		"resources/pause.png"
 	    	};
-	    	pauseButton = new iconButton(iconpause);
+		if(pauseButton == NULL){
+	    		pauseButton = new iconButton(iconpause);
+			connect(pauseButton, SIGNAL(clicked()), this, SLOT(Pause()));
+		}
 	}
 	iconButton * GetPauseButton(){
 		return pauseButton;
@@ -386,7 +389,10 @@ public:
 	    	QVector<QString> iconabort = {
 	    		"resources/abort.png"
 	    	};
-	    	abortButton = new iconButton(iconabort);
+		if(abortButton == NULL){
+	    		abortButton = new iconButton(iconabort);
+			connect(abortButton, SIGNAL(clicked()), this, SLOT(Abort()));
+		}
 	}
 	iconButton * GetAbortButton(){
 		return abortButton;
@@ -501,7 +507,8 @@ private slots:
 		MOVE move;
 		move.Axis = AXIS_X;
 		move.Distance = 0;
-		move.Dir = 0;
+		move.Speed = 0;
+		move.Dir = 1;
 
 		SendMotionCmd(UI_CMD::CMD_MOTION_MOVE, &move);
 	}
@@ -509,7 +516,8 @@ private slots:
 		MOVE move;
 		move.Axis = AXIS_X;
 		move.Distance = 0;
-		move.Dir = 1;
+		move.Speed = 0;
+		move.Dir = 0;
 
 		SendMotionCmd(UI_CMD::CMD_MOTION_MOVE, &move);
 	}
@@ -517,6 +525,7 @@ private slots:
 		MOVE move;
 		move.Axis = AXIS_X;
 		move.Distance = 0;
+		move.Speed = 0;
 		move.Dir = 0;
 
 		SendMotionCmd(UI_CMD::CMD_MOTION_MOVE_STOP, &move);
@@ -525,6 +534,7 @@ private slots:
 		MOVE move;
 		move.Axis = AXIS_Y;
 		move.Distance = 0;
+		move.Speed = 0;
 		move.Dir = 0;
 
 		SendMotionCmd(UI_CMD::CMD_MOTION_MOVE, &move);
@@ -533,7 +543,8 @@ private slots:
 		MOVE move;
 		move.Axis = AXIS_Y;
 		move.Distance = 0;
-		move.Dir = 0;
+		move.Speed = 0;
+		move.Dir = 1;
 
 		SendMotionCmd(UI_CMD::CMD_MOTION_MOVE, &move);
 	}
@@ -541,6 +552,7 @@ private slots:
 		MOVE move;
 		move.Axis = AXIS_Y;
 		move.Distance = 0;
+		move.Speed = 0;
 		move.Dir = 0;
 
 		SendMotionCmd(UI_CMD::CMD_MOTION_MOVE_STOP, &move);
@@ -549,6 +561,7 @@ private slots:
 		MOVE move;
 		move.Axis = AXIS_X;
 		move.Distance = 10;
+		move.Speed = 0;
 		move.Dir = 0;
 
 		SendMotionCmd(UI_CMD::CMD_MOTION_MOVETO, &move);
@@ -556,8 +569,13 @@ private slots:
 	void Measure(){
 		MotionThread * measure = new MotionThread(UI_CMD::CMD_MOTION_MEASURE_MEDIA, 0);
 		measure->start();
-
-		qDebug() << "measure";
+	}
+	void Pause(){
+		PrintPause();
+	}
+	
+	void Abort(){
+		PrintAbort();
 	}
 };
 
