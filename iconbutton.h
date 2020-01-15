@@ -36,11 +36,9 @@ class iconButton :
 			 
 public:
 	
-	iconButton( QString FileName, int xnum  = 1,  QWidget *parent = 0,
-					                int ynum = 1, QString bkGrnd = NULL);
-	iconButton(QVector<QString> &list, QWidget *parent = 0, QString bkGrnd = NULL);
+	iconButton(QVector<QString> &list, QWidget *parent = NULL);
 				 
-	QList<QPixmap> *getPixmapList(void){return &pixmatpList;}
+	//QList<QPixmap> *getPixmapList(void){return &pixmatpList;}
 	void setcurIndex(int index){curIndex = index; update();}
 	int getcurIndex(void){return curIndex;}
 	
@@ -62,6 +60,13 @@ public:
 		QPushButton::setEnabled(true);
 #endif
 	}
+	int SetStatus(int s){
+		if(s < pixmatpList.size()){
+			status = s;
+			update();
+		}
+		return 0;
+	}
 
 private:
 
@@ -71,9 +76,10 @@ private:
 						     
 protected:
 	
-	QIcon icon;
-	QList<QPixmap> pixmatpList;
-	
+	//QIcon icon;
+	QVector<QVector<QPixmap> > pixmatpList;
+
+	int status;	
 	int curIndex;
 signals:
 	void keyPressed(void);

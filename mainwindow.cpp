@@ -140,6 +140,7 @@ void mainDialog::ProcessPrintStatus()
 	if(window != this){
 
 	}
+
 	static STATUS  oldstatus = {(unsigned int)~0};
 
 	STATUS  status;
@@ -168,6 +169,7 @@ void mainDialog::ProcessPrintStatus()
 
 	if(s == READY){
 		Tool->setMoveEnabled(true);
+		Tool->GetNetworkButton()->SetStatus(0);
 		
 		INK_PUMP * pump = (INK_PUMP*)&status;
 		if(memcpy(&InkPump, pump, sizeof(INK_PUMP))){
@@ -209,6 +211,9 @@ void mainDialog::ProcessPrintStatus()
 	}else if(s == PAUSE){
 		emit pause();
 	}
+	//if(s == REMOTE){
+	//	Tool->GetNetworkButton()->SetStatus(2);
+	//}
 
 	oldstatus.error_code = status.error_code;
 }

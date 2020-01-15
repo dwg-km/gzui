@@ -84,6 +84,7 @@ public:
 		toolLayout->addWidget(Tool->GetMenuButton());
 		toolLayout->addWidget(Tool->GetPauseButton());
 		toolLayout->addWidget(Tool->GetAbortButton());
+		toolLayout->addWidget(Tool->GetNetworkButton());
 		toolLayout->addWidget(Tool->GetPoweroffButton());
 		toolLayout->addWidget(Tool->GetExitButton());
 

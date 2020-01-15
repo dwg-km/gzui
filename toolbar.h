@@ -23,7 +23,6 @@
 	}
 */
 
-
 class MotionThread : public QThread{
 public:
 	MotionThread(UI_CMD cmd, MOVE * move){
@@ -90,6 +89,8 @@ private:
 	iconButton * pauseButton;
 	iconButton * exitButton;
 	iconButton * saveButton;
+	iconButton * networkButton;
+
 
 	iconButton * nextButton;
 	iconButton * previousButton;
@@ -131,6 +132,7 @@ public:
 		nextButton = NULL;
 		previousButton = NULL;
 		saveButton = NULL;
+		networkButton = NULL;
 		
 		printButton = NULL;
 		measureButton = NULL;
@@ -176,6 +178,7 @@ public:
 		AddNozzleButton();
 		AddOriginButton();
 
+		AddNetworkButton();
 
 		AddWaveButton();
 	}
@@ -480,6 +483,17 @@ public:
 	}
 	iconButton * GetFlashButton(){
 		return flashButton;
+	}
+	void AddNetworkButton(){
+		QVector<QString> iconnetwork = {
+			"resources/internet.png",
+			"resources/offline.png",
+			"resources/user.png"
+		};
+		networkButton = new iconButton(iconnetwork);
+	}
+	iconButton * GetNetworkButton(){
+		return networkButton;
 	}
 
 private slots:

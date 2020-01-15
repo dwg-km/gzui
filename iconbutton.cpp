@@ -7,59 +7,34 @@
 
 
 #include "iconbutton.h"
-
-iconButton::iconButton( QString FileName, int xnum , QWidget *parent, 
-		int ynum, QString bkGrnd)
-#if WITH_QLABEL
-	: QLabel(parent),
-#else
-	: QPushButton(parent), curIndex(0)
-#endif
-{
-	QPixmap pixmap(FileName);
-	
-	for (int cnt = 0; cnt < xnum; ++cnt)
-	{
-		for (int y = 0; y < ynum; ++ y)
-		{
-			pixmatpList.push_back( pixmap.copy(cnt * (pixmap.width() / xnum),
-						y * (pixmap.height() / ynum),
-						pixmap.width() / xnum ,
-						pixmap.height() / ynum));
-		}
-	}
-	
-	if (bkGrnd != NULL)
-		background  = new QPixmap(bkGrnd);
-	else
-		background = NULL;
-	setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed	);
-}
  
-iconButton::iconButton(QVector<QString> &list, QWidget *parent, QString bkGrnd)
+iconButton::iconButton(QVector<QString> &list, QWidget *parent)
 #if WITH_QLABEL
 	: QLabel(parent), 
 #else
-	: QPushButton(parent), curIndex(0)
+	: QPushButton(parent), curIndex(0), status(0)
 #endif
 {
-	setPixmapList(list);
 	setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
-	if (bkGrnd != NULL)
-		background  = new QPixmap(bkGrnd);
-	else
-		background = NULL;
 
-	const QImage image(list[0]);
-	icon = QPixmap::fromImage(image);
-	pixmatpList.push_back( 
-		icon.pixmap(QSize(60, 60), QIcon::Selected, QIcon::Off));
-	pixmatpList.push_back( 
-		icon.pixmap(QSize(60, 60), QIcon::Disabled, QIcon::Off));
+	QVector<QString>::iterator iter;
+	for (iter = list.begin(); iter != list.end(); iter++){
+		QVector<QPixmap> pixel;
+		QIcon icon = QPixmap::fromImage(QImage(*iter));
+		pixel.push_back( 
+			icon.pixmap(QSize(60, 60), QIcon::Active,  QIcon::Off));
+		pixel.push_back( 
+			icon.pixmap(QSize(60, 60), QIcon::Selected, QIcon::Off));
+		pixel.push_back( 
+			icon.pixmap(QSize(60, 60), QIcon::Disabled, QIcon::Off));
+
+		pixmatpList.push_back(pixel);
+	}
 }
  
 void iconButton::setPixmapList(QVector<QString> &list)
 {
+	/*
 	if (list.size() <= 0)
 		return;
 	pixmatpList.clear();
@@ -69,13 +44,14 @@ void iconButton::setPixmapList(QVector<QString> &list)
 	{
 		pixmatpList.push_back(QPixmap(*pos));
 	}
+	*/
 }
  
 #ifndef	WITH_QLABEL
 void iconButton::paintEvent ( QPaintEvent * event)
 {
 	QPainter painter(this);
-	painter.drawPixmap(event->rect(), pixmatpList[curIndex]);
+	painter.drawPixmap(event->rect(), pixmatpList[status][curIndex]);
 }
 #endif
 
@@ -94,7 +70,7 @@ void iconButton::leaveEvent(QEvent *event)
 void iconButton::mousePressEvent(QMouseEvent *event)
 {
 #if WITH_QLABEL
-	setPixmap(pixmatpList[2]);
+	setPixmap(pixmatpList[status][2]);
 	update();
 #else	
 	curIndex = 2;
@@ -107,7 +83,7 @@ void iconButton::mousePressEvent(QMouseEvent *event)
 void iconButton::mouseReleaseEvent(QMouseEvent *event)
 {
 #if WITH_QLABEL
-	setPixmap(pixmatpList[0]);
+	setPixmap(pixmatpList[status][0]);
 	update();
 #else	
 	curIndex = 1;
@@ -119,7 +95,6 @@ void iconButton::mouseReleaseEvent(QMouseEvent *event)
  
 QSize iconButton::sizeHint() const
 {
-	return background != NULL? QSize(background->width(), background->height()):
-		QSize(pixmatpList[0].width(), pixmatpList[0].height());
+	return QSize(pixmatpList[status][0].width(), pixmatpList[status][0].height());
 }
 
