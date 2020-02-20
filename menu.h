@@ -124,6 +124,7 @@ public:
 		widthLineEdit = new DoubleLineEdit;
 		offsetLineEdit = new DoubleLineEdit;
 
+
 		typeBox->addItem("无彩条");
 		typeBox->addItem("左侧彩条");
 		typeBox->addItem("右侧彩条");
@@ -144,9 +145,8 @@ public:
 		typeBox->setCurrentIndex(Strip.Position);
 
 		widthLineEdit->setText(QString::number(Strip.Width));
-	
 		offsetLineEdit->setText(QString::number(Strip.Offset));
-	}
+		}
 	void LayoutFeatherCfg(){
 		featherBox = new QGroupBox(tr("羽化"));
 
