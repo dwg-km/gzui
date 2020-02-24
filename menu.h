@@ -399,12 +399,12 @@ public:
 		widgetlist =  new QTabWidget;
 		
 		AddBaseSettingWidget();
-		AddInkWidget();
+		//AddInkWidget();
 		AddMechineWidget();
-		AddCleanWidget();
-		AddUVWidget();
-		AddAdvanceWidget();
-		AddWarningWidget();
+		//AddCleanWidget();
+		//AddUVWidget();
+		//AddAdvanceWidget();
+		//AddWarningWidget();
 
 		Layout(widgetlist);
 	}
