@@ -604,6 +604,7 @@ class BiDirectionWidget : public QWidget{
 	Q_OBJECT
 public:
 	BiDirectionWidget(struct MECHAINE* property, QWidget *parent = NULL) : QWidget(parent){
+		property = property; // no warning
 
 		resComBox = new QComboBox;
 		speedComBox = new QComboBox;

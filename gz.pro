@@ -12,6 +12,7 @@ HEADERS       = mainwindow.h \
 		menu.h \
 		cali.h \
 		motion.h \
+		wave.h \
 		iconbutton.h\
 		toolbar.h \
 		UiTemplate.h \
