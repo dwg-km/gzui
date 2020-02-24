@@ -215,7 +215,6 @@ private:
 	QComboBox * indexComBox;
 };
 
-
 class WaveDialog : public UiTemplate
 {
 	Q_OBJECT
@@ -233,12 +232,10 @@ public:
 		widgetlist =  new QTabWidget;
 
 		AddTempWaveWidget();
-		AddBaseVoltageWaveWidget();
+		AddVoltageWidget();
 		AddPulseWaveWidget();
 
 		Layout(widgetlist);
-
-		
 	}
 	void AddTempWaveWidget(){
 		int colnum = property.PrinterColorNum;
@@ -258,7 +255,7 @@ public:
 
 		widgetlist->addTab(TempWidget, "Temp");
 	}
-	void AddBaseVoltageWaveWidget(){
+	void AddVoltageWidget(){
 		int colnum = property.PrinterColorNum;
 		int rownum = property.PrinterGroupNum;
 
@@ -274,32 +271,9 @@ public:
 
 		voltageWidget = new QWidget;
 		voltageWidget->setLayout(layout);
-		widgetlist->addTab(voltageWidget, "BaseVoltage");
-	}
-	void AddVoltageWaveWidget(){
-		int colnum = property.PrinterColorNum;
-		int rownum = property.PrinterGroupNum;
-
-		//RateTimeGroup * basevol = new RateTimeGroup("基准电压", colnum, rownum, 2, property.PrintColor);
-		//RateTimeGroup * adjustvol = new RateTimeGroup("矫正电压", colnum, rownum, 2, property.PrintColor);
-		//RateTimeGroup * realvol = new RateTimeGroup("实时电压", colnum, rownum, 2, property.PrintColor);
-
-		//RateTimeGroup * basevol = new RateTimeGroup("基准电压", colnum, rownum, 2, color);
-		RateTimeGroup * adjustvol = new RateTimeGroup("矫正电压", colnum, rownum, 3, property.PrintColor);
-		RateTimeGroup * realvol = new RateTimeGroup("实时电压", colnum, rownum, 3, property.PrintColor);
-		realvol->setEnabled(false);
-
-		QVBoxLayout *layout = new QVBoxLayout;
-		//layout->addWidget(basevol);
-		layout->addWidget(adjustvol);
-		layout->addWidget(realvol);
-
-		QWidget * widget = new QWidget;
-		widget->setLayout(layout);
-		widgetlist->addTab(widget, "Voltage");
+		widgetlist->addTab(voltageWidget, "Voltage");
 	}
 	void AddPulseWaveWidget(){
-
 		QWidget * widget = new waveWidget(&property);
 
 		widgetlist->addTab(widget, "Wave");
