@@ -1,5 +1,9 @@
-#ifndef WAVE_H
+#ifndef WAVE_Hi
 #define	WAVE_H
+
+#include "command.h"
+#include "ui_interface.h"
+#include "APIDataInterface.hpp"
 
 #include <QPainter>
 #include "UiTemplate.h"
@@ -29,7 +33,7 @@ public:
 				for(int b = 0; b < z; b++){
 					QLineEdit *lineEdit = new QLineEdit(this);
 					horLayout->addWidget(lineEdit, (z + 1) * j + b + 1, i);
-					//matrix.push_back(lineEdit);
+					matrix.push_back(lineEdit);
 				}
 			}
 		}
@@ -72,13 +76,72 @@ public:
 	int SetEnabled(){
 	
 	}
-private:
+	void save(){
+	    	for(int i = 0; i < rownum; i++)
+			for( int j = 0; j < colnum; j++){
+				int index = i * rownum + j;
+				Value.push_back(matrix[index]->text().toFloat());
+			}
+	}
+public:
 	int colnum;
 	int rownum;
-	QVector<int> Value;
+	QVector<float> Value;
 	QVector<QLineEdit *> matrix;
 };
 
+class TempWaveWidget : public QWidget{
+	public:
+		TempWaveWidget(struct MECHAINE & property){
+				
+			int colnum = property.PrinterColorNum;   //列数
+			int rownum = property.PrinterGroupNum; //行数
+	        	temp = new RateTimeGroup("设置温度", colnum, rownum, 1, property.PrintColor);
+		        realtemp = new RateTimeGroup("实时温度", colnum, rownum, 1, property.PrintColor);
+			realtemp->setEnabled(false);
+			layout = new QVBoxLayout;
+			layout->addWidget(temp);
+  			layout->addWidget(realtemp);
+			setLayout(layout);
+		 	
+		}	
+//		void save(){
+  //    			temp.save();
+//			SendHbCmd(CMD_HB_TEMP_HEATD, 0 ,temp.Value);		
+		
+public:
+	RateTimeGroup * temp;
+	RateTimeGroup * realtemp;
+	QVBoxLayout *layout;
+};
+class BaseVoltageWaveWidget : public QWidget {
+public :
+	BaseVoltageWaveWidget(struct MECHAINE &property){
+		int colnum = property.ColumnPerHead;
+		int rownum = property.PrinterGroupNum;
+
+		//RateTimeGroup * basevol = new RateTimeGroup("基准电压", colnum, rownum, 2, property.PrintColor);
+		//RateTimeGroup * adjustvol = new RateTimeGroup("矫正电压", colnum, rownum, 2, property.PrintColor);
+		//RateTimeGroup * realvol = new RateTimeGroup("实时电压", colnum, rownum, 2, property.PrintColor);
+
+		char * color = "K;C;M;Y;Lm;Lc;Lk;Ly";
+		colnum = 8;
+	        basevol = new RateTimeGroup("基准电压", colnum, rownum, 3, color);
+		//RateTimeGroup * adjustvol = new RateTimeGroup("矫正电压", colnum, rownum, 2, color);
+		//RateTimeGroup * realvol = new RateTimeGroup("实时电压", colnum, rownum, 2, color);
+		//realvol->setEnabled(false);
+
+		QVBoxLayout *layout = new QVBoxLayout;
+		layout->addWidget(basevol);
+		//layout->addWidget(adjustvol);
+		//layout->addWidget(realvol);
+
+		QWidget * widget = new QWidget;
+		setLayout(layout);
+	}
+public :
+	RateTimeGroup * basevol;
+};
 class pulseWidget : public QWidget {
 public:
 	pulseWidget(QWidget *parent = NULL) : QWidget(parent)
@@ -91,7 +154,7 @@ public:
 
 		int p0 = 90;
 		int p1 = 70;
-		int p2 = 50;
+		int p2 = 50; 
 
 		int d0 = 60;
 		int d1 = 50;
@@ -155,10 +218,11 @@ public:
 private:
 };
 
-class waveWidget : public QWidget {
+class WaveWidget : public QWidget {
 public:
-	waveWidget(struct MECHAINE * p, QWidget *parent = NULL) : QWidget(parent), property(p)
+	WaveWidget(struct MECHAINE * property )
 	{
+
 		QGridLayout * layout = new QGridLayout;
 
 		pulseWidget * pulse = new pulseWidget;
@@ -174,7 +238,7 @@ public:
 			}
 		}
 		QPushButton * format = new QPushButton("copy to all head");
-		RateTimeGroup * wave = new RateTimeGroup("脉宽", 3, 1, 3, name);
+		 wave = new RateTimeGroup("脉宽", 3, 1, 3, name);
 
 		layout->addWidget(pulse, 0, 0);
 		layout->addWidget(indexComBox, 1, 0, 1, 1);
@@ -183,8 +247,12 @@ public:
 
 		setLayout(layout);
 	}
-private:
-	struct MECHAINE * property;
+
+
+
+public:
+	
+        RateTimeGroup * wave ;
 };
 
 
@@ -197,21 +265,44 @@ public:
 		toolLayout->addWidget(Tool->GetSaveButton());
 		toolLayout->addWidget(Tool->GetUpdateButton());
 		connect(Tool->GetMenuButton(), SIGNAL(clicked()), this, SLOT(close()));
-
+		connect(Tool->GetSaveButton(),SIGNAL(clicked()),this, SLOT(save()));
 		GetPrinterProperty(&property);
+
+		waveWidget = new WaveWidget(&property);
+	        tempWidget = new TempWaveWidget(property);
+ 		baseVoltageWidget = new BaseVoltageWaveWidget(property);
 
 		widgetlist =  new QTabWidget;
 
+		widgetlist->addTab(tempWidget, "Temp");
+		widgetlist->addTab(baseVoltageWidget, "BaseVoltage");
+		widgetlist->addTab(waveWidget, "Wave");
 		//AddMachineCheckWidget();
 		//AddBidirectonWaveWidget();
 		
-		AddTempWaveWidget();
-		AddBaseVoltageWaveWidget();
+		//AddTempWaveWidget();
+		//AddBaseVoltageWaveWidget();
 		//AddVoltageWaveWidget();
-		AddPulseWaveWidget();
+		//AddPulseWaveWidget();
 
 		Layout(widgetlist);
 	}
+	virtual void showEvent(QShowEvent * event){
+		float data[256];
+		SendHbCmd(CMD_HB_TEMP_HEAT, 0, data, 32);
+		
+		int colnum = property.PrinterColorNum;
+		int rownum = property.PrinterGroupNum;
+		int index =0;
+		QString str;
+   		for(int i = 0; i < rownum; i++)
+			for(int j = 0; j < colnum; j++)
+			{
+			        index =  i * colnum + j ;
+				str =QString::number( data[i]);
+ 				tempWidget->temp->matrix[index]->setText(str);
+			} 
+	 }
 	/*
 	void AddMachineCheckWidget(){
 		QPushButton *angleButton = new QPushButton("Angle");
@@ -227,52 +318,12 @@ public:
 		mainLayout->addWidget(overlapButton, y, x++);
 
 		QWidget * widget = new QWidget;
-		widget->setLayout(mainLayout);
+		widget->setLnn/save
+nnnnayout(mainLayout);
 
 		widgetlist->addTab(widget, "Mechanical");
 	}
 	*/
-	void AddTempWaveWidget(){
-		int colnum = property.ColumnPerHead;
-		int rownum = property.PrinterGroupNum;
-
-		RateTimeGroup * temp = new RateTimeGroup("设置温度", colnum, rownum, 1, property.PrintColor);
-		RateTimeGroup * realtemp = new RateTimeGroup("实时温度", colnum, rownum, 1, property.PrintColor);
-		realtemp->setEnabled(false);
-
-		QWidget * widget = new QWidget;
-		QVBoxLayout *layout = new QVBoxLayout;
-		layout->addWidget(temp);
-		layout->addWidget(realtemp);
-
-		widget->setLayout(layout);
-
-		widgetlist->addTab(widget, "Temp");
-	}
-	void AddBaseVoltageWaveWidget(){
-		int colnum = property.ColumnPerHead;
-		int rownum = property.PrinterGroupNum;
-
-		//RateTimeGroup * basevol = new RateTimeGroup("基准电压", colnum, rownum, 2, property.PrintColor);
-		//RateTimeGroup * adjustvol = new RateTimeGroup("矫正电压", colnum, rownum, 2, property.PrintColor);
-		//RateTimeGroup * realvol = new RateTimeGroup("实时电压", colnum, rownum, 2, property.PrintColor);
-
-		char * color = "K;C;M;Y;Lm;Lc;Lk;Ly";
-		colnum = 8;
-		RateTimeGroup * basevol = new RateTimeGroup("基准电压", colnum, rownum, 3, color);
-		//RateTimeGroup * adjustvol = new RateTimeGroup("矫正电压", colnum, rownum, 2, color);
-		//RateTimeGroup * realvol = new RateTimeGroup("实时电压", colnum, rownum, 2, color);
-		//realvol->setEnabled(false);
-
-		QVBoxLayout *layout = new QVBoxLayout;
-		layout->addWidget(basevol);
-		//layout->addWidget(adjustvol);
-		//layout->addWidget(realvol);
-
-		QWidget * widget = new QWidget;
-		widget->setLayout(layout);
-		widgetlist->addTab(widget, "BaseVoltage");
-	}
 	void AddVoltageWaveWidget(){
 		int colnum = property.ColumnPerHead;
 		int rownum = property.PrinterGroupNum;
@@ -297,15 +348,42 @@ public:
 		widget->setLayout(layout);
 		widgetlist->addTab(widget, "Voltage");
 	}
-	void AddPulseWaveWidget(){
 
-		QWidget * widget = new waveWidget(&property);
+public slots:
 
-		widgetlist->addTab(widget, "Wave");
+	void save(){
+		int index = widgetlist->currentIndex();
+ 		switch(index){
+			case 0:
+			{
+				tempWidget->temp->save();
+				int const size = tempWidget->temp->Value.size();
+				float data[size];
+				for(int i = 0; i < size; i++){
+					data[i] = tempWidget->temp->Value[i];
+				}
+				SendHbCmd(CMD_HB_TEMP_HEAT, 1, data, size);
+				break;
+			}
+			case 1:
+				baseVoltageWidget->basevol->save();
+			//	SendHbCmd(CMD_HB_VOL_BASE, 0 ,&baseVoltageWidget->basevol>Value[0]);
+				//SendHbCmd(CMD_HB_VOL_BASE, 0 ,&baseVoltageWidget->basevol>Value[0]);
+				break;
+			case 2:
+				//waveWidget->
+//				SendHbCmd(CMD_HB_XXXX, 0 ,tempWidget->temp.Value);
+				break;
+			default:
+				break;
+		}
+						
 	}
 private:
+	TempWaveWidget *tempWidget;
+	WaveWidget * waveWidget;
+  	BaseVoltageWaveWidget * baseVoltageWidget;
 	QTabWidget * widgetlist;
 	struct MECHAINE property;
 };
-
 #endif

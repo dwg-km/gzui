@@ -18,7 +18,7 @@
 #include "command.h"
 #include "APIDataInterface.hpp"
 
-extern const char * GetPmVersion();
+extern const char* GetVertion();
 
 extern int CreatePrinter(char* path);
 extern int DestroyPrinter(void *handle);
@@ -34,6 +34,7 @@ extern int GetPrinterProperty(struct MECHAINE* property);
 extern int SetPrinterParam(UI_CMD cmd, void* param);
 extern int GetPrinterParam(UI_CMD cmd, void* param);
 
+extern int SendHbCmd(UI_CMD cmd, int dir, void * param, unsigned int len);
 extern int SendMotionCmd(UI_CMD cmd, void* parament);
 
 extern int UpdateCalibrationParam();

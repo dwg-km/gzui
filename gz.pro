@@ -11,6 +11,7 @@ TEMPLATE      = app
 HEADERS       = mainwindow.h \
 		menu.h \
 		cali.h \
+		motion.h \
 		iconbutton.h\
 		toolbar.h \
 		UiTemplate.h \
