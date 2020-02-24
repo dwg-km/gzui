@@ -41,7 +41,7 @@ void InkWidget::paintEvent(QPaintEvent *e)
 	qDebug() << "paint ink event";
 
 	int h = 0;
-	const int yCoord = height() * 0.1;
+	//const int yCoord = height() * 0.1;
 	const int rect_width = width() / ColorNum * 3 / 4;
 	const int rect_height = height() * 0.9;
 
@@ -141,7 +141,7 @@ void mainDialog::ProcessPrintStatus()
 
 	}
 
-	static STATUS  oldstatus = {(unsigned int)~0};
+	static STATUS  oldstatus = {(unsigned int)~0, {0}};
 
 	STATUS  status;
 	GetPrinterStatus(&status);
@@ -150,7 +150,7 @@ void mainDialog::ProcessPrintStatus()
 	}
 	/* if the status is same to the last one, return without do anything */
 	int s = status.error_code >> 24;
-	int os = oldstatus.error_code >> 24;
+	//int os = oldstatus.error_code >> 24;
 	if(s < 24){
 		statusLabel->setText(StatusLabel[s]);
 	}else{
@@ -238,7 +238,8 @@ private:
 
 void mainDialog::Flash()
 {
-	SendMotionCmd(UI_CMD::CMD_MOTION_FLASH, 0);
+	//SendMotionCmd(UI_CMD::CMD_MOTION_FLASH, 0);
+	SendHbCmd(UI_CMD::CMD_MOTION_FLASH, 0, 0, 0);
 }
 void mainDialog::Print()
 {

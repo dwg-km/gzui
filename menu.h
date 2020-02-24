@@ -13,6 +13,7 @@
 #include "wave.h"
 #include "cali.h"
 #include "toolbar.h"
+#include "motion.h"
 #include "UiTemplate.h"
 
 #include "lineedit.h"
@@ -124,6 +125,7 @@ public:
 		widthLineEdit = new DoubleLineEdit;
 		offsetLineEdit = new DoubleLineEdit;
 
+
 		typeBox->addItem("无彩条");
 		typeBox->addItem("左侧彩条");
 		typeBox->addItem("右侧彩条");
@@ -144,9 +146,8 @@ public:
 		typeBox->setCurrentIndex(Strip.Position);
 
 		widthLineEdit->setText(QString::number(Strip.Width));
-	
 		offsetLineEdit->setText(QString::number(Strip.Offset));
-	}
+		}
 	void LayoutFeatherCfg(){
 		featherBox = new QGroupBox(tr("羽化"));
 
@@ -349,6 +350,7 @@ public:
 	{
 		caliDialog = new CaliDialog();
 		waveDialog = new WaveDialog();
+		motionDialog = new MotionDialog();
 
 		statusLabel->setText("Menu");
 
@@ -369,8 +371,9 @@ public:
 
 		connect(Tool->GetCaliButton(), SIGNAL(clicked()), caliDialog, SLOT(show()));
 		connect(Tool->GetWaveButton(), SIGNAL(clicked()), waveDialog, SLOT(show()));
+		connect(Tool->GetBackupButton(),SIGNAL(clicked()), motionDialog, SLOT(show()));
 
-		connect(Tool->GetBackupButton(),SIGNAL(clicked()), this, SLOT(Backup()));
+		//connect(Tool->GetBackupButton(),SIGNAL(clicked()), this, SLOT(Backup()));
 		connect(Tool->GetUpdateButton(),SIGNAL(clicked()), this, SLOT(Update()));
 
 		connect(parent, SIGNAL(ready()), caliDialog, SLOT(SetReady()));
@@ -447,6 +450,7 @@ private:
 
 	CaliDialog * caliDialog;
 	WaveDialog * waveDialog;
+	MotionDialog * motionDialog;
 };
 
 #endif
