@@ -62,14 +62,16 @@ public:
 			}
 		}
 	}
+ 
 	int CheckDirty(float * data){
 		int dirty = 0;
 		for(int j = 0; j < rownum; j++){
 			for(int i = 0; i < colnum; i++){
 				for(int b = 0; b < block; b++){
 					int index = j * colnum * block + i * block + b;
-					int value = matrix[index]->text().toInt();
-					data[index] = Value[index];
+      					float value = matrix[index]->text().toFloat();
+					data[index] = value;
+					qDebug() << "data[" << index << "]=" << value << "; Value=" << Value[index];
 					if(Value[index] != value){
 						dirty = 1;
 					}
@@ -85,7 +87,7 @@ public:
 	int SetEnabled(){
 	
 	}
-private:
+public:
 	int colnum;
 	int rownum;
 	int block;
@@ -115,6 +117,7 @@ public:
 		setLayout(layout);
 	}
 	virtual void showEvent(QShowEvent * event){
+		qDebug() << "temp show event";
 		event = event;
 		GetRealTemp();
 		GetTargetTemp();
@@ -122,16 +125,19 @@ public:
 	virtual void hideEvent(QHideEvent * event){
 		event = event;
 		qDebug() << "temp hide event";
+		float a  = this->RealTempGroup->matrix[0]->text().toFloat();
+		qDebug()<<  a;
 		float temp[64];	
-		if(RealTempGroup->CheckDirty(temp)){
+		if(TargetTempGroup->CheckDirty(temp)){
+			qDebug() << "temp is dirty";
 			QMessageBox msgBox;
-			msgBox.setText("The document has been modified.");
+			msgBox.setText("The  temp document has been modified.");
 			msgBox.setInformativeText("Do you want to save your changes?");
 			msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
 			msgBox.setDefaultButton(QMessageBox::Save);
 			int ret = msgBox.exec();
 			if(ret == QMessageBox::Save){
-				SendHbCmd(CMD_HB_TEMP_HEAT, 1, temp, RealTempGroup->Size());
+				SendHbCmd(CMD_HB_TEMP_TARGET, 1, temp, TargetTempGroup->Size());
 			}
 		}
 	}
@@ -139,13 +145,13 @@ private:
 	void GetTargetTemp(){
 		float temp[64];	
 		int len = property.PrinterGroupNum * property.PrinterColorNum;
-		SendHbCmd(CMD_HB_TEMP_TAERGET, 0, temp, len);
+		SendHbCmd(CMD_HB_TEMP_TARGET, 0, temp, len);
 		TargetTempGroup->UpdataContext(temp);
 	}
 	void GetRealTemp(){
 		float temp[64];	
 		int len = property.PrinterGroupNum * property.PrinterColorNum;
-		SendHbCmd(CMD_HB_TEMP_HEAT, 0, temp, len);
+		SendHbCmd(CMD_HB_TEMP_REAL, 0, temp, len);
 		RealTempGroup->UpdataContext(temp);
 	}
 public slots:
@@ -153,7 +159,7 @@ public slots:
 		qDebug() << "save temp param";
 		float temp[64];	
 		if(TargetTempGroup->CheckDirty(temp)){
-			SendHbCmd(CMD_HB_TEMP_HEAT, 1, temp, TargetTempGroup->Size());
+			SendHbCmd(CMD_HB_TEMP_TARGET, 1, temp, TargetTempGroup->Size());
 		}	
 	}
 private:
@@ -193,7 +199,7 @@ public :
 		float temp[128];	
 		if(baseVoltageGroup->CheckDirty(temp) || adjustVoltageGroup->CheckDirty(temp)){
 			QMessageBox msgBox;
-			msgBox.setText("The document has been modified.");
+			msgBox.setText("The volage  document has been modified.");
 			msgBox.setInformativeText("Do you want to save your changes?");
 			msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
 			msgBox.setDefaultButton(QMessageBox::Save);
@@ -357,7 +363,7 @@ public:
 		float temp[128];	
 		if(waveGroup->CheckDirty(temp)){
 			QMessageBox msgBox;
-			msgBox.setText("The document has been modified.");
+			msgBox.setText("The wave  document has been modified.");
 			msgBox.setInformativeText("Do you want to save your changes?");
 			msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
 			msgBox.setDefaultButton(QMessageBox::Save);
