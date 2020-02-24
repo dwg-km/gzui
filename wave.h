@@ -1,6 +1,7 @@
 #ifndef WAVE_H
 #define	WAVE_H
 
+#include <QMessageBox>
 #include <QGroupBox>
 #include <QComboBox>
 #include <QPainter>
@@ -92,6 +93,152 @@ private:
 	QVector<QLineEdit *> matrix;
 };
 
+class TempWidget : public QWidget {
+	Q_OBJECT
+public:
+	TempWidget(struct MECHAINE &p, QWidget * parent = NULL) : 
+		QWidget(parent),
+		property(p)
+	{			
+		int colnum = property.PrinterColorNum;
+		int rownum = property.PrinterGroupNum;
+
+		TargetTempGroup = new RateTimeGroup("设置温度", colnum, rownum, 1, property.PrintColor);
+
+		RealTempGroup = new RateTimeGroup("实时温度", colnum, rownum, 1, property.PrintColor);
+		RealTempGroup->setEnabled(false);
+
+		QVBoxLayout *layout = new QVBoxLayout;
+		layout->addWidget(TargetTempGroup);
+		layout->addWidget(RealTempGroup);
+
+		setLayout(layout);
+	}
+	virtual void showEvent(QShowEvent * event){
+		event = event;
+		GetRealTemp();
+		GetTargetTemp();
+	}
+	virtual void hideEvent(QHideEvent * event){
+		event = event;
+		qDebug() << "temp hide event";
+		float temp[64];	
+		if(RealTempGroup->CheckDirty(temp)){
+			QMessageBox msgBox;
+			msgBox.setText("The document has been modified.");
+			msgBox.setInformativeText("Do you want to save your changes?");
+			msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+			msgBox.setDefaultButton(QMessageBox::Save);
+			int ret = msgBox.exec();
+			if(ret == QMessageBox::Save){
+				SendHbCmd(CMD_HB_TEMP_HEAT, 1, temp, RealTempGroup->Size());
+			}
+		}
+	}
+private:
+	void GetTargetTemp(){
+		float temp[64];	
+		int len = property.PrinterGroupNum * property.PrinterColorNum;
+		SendHbCmd(CMD_HB_TEMP_TAERGET, 0, temp, len);
+		TargetTempGroup->UpdataContext(temp);
+	}
+	void GetRealTemp(){
+		float temp[64];	
+		int len = property.PrinterGroupNum * property.PrinterColorNum;
+		SendHbCmd(CMD_HB_TEMP_HEAT, 0, temp, len);
+		RealTempGroup->UpdataContext(temp);
+	}
+public slots:
+	void SaveParam(){
+		qDebug() << "save temp param";
+		float temp[64];	
+		if(TargetTempGroup->CheckDirty(temp)){
+			SendHbCmd(CMD_HB_TEMP_HEAT, 1, temp, TargetTempGroup->Size());
+		}	
+	}
+private:
+	struct MECHAINE property;
+	RateTimeGroup * RealTempGroup;
+	RateTimeGroup * TargetTempGroup;  
+};
+
+class VoltageWidget : public QWidget {
+	Q_OBJECT
+public :
+	VoltageWidget(struct MECHAINE &p, QWidget * parent = NULL) :
+		QWidget(parent),
+		property(p)
+	{
+		int colnum = property.PrinterColorNum;
+		int rownum = property.PrinterGroupNum;
+
+		baseVoltageGroup = new RateTimeGroup("基准电压", colnum, rownum, 1, property.PrintColor);
+		adjustVoltageGroup = new RateTimeGroup("矫正电压", colnum, rownum, 1, property.PrintColor);
+		//RateTimeGroup * realvol = new RateTimeGroup("实时电压", colnum, rownum, 2, color);
+		//realvol->setEnabled(false);
+
+		QVBoxLayout *layout = new QVBoxLayout;
+		layout->addWidget(baseVoltageGroup);
+		layout->addWidget(adjustVoltageGroup);
+		//layout->addWidget(realvol);
+
+		setLayout(layout);
+	}
+	virtual void showEvent(QShowEvent * event){
+		event = event;
+		GetBaseVoltage();
+		GetAdjustVoltage();
+	}
+	virtual void hideEvent(QHideEvent * event){
+		float temp[128];	
+		if(baseVoltageGroup->CheckDirty(temp) || adjustVoltageGroup->CheckDirty(temp)){
+			QMessageBox msgBox;
+			msgBox.setText("The document has been modified.");
+			msgBox.setInformativeText("Do you want to save your changes?");
+			msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+			msgBox.setDefaultButton(QMessageBox::Save);
+			int ret = msgBox.exec();
+			if(ret == QMessageBox::Save){
+				SaveParam();
+			}
+		}
+	}
+private:
+	void GetBaseVoltage(){
+		float temp[64];	
+		int len = property.PrinterGroupNum * property.PrinterColorNum;
+		SendHbCmd(CMD_HB_VOL_BASE, 0, temp, len);
+		baseVoltageGroup->UpdataContext(temp);
+	}
+	void GetAdjustVoltage(){
+		float temp[64];	
+		int len = property.PrinterGroupNum * property.PrinterColorNum;
+		SendHbCmd(CMD_HB_VOL_ADJUST, 0, temp, len);
+		adjustVoltageGroup->UpdataContext(temp);
+	}
+	void SetBaseVoltage(){
+		float temp[64];	
+		if(baseVoltageGroup->CheckDirty(temp)){
+			SendHbCmd(CMD_HB_VOL_BASE, 1, temp, baseVoltageGroup->Size());
+		}	
+	}
+	void SetAdjustVoltage(){
+		float temp[64];	
+		if(adjustVoltageGroup->CheckDirty(temp)){
+			SendHbCmd(CMD_HB_VOL_ADJUST, 1, temp, adjustVoltageGroup->Size());
+		}	
+	}
+public slots:
+	void SaveParam(){
+		SetBaseVoltage();
+		SetAdjustVoltage();
+	}
+private:
+	struct MECHAINE property;
+	RateTimeGroup *	baseVoltageGroup;
+	RateTimeGroup *	adjustVoltageGroup;
+};
+
 class pulseWidget : public QWidget {
 public:
 	pulseWidget(QWidget *parent = NULL) : QWidget(parent)
@@ -169,22 +316,22 @@ public:
 private:
 };
 
-class waveWidget : public QWidget {
+class WaveWidget : public QWidget {
 	Q_OBJECT
 public:
-	waveWidget(struct MECHAINE * p, QWidget *parent = NULL) : QWidget(parent), property(p)
+	WaveWidget(struct MECHAINE& p, QWidget *parent = NULL) : QWidget(parent), property(p)
 	{
 		QGridLayout * layout = new QGridLayout;
 
 		pulseWidget * pulse = new pulseWidget;
 
-		QString color = property->PrintColor;
+		QString color = property.PrintColor;
 		QStringList colorlist = color.split(";");
 
 		char * name = "Pause;Voltage;Delay";
 		indexComBox = new QComboBox;
-		for(int g = 0; g < property->PrinterGroupNum; g++){
-			for(int c = 0; c < property->PrinterColorNum; c++){
+		for(int g = 0; g < property.PrinterGroupNum; g++){
+			for(int c = 0; c < property.PrinterColorNum; c++){
 				QString text = colorlist.at(c) + QString::number(g);
 				indexComBox->addItem(text);
 			}
@@ -200,17 +347,35 @@ public:
 
 		setLayout(layout);
 	}
-
 	virtual void showEvent(QShowEvent * event){
 		float temp[128];	
-		int len = property->PrinterGroupNum * property->PrinterColorNum * 9;
+		int len = property.PrinterGroupNum * property.PrinterColorNum * 9;
 		SendHbCmd(CMD_HB_WAVE, 0, temp, len);
 		waveGroup->UpdataContext(&temp[indexComBox->currentIndex() * 9]);
 	}
+	virtual void hideEvent(QHideEvent * event){
+		float temp[128];	
+		if(waveGroup->CheckDirty(temp)){
+			QMessageBox msgBox;
+			msgBox.setText("The document has been modified.");
+			msgBox.setInformativeText("Do you want to save your changes?");
+			msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+			msgBox.setDefaultButton(QMessageBox::Save);
+			int ret = msgBox.exec();
+			if(ret == QMessageBox::Save){
+				SendHbCmd(CMD_HB_WAVE, 1, temp, waveGroup->Size());
+			}
+		}
+	}
 public slots:
-
+	void SaveParam(){
+		float temp[128];	
+		if(waveGroup->CheckDirty(temp)){
+			SendHbCmd(CMD_HB_WAVE, 1, temp, waveGroup->Size());
+		}
+	}
 private:
-	struct MECHAINE * property;
+	struct MECHAINE property;
 	RateTimeGroup * waveGroup;
 	QComboBox * indexComBox;
 };
@@ -225,9 +390,9 @@ public:
 		toolLayout->addWidget(Tool->GetSaveButton());
 		toolLayout->addWidget(Tool->GetUpdateButton());
 		connect(Tool->GetMenuButton(), SIGNAL(clicked()), this, SLOT(close()));
-		connect(Tool->GetSaveButton(), SIGNAL(clicked()), this, SLOT(SaveParam()));
 
 		GetPrinterProperty(&property);
+
 
 		widgetlist =  new QTabWidget;
 
@@ -238,113 +403,30 @@ public:
 		Layout(widgetlist);
 	}
 	void AddTempWaveWidget(){
-		int colnum = property.PrinterColorNum;
-		int rownum = property.PrinterGroupNum;
+	        tempWidget = new TempWidget(property);
+		connect(Tool->GetSaveButton(), SIGNAL(clicked()), tempWidget, SLOT(SaveParam()));
 
-		TargetTempGroup = new RateTimeGroup("设置温度", colnum, rownum, 1, property.PrintColor);
-
-		RealTempGroup = new RateTimeGroup("实时温度", colnum, rownum, 1, property.PrintColor);
-		RealTempGroup->setEnabled(false);
-
-		TempWidget = new QWidget;
-		QVBoxLayout *layout = new QVBoxLayout;
-		layout->addWidget(TargetTempGroup);
-		layout->addWidget(RealTempGroup);
-
-		TempWidget->setLayout(layout);
-
-		widgetlist->addTab(TempWidget, "Temp");
+		widgetlist->addTab(tempWidget, "Temp");
 	}
 	void AddVoltageWidget(){
-		int colnum = property.PrinterColorNum;
-		int rownum = property.PrinterGroupNum;
+		voltageWidget = new VoltageWidget(property);
+		connect(Tool->GetSaveButton(), SIGNAL(clicked()), voltageWidget, SLOT(SaveParam()));
 
-		baseVoltageGroup = new RateTimeGroup("基准电压", colnum, rownum, 1, property.PrintColor);
-		adjustVoltageGroup = new RateTimeGroup("矫正电压", colnum, rownum, 1, property.PrintColor);
-		//RateTimeGroup * realvol = new RateTimeGroup("实时电压", colnum, rownum, 2, color);
-		//realvol->setEnabled(false);
-
-		QVBoxLayout *layout = new QVBoxLayout;
-		layout->addWidget(baseVoltageGroup);
-		layout->addWidget(adjustVoltageGroup);
-		//layout->addWidget(realvol);
-
-		voltageWidget = new QWidget;
-		voltageWidget->setLayout(layout);
 		widgetlist->addTab(voltageWidget, "Voltage");
 	}
 	void AddPulseWaveWidget(){
-		QWidget * widget = new waveWidget(&property);
+		waveWidget = new WaveWidget(property);
+		connect(Tool->GetSaveButton(), SIGNAL(clicked()), waveWidget, SLOT(SaveParam()));
 
-		widgetlist->addTab(widget, "Wave");
-	}
-
-	virtual void showEvent(QShowEvent * event){
-		event = event;
-		GetRealTemp();
-		GetTargetTemp();
-		GetBaseVoltage();
-		GetAdjustVoltage();
-	}
-
-private:
-	void GetTargetTemp(){
-		float temp[64];	
-		int len = property.PrinterGroupNum * property.PrinterColorNum;
-		SendHbCmd(CMD_HB_TEMP_HEAT, 0, temp, len);
-		TargetTempGroup->UpdataContext(temp);
-	}
-	void GetRealTemp(){
-		float temp[64];	
-		int len = property.PrinterGroupNum * property.PrinterColorNum;
-		SendHbCmd(CMD_HB_TEMP_HEAT, 0, temp, len);
-		RealTempGroup->UpdataContext(temp);
-	}
-	void SetTargetTemp(){
-		float temp[64];	
-		if(TargetTempGroup->CheckDirty(temp)){
-			SendHbCmd(CMD_HB_TEMP_HEAT, 1, temp, TargetTempGroup->Size());
-		}	
-	}
-	void GetBaseVoltage(){
-		float temp[64];	
-		int len = property.PrinterGroupNum * property.PrinterColorNum;
-		SendHbCmd(CMD_HB_TEMP_HEAT, 0, temp, len);
-		baseVoltageGroup->UpdataContext(temp);
-	}
-	void SetBaseVoltage(){
-		float temp[64];	
-		if(baseVoltageGroup->CheckDirty(temp)){
-			SendHbCmd(CMD_HB_TEMP_HEAT, 1, temp, baseVoltageGroup->Size());
-		}	
-	}
-	void GetAdjustVoltage(){
-		float temp[64];	
-		int len = property.PrinterGroupNum * property.PrinterColorNum;
-		SendHbCmd(CMD_HB_TEMP_HEAT, 0, temp, len);
-		adjustVoltageGroup->UpdataContext(temp);
-	}
-	void SetAdjustVoltage(){
-		float temp[64];	
-		if(adjustVoltageGroup->CheckDirty(temp)){
-			SendHbCmd(CMD_HB_TEMP_HEAT, 1, temp, adjustVoltageGroup->Size());
-		}	
-	}
-public slots:
-	void SaveParam(){
-		SetTargetTemp();
-		SetBaseVoltage();
-		SetAdjustVoltage();
+		widgetlist->addTab(waveWidget, "Wave");
 	}
 private:
-	QWidget * TempWidget;
-	RateTimeGroup * RealTempGroup;
-	RateTimeGroup * TargetTempGroup;  
+	TempWidget * tempWidget;
 
-	QWidget * voltageWidget; 
-	RateTimeGroup *	baseVoltageGroup;
-	RateTimeGroup *	adjustVoltageGroup;
-
+	VoltageWidget * voltageWidget; 
+	
+	WaveWidget * waveWidget;
+	
 	QTabWidget * widgetlist;
 	struct MECHAINE property;
 };
