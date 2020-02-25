@@ -18,8 +18,7 @@ public:
 		: QGroupBox(name),
 		colnum(x),
 		rownum(y),
-		block(z),
-		Value(x * y * z, -1000)
+		block(z)
 	{
 		QGridLayout * horLayout = new QGridLayout;
 
@@ -51,36 +50,28 @@ public:
 			for(int i = 0; i < colnum; i++){
 				for(int b = 0; b < block; b++){
 					int index = j * colnum * block + i * block + b;
-					if(Value[index] != data[index]){
-						Value[index] = data[index];
-						QString text = QString::number(data[index]);
-						matrix[index]->setText(text);
-					}
+					QString text = QString::number(data[index]);
+					matrix[index]->setText(text);
 				}
 			}
 		}
 	}
  
 	int CheckDirty(float * data){
-		int dirty = 0;
 		for(int j = 0; j < rownum; j++){
 			for(int i = 0; i < colnum; i++){
 				for(int b = 0; b < block; b++){
 					int index = j * colnum * block + i * block + b;
       					float value = matrix[index]->text().toFloat();
 					data[index] = value;
-					qDebug() << "data[" << index << "]=" << value << "; Value=" << Value[index];
-					if(Value[index] != value){
-						dirty = 1;
-					}
 				}
 			}
 		}
 	
-		return dirty;
+		return 1;
 	}
 	int Size(){
-		return Value.size();
+		return rownum * colnum * block;
 	}
 	int SetEnabled(){
 	
@@ -89,7 +80,6 @@ public:
 	int colnum;
 	int rownum;
 	int block;
-	QVector<float> Value;
 	QVector<QLineEdit *> matrix;
 };
 
@@ -113,7 +103,11 @@ public:
 		layout->addWidget(RealTempGroup);
 
 		setLayout(layout);
+
+		GetRealTemp();
+		GetTargetTemp();
 	}
+/*
 	virtual void showEvent(QShowEvent * event){
 		event = event;
 		GetRealTemp();
@@ -134,6 +128,7 @@ public:
 			}
 		}
 	}
+*/
 private:
 	void GetTargetTemp(){
 		float temp[64];	
@@ -149,7 +144,6 @@ private:
 	}
 public slots:
 	void SaveParam(){
-		qDebug() << "save param";
 		float temp[64];	
 		if(TargetTempGroup->CheckDirty(temp)){
 			qDebug() << " is dirty";
@@ -161,7 +155,7 @@ private:
 	RateTimeGroup * RealTempGroup;
 	RateTimeGroup * TargetTempGroup;  
 };
-
+/*
 class VoltageWidget : public QWidget {
 	Q_OBJECT
 public :
@@ -238,7 +232,7 @@ private:
 	RateTimeGroup *	baseVoltageGroup;
 	RateTimeGroup *	adjustVoltageGroup;
 };
-
+*/
 class pulseWidget : public QWidget {
 public:
 	pulseWidget(QWidget *parent = NULL) : QWidget(parent)
@@ -251,18 +245,6 @@ public:
 		e = e; //no warning
 
 		QPainter painter(this);
-
-		int p0 = 90;
-		int p1 = 70;
-		int p2 = 50;
-
-		int d0 = 60;
-		int d1 = 50;
-		int d2 = 40;
-
-		int v0 = 60;
-		int v1 = 50;
-		int v2 = 40;
 	
 		QVector<QPoint> points;
 		points.push_back(QPoint(0,			0));
@@ -313,7 +295,34 @@ public:
 		painter.drawText(points[10], "v2");
 		painter.drawText(points[12], "d2");
 	}
+	void Updata(float * data){
+		p0 = (int)data[0];
+		p1 = (int)data[1];
+		p2 = (int)data[2];
+
+		v0 = (int)data[0];
+		v1 = (int)data[1];
+		v2 = (int)data[2];
+
+
+		d0 = (int)data[0];
+		d1 = (int)data[1];
+		d2 = (int)data[2];
+
+		update();
+	}
 private:
+	int p0;
+	int p1;
+	int p2;
+
+	int d0;
+	int d1;
+	int d2;
+
+	int v0;
+	int v1;
+	int v2;
 };
 
 class WaveWidget : public QWidget {
@@ -322,12 +331,11 @@ public:
 	WaveWidget(struct MECHAINE& p, QWidget *parent = NULL) :
 		QWidget(parent),
 		property(p),
-		Index(0),
-		Dirty(0)
+		Index(0)
 	{
 		QGridLayout * layout = new QGridLayout;
 
-		pulseWidget * pulse = new pulseWidget;
+		pulse = new pulseWidget;
 
 		QString color = property.PrintColor;
 		QStringList colorlist = color.split(";");
@@ -354,7 +362,12 @@ public:
 		layout->addWidget(waveGroup,		3, 0, 1, 3);
 
 		setLayout(layout);
+
+		SendHbCmd(CMD_HB_WAVE, READ, (float*)WaveCurve, Size);
+		pulse->Updata(WaveCurve[Index]);
+		waveGroup->UpdataContext(WaveCurve[Index]);
 	}
+/*
 	virtual void showEvent(QShowEvent * event){
 		event = event;
 		int index = indexComBox->currentIndex();
@@ -378,32 +391,28 @@ public:
 			}
 		}
 	}
+*/
 	void SaveData(){
-		if(Dirty){
-			Dirty = 0;
-			SendHbCmd(CMD_HB_WAVE, WRITE, (float*)WaveCurve, Size);
-		}
+		SendHbCmd(CMD_HB_WAVE, WRITE, (float*)WaveCurve, Size);
 	}
 public slots:
 	void IndexChanged(int index){
-		if(waveGroup->CheckDirty(WaveCurve[Index])){
-			Dirty = 1;
-		}
+		waveGroup->CheckDirty(WaveCurve[Index]);
 		Index = index;
+		pulse->Updata(WaveCurve[Index]);
 		waveGroup->UpdataContext(WaveCurve[index]);
 	}
 	void SaveParam(){
-		if(waveGroup->CheckDirty(WaveCurve[Index])){
-			Dirty = 1;
-		}
+		waveGroup->CheckDirty(WaveCurve[Index]);
 		SaveData();
 	}
 private:
 	int Index;
-	int Dirty;
 	int Size;
 	float WaveCurve[16][9];
 	struct MECHAINE property;
+	
+	pulseWidget * pulse;
 	RateTimeGroup * waveGroup;
 	QComboBox * indexComBox;
 };
@@ -421,11 +430,10 @@ public:
 
 		GetPrinterProperty(&property);
 
-
 		widgetlist =  new QTabWidget;
 
 		AddTempWaveWidget();
-		AddVoltageWidget();
+		//AddVoltageWidget();
 		AddPulseWaveWidget();
 
 		Layout(widgetlist);
@@ -436,12 +444,12 @@ public:
 
 		widgetlist->addTab(tempWidget, "Temp");
 	}
-	void AddVoltageWidget(){
-		voltageWidget = new VoltageWidget(property);
-		connect(Tool->GetSaveButton(), SIGNAL(clicked()), voltageWidget, SLOT(SaveParam()));
-
-		widgetlist->addTab(voltageWidget, "Voltage");
-	}
+	//void AddVoltageWidget(){
+	//	voltageWidget = new VoltageWidget(property);
+	//	connect(Tool->GetSaveButton(), SIGNAL(clicked()), voltageWidget, SLOT(SaveParam()));
+	//
+	//	widgetlist->addTab(voltageWidget, "Voltage");
+	//}
 	void AddPulseWaveWidget(){
 		waveWidget = new WaveWidget(property);
 		connect(Tool->GetSaveButton(), SIGNAL(clicked()), waveWidget, SLOT(SaveParam()));
@@ -451,7 +459,7 @@ public:
 private:
 	TempWidget * tempWidget;
 
-	VoltageWidget * voltageWidget; 
+	//VoltageWidget * voltageWidget; 
 	
 	WaveWidget * waveWidget;
 	
