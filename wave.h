@@ -47,8 +47,6 @@ public:
 		setLayout(horLayout);
 	}
 	void UpdataContext(float * data){
-		//int colnum = property->PrinterColorNum;   //列数
-		//int rownum = property->PrinterGroupNum; //行数
 		for(int j = 0; j < rownum; j++){
 			for(int i = 0; i < colnum; i++){
 				for(int b = 0; b < block; b++){
@@ -117,19 +115,14 @@ public:
 		setLayout(layout);
 	}
 	virtual void showEvent(QShowEvent * event){
-		qDebug() << "temp show event";
 		event = event;
 		GetRealTemp();
 		GetTargetTemp();
 	}
 	virtual void hideEvent(QHideEvent * event){
 		event = event;
-		qDebug() << "temp hide event";
-		float a  = this->RealTempGroup->matrix[0]->text().toFloat();
-		qDebug()<<  a;
 		float temp[64];	
 		if(TargetTempGroup->CheckDirty(temp)){
-			qDebug() << "temp is dirty";
 			QMessageBox msgBox;
 			msgBox.setText("The  temp document has been modified.");
 			msgBox.setInformativeText("Do you want to save your changes?");
@@ -156,9 +149,10 @@ private:
 	}
 public slots:
 	void SaveParam(){
-		qDebug() << "save temp param";
+		qDebug() << "save param";
 		float temp[64];	
 		if(TargetTempGroup->CheckDirty(temp)){
+			qDebug() << " is dirty";
 			SendHbCmd(CMD_HB_TEMP_TARGET, 1, temp, TargetTempGroup->Size());
 		}	
 	}
@@ -325,7 +319,11 @@ private:
 class WaveWidget : public QWidget {
 	Q_OBJECT
 public:
-	WaveWidget(struct MECHAINE& p, QWidget *parent = NULL) : QWidget(parent), property(p)
+	WaveWidget(struct MECHAINE& p, QWidget *parent = NULL) :
+		QWidget(parent),
+		property(p),
+		Index(0),
+		Dirty(0)
 	{
 		QGridLayout * layout = new QGridLayout;
 
@@ -333,6 +331,8 @@ public:
 
 		QString color = property.PrintColor;
 		QStringList colorlist = color.split(";");
+
+		Size = property.PrinterGroupNum * property.PrinterColorNum * 9;
 
 		char * name = "Pause;Voltage;Delay";
 		indexComBox = new QComboBox;
@@ -342,6 +342,8 @@ public:
 				indexComBox->addItem(text);
 			}
 		}
+		connect(indexComBox, SIGNAL(currentIndexChanged(int)), 
+				this, SLOT(IndexChanged(int)));
 
 		QPushButton * format = new QPushButton("copy to all head");
 		waveGroup = new RateTimeGroup("脉宽", 3, 1, 3, name);
@@ -354,33 +356,53 @@ public:
 		setLayout(layout);
 	}
 	virtual void showEvent(QShowEvent * event){
-		float temp[128];	
-		int len = property.PrinterGroupNum * property.PrinterColorNum * 9;
-		SendHbCmd(CMD_HB_WAVE, 0, temp, len);
-		waveGroup->UpdataContext(&temp[indexComBox->currentIndex() * 9]);
+		event = event;
+		int index = indexComBox->currentIndex();
+		SendHbCmd(CMD_HB_WAVE, READ, (float*)WaveCurve, Size);
+		waveGroup->UpdataContext(WaveCurve[index]);
 	}
 	virtual void hideEvent(QHideEvent * event){
-		float temp[128];	
-		if(waveGroup->CheckDirty(temp)){
+		event = event;
+		if(waveGroup->CheckDirty(WaveCurve[Index])){
+			Dirty = 1;
+		}
+		if(Dirty){
 			QMessageBox msgBox;
-			msgBox.setText("The wave  document has been modified.");
+			msgBox.setText("The wave has been modified.");
 			msgBox.setInformativeText("Do you want to save your changes?");
-			msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+			msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Cancel);
 			msgBox.setDefaultButton(QMessageBox::Save);
-			int ret = msgBox.exec();
-			if(ret == QMessageBox::Save){
-				SendHbCmd(CMD_HB_WAVE, 1, temp, waveGroup->Size());
+			if(msgBox.exec() == QMessageBox::Save){
+				//SendHbCmd(CMD_HB_WAVE, WRITE, (float*)WaveCurve, Size);
+				SaveData();
 			}
 		}
 	}
-public slots:
-	void SaveParam(){
-		float temp[128];	
-		if(waveGroup->CheckDirty(temp)){
-			SendHbCmd(CMD_HB_WAVE, 1, temp, waveGroup->Size());
+	void SaveData(){
+		if(Dirty){
+			Dirty = 0;
+			SendHbCmd(CMD_HB_WAVE, WRITE, (float*)WaveCurve, Size);
 		}
 	}
+public slots:
+	void IndexChanged(int index){
+		if(waveGroup->CheckDirty(WaveCurve[Index])){
+			Dirty = 1;
+		}
+		Index = index;
+		waveGroup->UpdataContext(WaveCurve[index]);
+	}
+	void SaveParam(){
+		if(waveGroup->CheckDirty(WaveCurve[Index])){
+			Dirty = 1;
+		}
+		SaveData();
+	}
 private:
+	int Index;
+	int Dirty;
+	int Size;
+	float WaveCurve[16][9];
 	struct MECHAINE property;
 	RateTimeGroup * waveGroup;
 	QComboBox * indexComBox;
