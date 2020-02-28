@@ -237,7 +237,7 @@ class pulseWidget : public QWidget {
 public:
 	pulseWidget(QWidget *parent = NULL) : QWidget(parent)
 	{
-		setFixedSize(600, 120);
+		setFixedSize(600, 128);
 	}
 
 	virtual void paintEvent(QPaintEvent *e)
@@ -296,18 +296,18 @@ public:
 		painter.drawText(points[12], "d2");
 	}
 	void Updata(float * data){
-		p0 = (int)data[0];
-		p1 = (int)data[1];
-		p2 = (int)data[2];
+		p0 = (int)data[0] * 10;
+		p1 = (int)data[1] * 10;
+		p2 = (int)data[2] * 10;
 
-		v0 = (int)data[0];
-		v1 = (int)data[1];
-		v2 = (int)data[2];
+		v0 = (int)data[4];
+		v1 = (int)data[5];
+		v2 = (int)data[6];
 
 
-		d0 = (int)data[0];
-		d1 = (int)data[1];
-		d2 = (int)data[2];
+		d0 = (int)data[8] * 10;
+		d1 = (int)data[9] * 10;
+		d2 = (int)data[10] * 10;
 
 		update();
 	}
@@ -331,8 +331,12 @@ public:
 	WaveWidget(struct MECHAINE& p, QWidget *parent = NULL) :
 		QWidget(parent),
 		property(p),
-		Index(0)
+		Index(0),
+		Row(4),
+		Col(3),
+		LineEditPerHead(12)
 	{
+
 		QGridLayout * layout = new QGridLayout;
 
 		pulse = new pulseWidget;
@@ -340,7 +344,7 @@ public:
 		QString color = property.PrintColor;
 		QStringList colorlist = color.split(";");
 
-		Size = property.PrinterGroupNum * property.PrinterColorNum * 9;
+		Size = property.PrinterGroupNum * property.PrinterColorNum * LineEditPerHead;
 
 		char * name = "Pause;Voltage;Delay";
 		indexComBox = new QComboBox;
@@ -354,7 +358,10 @@ public:
 				this, SLOT(IndexChanged(int)));
 
 		QPushButton * format = new QPushButton("copy to all head");
-		waveGroup = new RateTimeGroup("脉宽", 3, 1, 3, name);
+		connect(format, SIGNAL(clicked()), 
+				this, SLOT(CpyToAllHead()));
+
+		waveGroup = new RateTimeGroup("脉宽", Col, 1, Row, name);
 
 		layout->addWidget(pulse,		0, 0, 1, 2);
 		layout->addWidget(indexComBox,		2, 0, 1, 1);
@@ -363,11 +370,10 @@ public:
 
 		setLayout(layout);
 
-		SendHbCmd(CMD_HB_WAVE, READ, (float*)WaveCurve, Size);
-		pulse->Updata(WaveCurve[Index]);
-		waveGroup->UpdataContext(WaveCurve[Index]);
+		//SendHbCmd(CMD_HB_WAVE, READ, (float*)WaveCurve, Size);
+		//pulse->Updata(WaveCurve[Index]);
+		//waveGroup->UpdataContext(WaveCurve[Index]);
 	}
-/*
 	virtual void showEvent(QShowEvent * event){
 		event = event;
 		int index = indexComBox->currentIndex();
@@ -375,6 +381,7 @@ public:
 		waveGroup->UpdataContext(WaveCurve[index]);
 	}
 	virtual void hideEvent(QHideEvent * event){
+/*
 		event = event;
 		if(waveGroup->CheckDirty(WaveCurve[Index])){
 			Dirty = 1;
@@ -390,8 +397,8 @@ public:
 				SaveData();
 			}
 		}
-	}
 */
+	}
 	void SaveData(){
 		SendHbCmd(CMD_HB_WAVE, WRITE, (float*)WaveCurve, Size);
 	}
@@ -406,10 +413,21 @@ public slots:
 		waveGroup->CheckDirty(WaveCurve[Index]);
 		SaveData();
 	}
+	void CpyToAllHead(){
+		waveGroup->CheckDirty(WaveCurve[Index]);
+		for(int i = 0; i < 16; i++){
+			for(int j = 0; j < LineEditPerHead; j++){
+				WaveCurve[i][j] =  WaveCurve[Index][j];
+			}
+		}
+	}
 private:
 	int Index;
 	int Size;
-	float WaveCurve[16][9];
+	int Col;
+	int Row;
+	int LineEditPerHead;
+	float WaveCurve[16][12];
 	struct MECHAINE property;
 	
 	pulseWidget * pulse;
