@@ -247,21 +247,24 @@ public:
 		QPainter painter(this);
 	
 		QVector<QPoint> points;
-		points.push_back(QPoint(0,			0));
-		points.push_back(QPoint(10,			0));
-		points.push_back(QPoint(10,			v0));
-		points.push_back(QPoint(10+p0,			v0));
-		points.push_back(QPoint(10+p0,			0));
-		points.push_back(QPoint(10+p0+d0,		0));
-		points.push_back(QPoint(10+p0+d0,		v1));
-		points.push_back(QPoint(10+p0+d0+p1,		v1));
-		points.push_back(QPoint(10+p0+d0+p1,		0));
-		points.push_back(QPoint(10+p0+d0+p1+d1,		0));
-		points.push_back(QPoint(10+p0+d0+p1+d1,		v2));
-		points.push_back(QPoint(10+p0+d0+p1+d1+p2,	v2));
-		points.push_back(QPoint(10+p0+d0+p1+d1+p2,	0));
-		points.push_back(QPoint(10+p0+d0+p1+d1+p2+d2,	0));
-		points.push_back(QPoint(10+p0+d0+p1+d1+p2+d2+10,0));
+		points.push_back(QPoint(0,				0));
+		points.push_back(QPoint(10,				0));
+		points.push_back(QPoint(10,				v0));
+		points.push_back(QPoint(10+p0,				v0));
+		points.push_back(QPoint(10+p0,				0));
+		points.push_back(QPoint(10+p0+d0,			0));
+		points.push_back(QPoint(10+p0+d0,			v1));
+		points.push_back(QPoint(10+p0+d0+p1,			v1));
+		points.push_back(QPoint(10+p0+d0+p1,			0));
+		points.push_back(QPoint(10+p0+d0+p1+d1,			0));
+		points.push_back(QPoint(10+p0+d0+p1+d1,			v2));
+		points.push_back(QPoint(10+p0+d0+p1+d1+p2,		v2));
+		points.push_back(QPoint(10+p0+d0+p1+d1+p2,		0));
+		points.push_back(QPoint(10+p0+d0+p1+d1+p2+d2,		0));
+		points.push_back(QPoint(10+p0+d0+p1+d1+p2+d2,		v3));
+		points.push_back(QPoint(10+p0+d0+p1+d1+p2+d2+p3,	v3));
+		points.push_back(QPoint(10+p0+d0+p1+d1+p2+d2+p3,	0));
+		points.push_back(QPoint(10+p0+d0+p1+d1+p2+d2+p3+d3,	0));
 
 		int y = 20;
 		int ymax = 0;
@@ -283,6 +286,7 @@ public:
 		for(int i = 0; i < points.size() - 1; i++){
 			painter.drawLine(points[i], points[i+1]);
 		}
+		/*
 		painter.drawText(points[1].rx()+p0/2, points[1].ry()-5, "p0");
 		painter.drawText(points[2], "v0");
 		painter.drawText(points[4], "d0");
@@ -294,20 +298,23 @@ public:
 		painter.drawText(points[9], "p2");
 		painter.drawText(points[10], "v2");
 		painter.drawText(points[12], "d2");
+		*/
 	}
 	void Updata(float * data){
 		p0 = (int)data[0] * 10;
 		p1 = (int)data[1] * 10;
 		p2 = (int)data[2] * 10;
+		p3 = (int)data[3] * 10;
 
 		v0 = (int)data[4];
 		v1 = (int)data[5];
 		v2 = (int)data[6];
-
+		v3 = (int)data[7];
 
 		d0 = (int)data[8] * 10;
 		d1 = (int)data[9] * 10;
 		d2 = (int)data[10] * 10;
+		d3 = (int)data[11] * 10;
 
 		update();
 	}
@@ -315,14 +322,17 @@ private:
 	int p0;
 	int p1;
 	int p2;
+	int p3;
 
 	int d0;
 	int d1;
 	int d2;
+	int d3;
 
 	int v0;
 	int v1;
 	int v2;
+	int v3;
 };
 
 class WaveWidget : public QWidget {
@@ -357,6 +367,12 @@ public:
 		connect(indexComBox, SIGNAL(currentIndexChanged(int)), 
 				this, SLOT(IndexChanged(int)));
 
+		grayComBox = new QComboBox;
+		for(int g = 1; g < 4; g++){
+			QString text = QString::number(g) + "级灰度";
+			grayComBox->addItem(text);
+		}
+
 		QPushButton * format = new QPushButton("copy to all head");
 		connect(format, SIGNAL(clicked()), 
 				this, SLOT(CpyToAllHead()));
@@ -365,7 +381,8 @@ public:
 
 		layout->addWidget(pulse,		0, 0, 1, 2);
 		layout->addWidget(indexComBox,		2, 0, 1, 1);
-		layout->addWidget(format,		2, 1, 1, 1);
+		layout->addWidget(grayComBox,		2, 1, 1, 1);
+		layout->addWidget(format,		2, 2, 1, 1);
 		layout->addWidget(waveGroup,		3, 0, 1, 3);
 
 		setLayout(layout);
@@ -379,6 +396,7 @@ public:
 		int index = indexComBox->currentIndex();
 		SendHbCmd(CMD_HB_WAVE, READ, (float*)WaveCurve, Size);
 		waveGroup->UpdataContext(WaveCurve[index]);
+		pulse->Updata(WaveCurve[Index]);
 	}
 	virtual void hideEvent(QHideEvent * event){
 /*
@@ -433,6 +451,7 @@ private:
 	pulseWidget * pulse;
 	RateTimeGroup * waveGroup;
 	QComboBox * indexComBox;
+	QComboBox * grayComBox;
 };
 
 class WaveDialog : public UiTemplate
