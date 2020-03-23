@@ -38,4 +38,4 @@ SUBDIRS		= lib \
 
 
 
-unix:!macx: LIBS += ../lib/libpmd.so 
+unix:!macx: LIBS += /usr/lib/libpmd.so 

@@ -16,6 +16,7 @@
 
 #include "ui_interface.h"
 #include "APIDataInterface.hpp"
+#include "touchkey/lineedit.h"
 
 /*
 class MoterGroupBox : public QGroupBox{
@@ -61,17 +62,17 @@ public:
 
 		QGridLayout * dbgLayout = new QGridLayout;
 		pulsePushButton = new QPushButton("移动固定(脉冲)");
-	        pulseLineEdit = new QLineEdit;
+	        pulseLineEdit = new IntLineEdit;
 
 	        movePushButton = new QPushButton("移动到(mm)");
-	        moveLineEdit = new QLineEdit;
+	        moveLineEdit = new IntLineEdit;
 
 	        posPushButton = new QPushButton("位置");
 		posLineEdit = new QLineEdit;
 		
 		gearPushButton = new QPushButton("齿轮比");
 		resetPushButton = new QPushButton("reset");
-		gearLineEdit = new QLineEdit;
+		gearLineEdit = new IntLineEdit;
 
 		dbgLayout->addWidget(pulsePushButton,	1, 0);
 		dbgLayout->addWidget(pulseLineEdit,	1, 1, 1, 4);
@@ -97,10 +98,10 @@ public:
  	QPushButton * GetMovePushButton(){
 		return movePushButton;
 	}
-	QLineEdit* GetPulseLineEdit(){
+	IntLineEdit* GetPulseLineEdit(){
 		return pulseLineEdit;
 	}
-	QLineEdit* GetMoveLineEdit(){
+	IntLineEdit* GetMoveLineEdit(){
 		return moveLineEdit;
 	}
 /*
@@ -116,14 +117,14 @@ public:
 	QLineEdit * posLineEdit;
 
 	QPushButton * movePushButton; 
-	QLineEdit * moveLineEdit;
+	IntLineEdit * moveLineEdit;
 
-	QLineEdit * pulseLineEdit;
+	IntLineEdit * pulseLineEdit;
         QPushButton * pulsePushButton;
 	
 	QPushButton * gearPushButton;
 	QPushButton * resetPushButton;
-	QLineEdit * gearLineEdit;
+	IntLineEdit * gearLineEdit;
 };
 
 
@@ -139,12 +140,12 @@ public:
 		QLabel * speedLabel = new QLabel("运动速度(mm/s)");
 		QLabel * accLabel = new QLabel("加速距离(mm)");
 
-		highspeedLineEdit = new QLineEdit;
-		highaccLineEdit = new QLineEdit;
-		midspeedLineEdit = new QLineEdit;
-		midaccLineEdit = new QLineEdit;
-		lowspeedLineEdit = new QLineEdit;
-		lowaccLineEdit = new QLineEdit;
+		highspeedLineEdit = new IntLineEdit;
+		highaccLineEdit = new IntLineEdit;
+		midspeedLineEdit = new IntLineEdit;
+		midaccLineEdit = new IntLineEdit;
+		lowspeedLineEdit = new IntLineEdit;
+		lowaccLineEdit = new IntLineEdit;
 
 		QGridLayout * Layout = new QGridLayout;
 
@@ -175,13 +176,13 @@ public:
 	}
 
 public:
-	QLineEdit * highspeedLineEdit;
-	QLineEdit * midspeedLineEdit;
-	QLineEdit * lowspeedLineEdit;
+	IntLineEdit * highspeedLineEdit;
+	IntLineEdit * midspeedLineEdit;
+	IntLineEdit * lowspeedLineEdit;
 
-	QLineEdit * highaccLineEdit;
-	QLineEdit * midaccLineEdit;
-	QLineEdit * lowaccLineEdit;
+	IntLineEdit * highaccLineEdit;
+	IntLineEdit * midaccLineEdit;
+	IntLineEdit * lowaccLineEdit;
 };
 
 class MotionDialog : public UiTemplate
@@ -194,6 +195,8 @@ public:
 		toolLayout->addWidget(Tool->GetSaveButton());
 		toolLayout->addWidget(Tool->GetUpdateButton());
 		connect(Tool->GetMenuButton(), SIGNAL(clicked()), this, SLOT(close()));
+
+		statusLabel->setText("机械设置");
 
 		GetPrinterProperty(&property);
 
@@ -229,7 +232,7 @@ public:
 		rasterPushButton = new QPushButton(tr("分辨率"));
 
 		resetPushButton = new QPushButton("reset");
-		rasterLineEdit = new QLineEdit;
+		rasterLineEdit = new IntLineEdit;
 		rasterGroup = new QGroupBox("光栅/编码器");
 
 		QGridLayout *rasterLayout = new QGridLayout();
@@ -258,7 +261,7 @@ public:
 
 		//ReadRaster();
 		//GetGearRatio();
-		GetMoveParam();
+		//GetMoveParam();
 
 		//QWidget * widget = new QWidget;
 		QGridLayout *layout = new QGridLayout;
@@ -395,7 +398,7 @@ private:
 
 	QPushButton * rasterPushButton;
 	QPushButton * resetPushButton;
-	QLineEdit * rasterLineEdit;
+	IntLineEdit * rasterLineEdit;
 
 	QRadioButton* dir_positive;
 	QRadioButton* dir_reverse;

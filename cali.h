@@ -48,7 +48,7 @@ public:
 
 		for(int j = 0; j < rownum; j++){
 			for(int i = 0; i < colnum; i++){
-				QLineEdit *lineEdit = new QLineEdit(this);
+				IntLineEdit  *lineEdit = new IntLineEdit(this);
 				//lineEdit->resize(40, 28);
 				horLayout->addWidget(lineEdit, j + 1, i + 2);
 				matrix.push_back(lineEdit);
