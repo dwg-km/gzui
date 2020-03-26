@@ -258,7 +258,7 @@ public:
 
 		//ReadRaster();
 		//GetGearRatio();
-		GetMoveParam();
+		//GetMoveParam();
 
 		//QWidget * widget = new QWidget;
 		QGridLayout *layout = new QGridLayout;
