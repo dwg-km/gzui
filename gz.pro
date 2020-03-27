@@ -36,6 +36,7 @@ SOURCES       = main.cpp \
 SUBDIRS		= lib \
 		touchkey 
 
+my_cmd_line = cp ../gz_run.sh ./
+QMAKE_POST_LINK += $$quote($$my_cmd_line)
 
-
-unix:!macx: LIBS += /usr/lib/libpmd.so 
+unix:!macx: LIBS += ../lib/libpmd.so 
