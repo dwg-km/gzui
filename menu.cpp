@@ -43,6 +43,7 @@ void UiSetting::Update()
 		int r = QMessageBox::warning(NULL, 
 			tr("Update"), "Update finished. click yes to restart", QMessageBox::Cancel | QMessageBox::Yes);
 		if (r == QMessageBox::Yes){
+			DestroyPrinter(0);
 			qApp->exit(773);
 		}
 	}
