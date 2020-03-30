@@ -155,7 +155,7 @@ void FindErrorExplain(unsigned int err, QString& explain)
 //判断两个网卡端口状态
 int NetStateIsConnect()
 {
-
+	/*
 	int fd = open("/tmp/ip.conf",O_RDONLY);
 	if(0 > fd)
 	{
