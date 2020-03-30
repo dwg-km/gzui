@@ -239,7 +239,7 @@ private:
 void mainDialog::Flash()
 {
 	//SendMotionCmd(UI_CMD::CMD_MOTION_FLASH, 0);
-	SendHbCmd(UI_CMD::CMD_MOTION_FLASH, 0, 0, 0);
+	SendHbCmd(UI_CMD::CMD_HB_FLASH, 1, 0, 0);
 }
 void mainDialog::Print()
 {

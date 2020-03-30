@@ -104,15 +104,15 @@ public:
 
 		setLayout(layout);
 
-		GetRealTemp();
-		GetTargetTemp();
+		//GetRealTemp();
+		//GetTargetTemp();
 	}
-/*
 	virtual void showEvent(QShowEvent * event){
 		event = event;
 		GetRealTemp();
 		GetTargetTemp();
 	}
+/*
 	virtual void hideEvent(QHideEvent * event){
 		event = event;
 		float temp[64];	
