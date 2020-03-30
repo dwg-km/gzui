@@ -86,13 +86,15 @@ public:
 		toolLayout->addWidget(Tool->GetAbortButton());
 		toolLayout->addWidget(Tool->GetNetworkButton());
 		toolLayout->addWidget(Tool->GetPoweroffButton());
-		toolLayout->addWidget(Tool->GetExitButton());
 
 		Tool->GetAbortButton()->setDisabled();
 		Tool->GetPauseButton()->setDisabled();
-
-		connect(Tool->GetExitButton(), SIGNAL(clicked()), this, SLOT(Exit()));
 		connect(Tool->GetPoweroffButton(), SIGNAL(clicked()), this, SLOT(PowerOff()));
+
+#ifdef DEBUG
+		toolLayout->addWidget(Tool->GetExitButton());
+		connect(Tool->GetExitButton(), SIGNAL(clicked()), this, SLOT(Exit()));
+#endif
 
 		menuDialog = new UiSetting(this);
 		connect(Tool->GetMenuButton(),SIGNAL(clicked()),menuDialog,SLOT(show()));
