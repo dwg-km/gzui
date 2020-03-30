@@ -1,6 +1,18 @@
 #include <QThread>
 #include <QApplication>
 #include <QXmlStreamReader>
+#include <QNetworkConfigurationManager>
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/socket.h>
+#include <fcntl.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
 
 #include "mainwindow.h"
 
@@ -23,6 +35,11 @@ enum ColorIndex {
 #define		RGB_YELLOW	QColor(244, 231, 0)
 #define		RGB_LMAGENTA	QColor(231, 143, 194)
 #define		RGB_LCYAN	QColor(140, 203, 226)
+
+#define		Eth00	0	//eth0=0,eth1=0	两个网络端口都没连接	
+#define		Eth01	1	//eth0=0,eth1=1	有一个网络端口连接一个没有连接
+#define		Eth10	2	//eth0=1,eth1=0	有一个网络端口连接一个没有连接	
+#define		Eth11	3	//eth0=1,eth1=1	两个网络端口都连接了
 
 #define		DRAW_COLOR_BAR(c)	do{\
 	QString percent = QString::number(InkPump.InkQuantity[c]) + "%";\
@@ -135,8 +152,168 @@ void FindErrorExplain(unsigned int err, QString& explain)
 	}
 }
 
+//判断两个网卡端口状态
+int NetStateIsConnect()
+{
+
+	int fd = open("/tmp/ip.conf",O_RDONLY);
+	if(0 > fd)
+	{
+		perror("open");
+		return -1;
+	}
+
+	char str[1024] = {};
+	read(fd,str,size);
+	puts(str);
+	printf("读取成功!\n");
+
+	char*str1,*str2,*str3;
+	str1 = strstr(str,"eth0");
+	str2 = strstr(str,"eth1");
+	str3 = strstr(str,"lo");
+	if(NULL == str1 || NULL == str2)
+	{
+		return -1;
+	}
+
+	int len1 = strlen(str1);
+	int len2 = strlen(str2);
+	int len3 = strlen(str3);
+
+	char str4[len1-len2+1] = {};
+	strncpy(str4,str1,len1-len2);
+	puts(str4);
+	printf("字符串4读取成功!\n");
+
+	char str5[len2-len3+1] = {};
+	strncpy(str5,str2,len2-len3);
+	puts(str5);
+	printf("字符串5读取成功!\n");
+
+	char* strEth0,*strEth1;
+	strEth0 = strstr(str4,"RUNNING");
+	if(NULL == strEth0)
+	{
+		printf("eth0未连接\n");
+	}
+	else
+	{
+		puts(strEth0);
+	}
+	printf("eth0的RUNNING读取成功!\n");
+
+
+	
+	strEth1 = strstr(str5,"RUNNING");
+	if(NULL == strEth1)
+	{
+		printf("eth1未连接\n");
+	}
+	else
+	{
+		puts(strEth1);
+	}
+	printf("eth1的RUNNING读取成功!\n");
+
+	int ret = -1;
+	if(NULL == strEth0)
+	{
+		if(NULL == strEth1)
+		{
+			ret = 0;
+		}
+		else
+		{
+			ret = 1;
+		}
+	}
+	else
+	{
+		printf("eth0已连接\n");
+		if(NULL == strEth1)
+		{
+			ret = 2;
+		}
+		else
+		{
+			ret = 3;
+		}
+	}
+
+		printf("检测完成!\n");
+		return ret;
+	*/
+
+	int fd0 = open("/sys/class/net/eth0/carrier",O_RDONLY);
+	if(0 > fd0)
+	{
+		perror("open");
+		return -1;
+	}
+	char str0[1] = {};
+	read(fd0,str0,1);
+
+	int fd1 = open("/sys/class/net/eth1/carrier",O_RDONLY);
+	if(0 > fd1)
+	{
+		perror("open");
+		return -1;
+	}
+	char str1[1] = {};
+	read(fd1,str1,1);
+
+	if('0' == str0[0])
+	{
+		if('0' == str1[0])
+		{
+			return Eth00;
+		}
+		else
+		{
+			return Eth01;
+		}
+	}
+	else
+	{
+		if('0' == str1[0])
+		{
+			return Eth10;
+		}
+		else 
+		{
+			return Eth11;
+		}	
+	}
+
+}
+
 void mainDialog::ProcessPrintStatus()
-{	QWidget * window = QApplication::activeWindow();
+{
+	
+	switch(NetStateIsConnect())
+	{
+		case 0:Tool->GetNetworkButton()->SetStatus(1);break;	//两个端口都没有连接
+		case 1:Tool->GetNetworkButton()->SetStatus(1);break;	//eth0未连接eth1连接
+		case 2:Tool->GetNetworkButton()->SetStatus(1);break;	//eth0连接eth1未连接
+		case 3:Tool->GetNetworkButton()->SetStatus(0);break;	//两个端口都连接了
+		default:printf("检测出错!\n");break;	//出错
+	}
+	
+
+/*
+	QNetworkConfigurationManager mgr;
+	if(mgr.isOnline())
+	{	
+		Tool->GetNetworkButton()->SetStatus(0);
+	}
+	else
+	{
+		Tool->GetNetworkButton()->SetStatus(1);
+	}
+	
+*/
+	QWidget * window = QApplication::activeWindow();
 	if(window != this){
 
 	}

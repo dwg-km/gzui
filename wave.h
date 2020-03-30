@@ -9,6 +9,7 @@
 #include "command.h"
 #include "ui_interface.h"
 #include "APIDataInterface.hpp"
+#include "touchkey/lineedit.h"
 
 #include "UiTemplate.h"
 
@@ -36,7 +37,7 @@ public:
 				horLayout->addWidget(label, (z + 1) * j, i);
 
 				for(int b = 0; b < block; b++){
-					QLineEdit *lineEdit = new QLineEdit(this);
+					IntLineEdit *lineEdit = new IntLineEdit(this);
 					horLayout->addWidget(lineEdit, (z + 1) * j + b + 1, i);
 					matrix.push_back(lineEdit);
 				}
@@ -464,6 +465,9 @@ public:
 		toolLayout->addWidget(Tool->GetSaveButton());
 		toolLayout->addWidget(Tool->GetUpdateButton());
 		connect(Tool->GetMenuButton(), SIGNAL(clicked()), this, SLOT(close()));
+
+		statusLabel->setText("波形设置");
+
 
 		GetPrinterProperty(&property);
 
