@@ -25,10 +25,10 @@ int main(int argc, char *argv[])
 			case 'd':
 			{
 #ifdef DEBUG
-				qDebug() << "debug";
+				printf("debug\n");
 				return 1;
 #else
-				qDebug() << "release";
+				printf("release\n");
 				return 0;
 #endif
 			}
