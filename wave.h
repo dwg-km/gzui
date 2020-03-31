@@ -461,10 +461,10 @@ class WaveDialog : public UiTemplate
 public:
 	WaveDialog(QWidget *parent = NULL) : UiTemplate(parent)
 	{
-		toolLayout->addWidget(Tool->GetMenuButton());
+		toolLayout->addWidget(Tool->GetExitButton());
 		toolLayout->addWidget(Tool->GetSaveButton());
 		toolLayout->addWidget(Tool->GetUpdateButton());
-		connect(Tool->GetMenuButton(), SIGNAL(clicked()), this, SLOT(close()));
+		connect(Tool->GetExitButton(), SIGNAL(clicked()), this, SLOT(close()));
 
 		statusLabel->setText("波形设置");
 
