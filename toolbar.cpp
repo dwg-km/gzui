@@ -5,24 +5,42 @@
 void ToolBar::setMoveEnabled(bool enable)
 {
 	if(enable){
-		leftButton->setEnabled();
-		rightButton->setEnabled();
-		upButton->setEnabled();
-		downButton->setEnabled();
-		gohomeButton->setEnabled();
-		measureButton->setEnabled();
-		cleanButton->setEnabled();
-		printButton->setEnabled();
-		nozzleButton->setEnabled();
+		if(leftButton)
+			leftButton->setEnabled();
+		if(rightButton)
+			rightButton->setEnabled();
+		if(upButton)
+			upButton->setEnabled();
+		if(downButton)
+			downButton->setEnabled();
+		if(gohomeButton)
+			gohomeButton->setEnabled();
+		if(measureButton)
+			measureButton->setEnabled();
+		if(cleanButton)
+			cleanButton->setEnabled();
+		if(printButton)
+			printButton->setEnabled();
+		if(nozzleButton)
+			nozzleButton->setEnabled();
 	}else{
-		leftButton->setDisabled();
-		rightButton->setDisabled();
-		upButton->setDisabled();
-		downButton->setDisabled();
-		gohomeButton->setDisabled();
-		measureButton->setDisabled();
-		cleanButton->setDisabled();
-		printButton->setDisabled();
-		nozzleButton->setDisabled();
+		if(leftButton)
+			leftButton->setDisabled();
+		if(rightButton)
+			rightButton->setDisabled();
+		if(upButton)
+			upButton->setDisabled();
+		if(downButton)
+			downButton->setDisabled();
+		if(gohomeButton)
+			gohomeButton->setDisabled();
+		if(measureButton)
+			measureButton->setDisabled();
+		if(cleanButton)
+			cleanButton->setDisabled();
+		if(printButton)
+			printButton->setDisabled();
+		if(nozzleButton)
+			nozzleButton->setDisabled();
 	}
 }
