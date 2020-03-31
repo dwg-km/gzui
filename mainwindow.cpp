@@ -159,10 +159,7 @@ void FindErrorExplain(unsigned int err, QString& explain)
 int NetStateIsConnect()
 {
 	int fd0 = open("/sys/class/net/eth0/carrier",O_RDONLY);
-	if(0 > fd0)
-	{
-		perror("open");
-		close(fd0);
+	if(0 > fd0){
 		return -1;
 	}
 	char str0[1] = {};
@@ -170,9 +167,7 @@ int NetStateIsConnect()
 	close(fd0);
 
 	int fd1 = open("/sys/class/net/eth1/carrier",O_RDONLY);
-	if(0 > fd1)
-	{
-		perror("open");
+	if(0 > fd1){
 		return -1;
 	}
 	char str1[1] = {};
