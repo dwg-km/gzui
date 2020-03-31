@@ -41,6 +41,9 @@ enum ColorIndex {
 #define		Eth10	2	//eth0=1,eth1=0	有一个网络端口连接一个没有连接	
 #define		Eth11	3	//eth0=1,eth1=1	两个网络端口都连接了
 
+#define		NetIn	0	//界面显示网络已连接
+#define		NetOut	1	//界面显示网络未连接
+
 #define		DRAW_COLOR_BAR(c)	do{\
 	QString percent = QString::number(InkPump.InkQuantity[c]) + "%";\
 	h =(double)InkPump.InkQuantity[c] / 100 * rect_height;\
@@ -159,6 +162,7 @@ int NetStateIsConnect()
 	if(0 > fd0)
 	{
 		perror("open");
+		close(fd0);
 		return -1;
 	}
 	char str0[1] = {};
@@ -197,6 +201,7 @@ int NetStateIsConnect()
 			return Eth11;
 		}	
 	}
+	
 
 }
 
@@ -205,23 +210,24 @@ void mainDialog::ProcessPrintStatus()
 	
 	switch(NetStateIsConnect())
 	{
-		case 0:Tool->GetNetworkButton()->SetStatus(1);break;	//两个端口都没有连接
-		case 1:Tool->GetNetworkButton()->SetStatus(1);break;	//eth0未连接eth1连接
-		case 2:Tool->GetNetworkButton()->SetStatus(1);break;	//eth0连接eth1未连接
-		case 3:Tool->GetNetworkButton()->SetStatus(0);break;	//两个端口都连接了
+		case Eth00:Tool->GetNetworkButton()->SetStatus(NetOut);break;	//两个端口都没有连接
+		case Eth01:Tool->GetNetworkButton()->SetStatus(NetOut);break;	//eth0未连接eth1连接
+		case Eth10:Tool->GetNetworkButton()->SetStatus(NetOut);break;	//eth0连接eth1未连接
+		case Eth11:Tool->GetNetworkButton()->SetStatus(NetIn);break;	//两个端口都连接了
 		default:break;	//出错
 	}
+	
 	
 
 /*
 	QNetworkConfigurationManager mgr;
 	if(mgr.isOnline())
 	{	
-		Tool->GetNetworkButton()->SetStatus(0);
+		Tool->GetNetworkButton()->SetStatus(NetIn);
 	}
 	else
 	{
-		Tool->GetNetworkButton()->SetStatus(1);
+		Tool->GetNetworkButton()->SetStatus(NetOut);
 	}
 	
 */

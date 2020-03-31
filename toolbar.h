@@ -141,6 +141,7 @@ public:
 
 		waveButton = NULL;
 
+		/*
 		AddLeftButton();
 		AddRightButton();
 		AddUpButton();
@@ -181,6 +182,7 @@ public:
 		AddNetworkButton();
 
 		AddWaveButton();
+		*/
 	}
 
 	void AddLeftButton(){
@@ -194,6 +196,10 @@ public:
 		}
 	}
 	iconButton * GetLeftButton(){
+		if(leftButton == NULL)
+		{
+			AddLeftButton();
+		}
 		return leftButton;
 	}
 	void AddRightButton(){
@@ -207,6 +213,10 @@ public:
 		}
 	}
 	iconButton * GetRightButton(){
+		if(rightButton == NULL)
+		{
+			AddRightButton();
+		}
 		return rightButton;
 	}
 	void AddUpButton(){
@@ -220,6 +230,10 @@ public:
 		}
 	}
 	iconButton * GetUpButton(){
+		if(upButton == NULL)
+		{
+			AddUpButton();
+		}
 		return upButton;
 	}
 	void AddDownButton(){
@@ -233,6 +247,10 @@ public:
 		}
 	}
 	iconButton * GetDownButton(){
+		if(downButton == NULL)
+		{
+			AddDownButton();
+		}
 		return downButton;
 	}
 	void AddGoHomeButton(){
@@ -245,6 +263,10 @@ public:
 		}
 	}
 	iconButton * GetGoHomeButton(){
+		if(gohomeButton == NULL)
+		{
+			AddGoHomeButton();
+		}
 		return gohomeButton;
 	}
 	void AddMenuButton(){
@@ -254,6 +276,10 @@ public:
 		menuButton = new iconButton(iconmenu);
 	}
 	iconButton * GetMenuButton(){
+		if(menuButton == NULL)
+		{
+			AddMenuButton();
+		}
 		return menuButton;
 	}
 	void AddHomeButton(){
@@ -263,6 +289,10 @@ public:
 		homeButton = new iconButton(iconhome);
 	}
 	iconButton * GetHomeButton(){
+		if(homeButton == NULL)
+		{
+			AddHomeButton();
+		}
 		return homeButton;
 	}
 	void AddCaliButton(){
@@ -272,6 +302,10 @@ public:
 	    	caliButton = new iconButton(iconcali);
 	}
 	iconButton * GetCaliButton(){
+		if(caliButton == NULL)
+		{
+			AddCaliButton();
+		}
 		return caliButton;
 	}
 	void AddUvButton(){
@@ -281,6 +315,10 @@ public:
 	    	mechineButton = new iconButton(iconmechine);
 	}
 	iconButton * GetUvButton(){
+		if(uvButton == NULL)
+		{
+			AddUvButton();
+		}
 		return uvButton;
 	}
 	void AddMechineButton(){
@@ -290,6 +328,10 @@ public:
 	    	uvButton = new iconButton(iconuv);
 	}
 	iconButton * GetMechineButton(){
+		if(mechineButton == NULL)
+		{
+			AddMechineButton();
+		}
 		return mechineButton;
 	}
 	void AddInkButton(){
@@ -299,6 +341,10 @@ public:
 	    	inkButton = new iconButton(iconink);
 	}
 	iconButton * GetInkButton(){
+		if(inkButton == NULL)
+		{
+			AddInkButton();
+		}
 		return inkButton;
 	}
 	void AddWarningButton(){
@@ -308,6 +354,10 @@ public:
 	    	warningButton = new iconButton(iconwarning);
 	}
 	iconButton * GetWarningButton(){
+		if(warningButton == NULL)
+		{
+			AddWarningButton();
+		}
 		return warningButton;
 	}
 	void AddManagerButton(){
@@ -317,6 +367,10 @@ public:
 	    	managerButton = new iconButton(iconmanager);
 	}
 	iconButton * GetManagerButton(){
+		if(managerButton == NULL)
+		{
+			AddManagerButton();
+		}
 		return managerButton;
 	}
 	void AddAdvanceButton(){
@@ -326,6 +380,10 @@ public:
 	    	advanceButton = new iconButton(iconadvance);
 	}
 	iconButton * GetAdvanceButton(){
+		if(advanceButton == NULL)
+		{
+			AddAdvanceButton();
+		}
 		return advanceButton;
 	}
 	void AddBasesettingButton(){
@@ -335,6 +393,10 @@ public:
 	    	basesettingButton = new iconButton(iconbasesetting);
 	}
 	iconButton * GetBasesettingButton(){
+		if(basesettingButton == NULL)
+		{
+			AddBasesettingButton();
+		}
 		return basesettingButton;
 	}
 	void AddCleanButton(){
@@ -344,6 +406,10 @@ public:
 	    	cleanButton = new iconButton(iconclean);
 	}
 	iconButton * GetCleanButton(){
+		if(cleanButton == NULL)
+		{
+			AddCleanButton();
+		}
 		return cleanButton;
 	}
 	void AddPoweroffButton(){
@@ -353,6 +419,10 @@ public:
 	    	poweroffButton = new iconButton(iconpoweroff);
 	}
 	iconButton * GetPoweroffButton(){
+		if(poweroffButton == NULL)
+		{
+			AddPoweroffButton();
+		}
 		return poweroffButton;
 	}
 	void AddUpdateButton(){
@@ -362,6 +432,10 @@ public:
 	    	updateButton = new iconButton(iconupdate);
 	}
 	iconButton * GetUpdateButton(){
+		if(updateButton == NULL)
+		{
+			AddUpdateButton();
+		}
 		return updateButton;
 	}
 	void AddBackupButton(){
@@ -371,6 +445,10 @@ public:
 	    	backupButton = new iconButton(iconbackup);
 	}
 	iconButton * GetBackupButton(){
+		if(backupButton == NULL)
+		{
+			AddBackupButton();
+		}
 		return backupButton;
 	}
 	void AddPauseButton(){
@@ -383,6 +461,10 @@ public:
 		}
 	}
 	iconButton * GetPauseButton(){
+		if(pauseButton == NULL)
+		{
+			AddPauseButton();
+		}
 		return pauseButton;
 	}
 	void AddAbortButton(){
@@ -395,6 +477,10 @@ public:
 		}
 	}
 	iconButton * GetAbortButton(){
+		if(abortButton == NULL)
+		{
+			AddAbortButton();
+		}
 		return abortButton;
 	}
 	void AddExitButton(){
@@ -404,6 +490,10 @@ public:
 	    	exitButton = new iconButton(iconexit);
 	}
 	iconButton * GetExitButton(){
+		if(exitButton == NULL)
+		{
+			AddExitButton();
+		}
 		return exitButton;
 	}
 	void AddPreviousButton(){
@@ -413,6 +503,10 @@ public:
 	    	previousButton = new iconButton(iconprevious);
 	}
 	iconButton * GetPreviousButton(){
+		if(previousButton == NULL)
+		{
+			AddPreviousButton();
+		}
 		return previousButton;
 	}
 	void AddNextButton(){
@@ -422,6 +516,10 @@ public:
 	    	nextButton = new iconButton(iconnext);
 	}
 	iconButton * GetNextButton(){
+		if(nextButton == NULL)
+		{
+			AddNextButton();
+		}
 		return nextButton;
 	}
 	void AddPrintButton(){
@@ -431,6 +529,10 @@ public:
 		printButton = new iconButton(iconprint);
 	}
 	iconButton * GetPrintButton(){
+		if(printButton == NULL)
+		{
+			AddPrintButton();
+		}
 		return printButton;
 	}
 	void AddMeasureButton(){
@@ -443,6 +545,10 @@ public:
 		}
 	}
 	iconButton * GetMeasureButton(){
+		if(measureButton == NULL)
+		{
+			AddMeasureButton();
+		}
 		return measureButton;
 	}
 	void AddNozzleButton(){
@@ -452,6 +558,10 @@ public:
 		nozzleButton = new iconButton(iconnozzle);
 	}
 	iconButton * GetNozzleButton(){
+		if(nozzleButton == NULL)
+		{
+			AddNozzleButton();
+		}
 		return nozzleButton;
 	}
 	void AddOriginButton(){
@@ -461,6 +571,10 @@ public:
 		originButton = new iconButton(iconorigin);
 	}
 	iconButton * GetOriginButton(){
+		if(originButton == NULL)
+		{
+			AddOriginButton();
+		}
 		return originButton;
 	}
 	void AddWaveButton(){
@@ -470,6 +584,10 @@ public:
 		waveButton = new iconButton(iconwave);
 	}
 	iconButton * GetWaveButton(){
+		if(waveButton == NULL)
+		{
+			AddWaveButton();
+		}
 		return waveButton;
 	}
 	void AddSaveButton(){
@@ -479,6 +597,10 @@ public:
 		saveButton = new iconButton(iconsave);
 	}
 	iconButton * GetSaveButton(){
+		if(saveButton == NULL)
+		{
+			AddSaveButton();
+		}
 		return saveButton;
 	}
 	void AddFlashButton(){
@@ -488,6 +610,10 @@ public:
 		flashButton = new iconButton(iconflash);
 	}
 	iconButton * GetFlashButton(){
+		if(flashButton == NULL)
+		{
+			AddFlashButton();
+		}
 		return flashButton;
 	}
 	void AddNetworkButton(){
@@ -499,6 +625,10 @@ public:
 		networkButton = new iconButton(iconnetwork);
 	}
 	iconButton * GetNetworkButton(){
+		if(networkButton == NULL)
+		{
+			AddNetworkButton();
+		}
 		return networkButton;
 	}
 

@@ -698,7 +698,7 @@ class CaliDialog : public UiTemplate
 public:
 	CaliDialog(QWidget *parent = NULL) : UiTemplate(parent)
 	{
-		toolLayout->addWidget(Tool->GetMenuButton());
+		toolLayout->addWidget(Tool->GetExitButton());
 
 		toolLayout->addWidget(Tool->GetLeftButton());
 		toolLayout->addWidget(Tool->GetRightButton());
@@ -712,7 +712,7 @@ public:
 		//toolLayout->addWidget(Tool->GetNextButton());
 		//toolLayout->addWidget(Tool->GetPreviousButton());
 		
-		connect(Tool->GetMenuButton(), SIGNAL(clicked()), this, SLOT(close()));
+		connect(Tool->GetExitButton(), SIGNAL(clicked()), this, SLOT(close()));
 
 		statusLabel->setText("Calibration");
 
