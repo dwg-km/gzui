@@ -155,96 +155,6 @@ void FindErrorExplain(unsigned int err, QString& explain)
 //判断两个网卡端口状态
 int NetStateIsConnect()
 {
-	/*
-	int fd = open("/tmp/ip.conf",O_RDONLY);
-	if(0 > fd)
-	{
-		perror("open");
-		return -1;
-	}
-
-	char str[1024] = {};
-	read(fd,str,size);
-	puts(str);
-	printf("读取成功!\n");
-
-	char*str1,*str2,*str3;
-	str1 = strstr(str,"eth0");
-	str2 = strstr(str,"eth1");
-	str3 = strstr(str,"lo");
-	if(NULL == str1 || NULL == str2)
-	{
-		return -1;
-	}
-
-	int len1 = strlen(str1);
-	int len2 = strlen(str2);
-	int len3 = strlen(str3);
-
-	char str4[len1-len2+1] = {};
-	strncpy(str4,str1,len1-len2);
-	puts(str4);
-	printf("字符串4读取成功!\n");
-
-	char str5[len2-len3+1] = {};
-	strncpy(str5,str2,len2-len3);
-	puts(str5);
-	printf("字符串5读取成功!\n");
-
-	char* strEth0,*strEth1;
-	strEth0 = strstr(str4,"RUNNING");
-	if(NULL == strEth0)
-	{
-		printf("eth0未连接\n");
-	}
-	else
-	{
-		puts(strEth0);
-	}
-	printf("eth0的RUNNING读取成功!\n");
-
-
-	
-	strEth1 = strstr(str5,"RUNNING");
-	if(NULL == strEth1)
-	{
-		printf("eth1未连接\n");
-	}
-	else
-	{
-		puts(strEth1);
-	}
-	printf("eth1的RUNNING读取成功!\n");
-
-	int ret = -1;
-	if(NULL == strEth0)
-	{
-		if(NULL == strEth1)
-		{
-			ret = 0;
-		}
-		else
-		{
-			ret = 1;
-		}
-	}
-	else
-	{
-		printf("eth0已连接\n");
-		if(NULL == strEth1)
-		{
-			ret = 2;
-		}
-		else
-		{
-			ret = 3;
-		}
-	}
-
-		printf("检测完成!\n");
-		return ret;
-	*/
-
 	int fd0 = open("/sys/class/net/eth0/carrier",O_RDONLY);
 	if(0 > fd0)
 	{
@@ -253,6 +163,7 @@ int NetStateIsConnect()
 	}
 	char str0[1] = {};
 	read(fd0,str0,1);
+	close(fd0);
 
 	int fd1 = open("/sys/class/net/eth1/carrier",O_RDONLY);
 	if(0 > fd1)
@@ -262,6 +173,7 @@ int NetStateIsConnect()
 	}
 	char str1[1] = {};
 	read(fd1,str1,1);
+	close(fd1);
 
 	if('0' == str0[0])
 	{
