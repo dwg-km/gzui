@@ -61,7 +61,7 @@ public:
 #endif
 	}
 	int SetStatus(int s){
-		if(s < pixmatpList.size()){
+		if(s < pixmatpList.size() && status != s){
 			status = s;
 			update();
 		}

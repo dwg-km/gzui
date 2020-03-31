@@ -209,7 +209,7 @@ void mainDialog::ProcessPrintStatus()
 		case 1:Tool->GetNetworkButton()->SetStatus(1);break;	//eth0未连接eth1连接
 		case 2:Tool->GetNetworkButton()->SetStatus(1);break;	//eth0连接eth1未连接
 		case 3:Tool->GetNetworkButton()->SetStatus(0);break;	//两个端口都连接了
-		default:printf("检测出错!\n");break;	//出错
+		default:break;	//出错
 	}
 	
 
