@@ -23,6 +23,10 @@ void ToolBar::setMoveEnabled(bool enable)
 			printButton->setEnabled();
 		if(nozzleButton)
 			nozzleButton->setEnabled();
+		if(flashButton)
+			flashButton->setEnabled();
+		if(originButton)
+			originButton->setEnabled();
 	}else{
 		if(leftButton)
 			leftButton->setDisabled();
@@ -42,5 +46,9 @@ void ToolBar::setMoveEnabled(bool enable)
 			printButton->setDisabled();
 		if(nozzleButton)
 			nozzleButton->setDisabled();
+		if(flashButton)
+			flashButton->setDisabled();
+		if(originButton)
+			originButton->setDisabled();
 	}
 }

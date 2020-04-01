@@ -75,7 +75,8 @@ public:
 		return rownum * colnum * block;
 	}
 	int SetEnabled(){
-	
+		//
+		return 0;
 	}
 public:
 	int colnum;
@@ -341,10 +342,10 @@ class WaveWidget : public QWidget {
 public:
 	WaveWidget(struct MECHAINE& p, QWidget *parent = NULL) :
 		QWidget(parent),
-		property(p),
 		Index(0),
 		Row(4),
 		Col(3),
+		property(p),
 		LineEditPerHead(12)
 	{
 
@@ -357,7 +358,7 @@ public:
 
 		Size = property.PrinterGroupNum * property.PrinterColorNum * LineEditPerHead;
 
-		char * name = "Pause;Voltage;Delay";
+		char * name = (char*)"Pause;Voltage;Delay";
 		indexComBox = new QComboBox;
 		for(int g = 0; g < property.PrinterGroupNum; g++){
 			for(int c = 0; c < property.PrinterColorNum; c++){
@@ -399,8 +400,8 @@ public:
 		waveGroup->UpdataContext(WaveCurve[index]);
 		pulse->Updata(WaveCurve[Index]);
 	}
-	virtual void hideEvent(QHideEvent * event){
 /*
+	virtual void hideEvent(QHideEvent * event){
 		event = event;
 		if(waveGroup->CheckDirty(WaveCurve[Index])){
 			Dirty = 1;
@@ -416,8 +417,8 @@ public:
 				SaveData();
 			}
 		}
-*/
 	}
+*/
 	void SaveData(){
 		SendHbCmd(CMD_HB_WAVE, WRITE, (float*)WaveCurve, Size);
 	}
@@ -443,11 +444,11 @@ public slots:
 private:
 	int Index;
 	int Size;
-	int Col;
 	int Row;
-	int LineEditPerHead;
+	int Col;
 	float WaveCurve[16][12];
 	struct MECHAINE property;
+	int LineEditPerHead;
 	
 	pulseWidget * pulse;
 	RateTimeGroup * waveGroup;

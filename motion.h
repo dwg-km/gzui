@@ -342,6 +342,7 @@ public slots:
 		unsigned int buf[4] = {0x0070, 0, 0, 0};
 		SendMotionCmd(UI_CMD::CMD_MOTION_GET_MODE, buf);
 		rasterLineEdit->setText(QString::number(buf[0]));	
+		return 0;
 	}
 	int SetRaster(){
 		unsigned int buf[4] = {0x0070, 0, 0, 0};
@@ -388,7 +389,6 @@ public slots:
 		unsigned int buf[4] = {0x0023, 0, 0, 0};
 		buf[1] = moter->gearLineEdit->text().toInt();
 		SendMotionCmd(UI_CMD::CMD_MOTION_SET_MODE, buf);
-		
 	}
 
 private:

@@ -70,7 +70,7 @@ public:
 
 private:
 
-	void setPixmapList(QVector<QString> &list);
+	//void setPixmapList(QVector<QString> &list);
 	
 	QPixmap *background;
 						     

@@ -12,7 +12,9 @@ iconButton::iconButton(QVector<QString> &list, QWidget *parent)
 #if WITH_QLABEL
 	: QLabel(parent), 
 #else
-	: QPushButton(parent), curIndex(0), status(0)
+	: QPushButton(parent),
+	status(0),
+	curIndex(0)
 #endif
 {
 	setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
@@ -32,9 +34,9 @@ iconButton::iconButton(QVector<QString> &list, QWidget *parent)
 	}
 }
  
+	/*
 void iconButton::setPixmapList(QVector<QString> &list)
 {
-	/*
 	if (list.size() <= 0)
 		return;
 	pixmatpList.clear();
@@ -44,12 +46,13 @@ void iconButton::setPixmapList(QVector<QString> &list)
 	{
 		pixmatpList.push_back(QPixmap(*pos));
 	}
-	*/
 }
+	*/
  
 #ifndef	WITH_QLABEL
 void iconButton::paintEvent ( QPaintEvent * event)
 {
+	event = event;
 	QPainter painter(this);
 	painter.drawPixmap(event->rect(), pixmatpList[status][curIndex]);
 }
@@ -57,18 +60,21 @@ void iconButton::paintEvent ( QPaintEvent * event)
 
 void iconButton::enterEvent(QEvent *event)
 {
+	event = event;
 	curIndex = 1;
 	//QPushButton::enterEvent(event);
 }
 
 void iconButton::leaveEvent(QEvent *event)
 {
+	event = event;
 	curIndex = 0;
 	//QPushButton::leaveEvent(event);
 }
 
 void iconButton::mousePressEvent(QMouseEvent *event)
 {
+	event = event;
 #if WITH_QLABEL
 	setPixmap(pixmatpList[status][2]);
 	update();
@@ -82,6 +88,7 @@ void iconButton::mousePressEvent(QMouseEvent *event)
  
 void iconButton::mouseReleaseEvent(QMouseEvent *event)
 {
+	event = event;
 #if WITH_QLABEL
 	setPixmap(pixmatpList[status][0]);
 	update();
