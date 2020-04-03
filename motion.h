@@ -69,6 +69,7 @@ public:
 
 	        posPushButton = new QPushButton("位置");
 		posLineEdit = new QLineEdit;
+		posLineEdit->setEnabled(false);
 		
 		gearPushButton = new QPushButton("齿轮比");
 		resetPushButton = new QPushButton("reset");
@@ -258,11 +259,19 @@ public:
 		moter->pulseLineEdit->setVisible(false);
 		dir_positive->setVisible(false);
 		dir_reverse->setVisible(false);
+		
+		//ReadRaster();		//光栅读取
+		//GetGearRatio();	//齿轮比读取
+		//GetMoveParam();	//运动参数读取
+		
+		connect(Tool->GetUpdateButton(), SIGNAL(clicked()), this, SLOT(ReadRaster()));
+		connect(Tool->GetUpdateButton(), SIGNAL(clicked()), this, SLOT(GetGearRatio()));
+		connect(Tool->GetUpdateButton(), SIGNAL(clicked()), this, SLOT(GetMoveParam()));
 
-		//ReadRaster();
-		//GetGearRatio();
-		//GetMoveParam();
-
+		//connect(Tool->GetSaveButton(), SIGNAL(clicked()), this, SLOT(SeadRaster()));
+		//connect(Tool->GetSaveButton(), SIGNAL(clicked()), this, SLOT(SetGearRatio()));
+		connect(Tool->GetSaveButton(), SIGNAL(clicked()), this, SLOT(SetMoveParam()));
+		
 		//QWidget * widget = new QWidget;
 		QGridLayout *layout = new QGridLayout;
 
@@ -336,6 +345,7 @@ public slots:
 		return 0;
 	}
 	int ReadRaster(){
+		qDebug() << "read raster";
 		//int raster[4] = {0, 0, 0, 0};
 		//SendMotionCmd(UI_CMD::CMD_MOTION_GET_RASTER, raster);
 		//rasterLineEdit->setText(QString::number(raster[0]));	
@@ -352,6 +362,7 @@ public slots:
 		return 0;
 	}
 	int GetGearRatio(){
+		qDebug() << "get gear ratio";
 		int axis = axisBox->currentIndex(); 
 		if(axis == 0){
 			unsigned int buf[4] = {0x0071, 0, 0, 0};
@@ -370,6 +381,7 @@ public slots:
 		return 0;
 	}
 	void GetMoveParam(){
+		qDebug() << "get move param";
 		unsigned int buf[4] = {0x0023, 0, 0, 0};
 		buf[1] = moter->gearLineEdit->text().toInt();
 		SendMotionCmd(UI_CMD::CMD_MOTION_GET_MODE, buf);

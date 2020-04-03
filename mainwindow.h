@@ -246,11 +246,13 @@ public:
 		setLayout->addWidget(bidLabel,		2, 2);
 		setLayout->addWidget(bidLineEdit,	2, 3);
 
+		/*
 		setLayout->addWidget(cycleLabel,	3, 0);
 		setLayout->addWidget(cycleLineEdit,	3, 1);
 		setLayout->addWidget(pumpLabel,		3, 2);
 		setLayout->addWidget(pumpLineEdit,	3, 3);
-		
+		*/
+
 		//QGridLayout * orgLayout = new QGridLayout;
 		//orgBox->setLayout(orgLayout);
 		//grid->addWidget(orgBox,		2, 1, 1, 1);

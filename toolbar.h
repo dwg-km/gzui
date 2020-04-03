@@ -453,7 +453,8 @@ public:
 	}
 	void AddPauseButton(){
 	    	QVector<QString> iconpause = {
-	    		"resources/pause.png"
+	    		"resources/pause.png",
+			"resources/resume.png"
 	    	};
 		if(pauseButton == NULL){
 	    		pauseButton = new iconButton(iconpause);

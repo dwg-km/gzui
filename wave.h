@@ -137,6 +137,7 @@ private:
 		SendHbCmd(CMD_HB_TEMP_TARGET, 0, temp, len);
 		TargetTempGroup->UpdataContext(temp);
 	}
+public slots:
 	void GetRealTemp(){
 		float temp[64];	
 		int len = property.PrinterGroupNum * property.PrinterColorNum;
@@ -482,6 +483,7 @@ public:
 	void AddTempWaveWidget(){
 	        tempWidget = new TempWidget(property);
 		connect(Tool->GetSaveButton(), SIGNAL(clicked()), tempWidget, SLOT(SaveParam()));
+		connect(Tool->GetUpdateButton(), SIGNAL(clicked()), tempWidget, SLOT(GetRealTemp()));
 
 		widgetlist->addTab(tempWidget, "Temp");
 	}
@@ -494,6 +496,7 @@ public:
 	void AddPulseWaveWidget(){
 		waveWidget = new WaveWidget(property);
 		connect(Tool->GetSaveButton(), SIGNAL(clicked()), waveWidget, SLOT(SaveParam()));
+
 
 		widgetlist->addTab(waveWidget, "Wave");
 	}

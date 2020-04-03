@@ -259,8 +259,7 @@ void mainDialog::ProcessPrintStatus()
 
 	if(s == READY){
 		Tool->setMoveEnabled(true);
-		Tool->GetNetworkButton()->SetStatus(0);
-		
+
 		INK_PUMP * pump = (INK_PUMP*)&status;
 		if(memcpy(&InkPump, pump, sizeof(INK_PUMP))){
 			memcpy(&InkPump, pump, sizeof(INK_PUMP));
@@ -299,7 +298,15 @@ void mainDialog::ProcessPrintStatus()
 		qDebug() << "moving...";
 		//emit moving();
 	}else if(s == PAUSE){
+		Tool->GetPauseButton()->SetStatus(1);
+		qDebug() << "Print in Pause,the Button is Resune\n";
 		emit pause();
+	}
+
+	if(s != PAUSE)
+	{
+		Tool->GetPauseButton()->SetStatus(0);
+		qDebug() << "Print in not Pause,the Button is Pause\n";
 	}
 	//if(s == REMOTE){
 	//	Tool->GetNetworkButton()->SetStatus(2);
