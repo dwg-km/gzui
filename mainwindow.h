@@ -148,6 +148,7 @@ public:
 		toolBox->setLayout(menuLayout);
 		connect(Tool->GetPrintButton(),SIGNAL(clicked()), this, SLOT(Print()));
 		connect(Tool->GetFlashButton(),SIGNAL(clicked()), this, SLOT(Flash()));
+		connect(Tool->GetOriginButton(),SIGNAL(clicked()), this, SLOT(SetAsOrigin()));
 		connect(Tool->GetNozzleButton(),SIGNAL(clicked()), this, SLOT(PrintNozzleCheck()));
 	}
 	void LayoutMoveButtons(){
@@ -287,6 +288,7 @@ public slots:
 	void mediaChanged(const QString&);
 	void modelChanged(const QString&);
 	void originChanged();
+	void SetAsOrigin();
 
 	void Exit();
 	void Flash();

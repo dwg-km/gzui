@@ -749,6 +749,7 @@ public:
 		QPushButton *overlapButton = new QPushButton("Overlap");
 		
 		connect(stepButton, SIGNAL(clicked()), this, SLOT(PrintStepCheck()));
+		connect(angleButton, SIGNAL(clicked()), this, SLOT(PrintAngleCheck()));
 
 		int x = 0;
 		int y = 0;
@@ -812,6 +813,9 @@ public slots:
 	}
 	void PrintStepCheck(){
 		PrintCalibration(UI_CMD::CMD_MECHINE_CHECK_STEP, 0, 0, 0);
+	}
+	void PrintAngleCheck(){
+		PrintCalibration(UI_CMD::CMD_MECHINE_CHECK_ANGLE, 0, 0, 0);
 	}
 private:
 	QTabWidget * widgetlist;

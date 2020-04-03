@@ -146,8 +146,6 @@ void udisk_thread()
 		/* Netlink message buffer */
 		int len = recv(hotplug_sock, &buf, sizeof(buf), 0);
 		char * s = buf;
-		int cnt = 0;
-		int n = 0;
 		//printf("recv len=%d : len %d\n", len, strlen(buf));
 		if(len > 0 && len <= UEVENT_BUFFER_SIZE){
 			deal_one_line(s);

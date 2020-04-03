@@ -259,7 +259,7 @@ void mainDialog::ProcessPrintStatus()
 
 	if(s == READY){
 		Tool->setMoveEnabled(true);
-		Tool->GetNetworkButton()->SetStatus(0);
+		//Tool->GetNetworkButton()->SetStatus(0);
 		
 		INK_PUMP * pump = (INK_PUMP*)&status;
 		if(memcpy(&InkPump, pump, sizeof(INK_PUMP))){
@@ -267,6 +267,7 @@ void mainDialog::ProcessPrintStatus()
 			cycleLineEdit->setText(QString::number(pump->InkCyclePressure));
 			pumpLineEdit->setText(QString::number(pump->InkSupplyPressure));
 		}
+		messageLabel->setText("");
 		emit ready();
 	}else if(s == ERROR){
 		if(status.error_code & SOFTWARE){
@@ -434,3 +435,12 @@ void mainDialog::originChanged()
 	}
 }
 
+void mainDialog::SetAsOrigin()
+{
+	qDebug() << "set as origiin";
+	int ret = SendMotionCmd(UI_CMD::CMD_MOTION_ORIGIN, NULL);
+	if(ret == 0){
+		qDebug() << "reload the origin";
+		LoadOrigin();	
+	}
+}
