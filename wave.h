@@ -135,13 +135,13 @@ private:
 	void GetTargetTemp(){
 		float temp[64];	
 		int len = property.PrinterGroupNum * property.PrinterColorNum;
-		SendHbCmd(CMD_HB_TEMP_TARGET, 0, temp, len);
+		SendHbCmd(CMD_HB_TEMP_TARGET, READ, temp, len);
 		TargetTempGroup->UpdataContext(temp);
 	}
 	void GetRealTemp(){
 		float temp[64];	
 		int len = property.PrinterGroupNum * property.PrinterColorNum;
-		SendHbCmd(CMD_HB_TEMP_REAL, 0, temp, len);
+		SendHbCmd(CMD_HB_TEMP_REAL, READ, temp, len);
 		RealTempGroup->UpdataContext(temp);
 	}
 public slots:
@@ -149,7 +149,7 @@ public slots:
 		float temp[64];	
 		if(TargetTempGroup->CheckDirty(temp)){
 			qDebug() << " is dirty";
-			SendHbCmd(CMD_HB_TEMP_TARGET, 1, temp, TargetTempGroup->Size());
+			SendHbCmd(CMD_HB_TEMP_TARGET, WRITE, temp, TargetTempGroup->Size());
 		}	
 	}
 private:
@@ -157,6 +157,7 @@ private:
 	RateTimeGroup * RealTempGroup;
 	RateTimeGroup * TargetTempGroup;  
 };
+
 /*
 class VoltageWidget : public QWidget {
 	Q_OBJECT

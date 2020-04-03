@@ -202,7 +202,6 @@ int NetStateIsConnect()
 
 void mainDialog::ProcessPrintStatus()
 {
-	
 	switch(NetStateIsConnect())
 	{
 		case Eth00:Tool->GetNetworkButton()->SetStatus(NetOut);break;	//两个端口都没有连接
@@ -211,8 +210,6 @@ void mainDialog::ProcessPrintStatus()
 		case Eth11:Tool->GetNetworkButton()->SetStatus(NetIn);break;	//两个端口都连接了
 		default:break;	//出错
 	}
-	
-	
 
 /*
 	QNetworkConfigurationManager mgr;
