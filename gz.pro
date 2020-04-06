@@ -46,4 +46,8 @@ SUBDIRS		= lib \
 my_cmd_line = cp ../gz_run.sh ./
 QMAKE_POST_LINK += $$quote($$my_cmd_line)
 
+DEFINES += GIT_VERSION=\\\"'$(shell git log -1 --format=%H)'\\\"
+
+DEFINES += UI_VERSION=\\\"v1.0.0\\\"
+
 unix:!macx: LIBS += ../lib/libpmd.so 

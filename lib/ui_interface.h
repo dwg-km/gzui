@@ -18,7 +18,7 @@
 #include "command.h"
 #include "APIDataInterface.hpp"
 
-extern const char* GetVertion();
+extern int GetPmVersion(char * vertion);
 
 extern int CreatePrinter(char* path);
 extern int DestroyPrinter(void *handle);

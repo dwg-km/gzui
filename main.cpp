@@ -8,7 +8,6 @@
 
 #include "ui_interface.h"
 
-#define	UI_VERSION	"ui 1.0.0"
 
 int main(int argc, char *argv[])
 {

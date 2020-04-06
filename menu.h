@@ -408,6 +408,7 @@ public:
 		//AddUVWidget();
 		//AddAdvanceWidget();
 		//AddWarningWidget();
+		AddVersionWidget();
 
 		Layout(widgetlist);
 	}
@@ -440,6 +441,22 @@ public:
 	void AddInkWidget(){
 		QWidget * widget = new QWidget;
 		widgetlist->addTab(widget, "Ink");
+	}
+	void AddVersionWidget(){
+		QWidget * widget = new QWidget;
+		widgetlist->addTab(widget, "version");
+
+		QLabel * version = new QLabel(widget);
+		version->setWordWrap(true);
+
+		char pm_info[128];
+		GetPmVersion(pm_info);
+
+		QString info;
+		info.sprintf("UI INFO\nversion: %s\nbuild date: %sbuild time: %s\nsignature: %s\n\n%s",
+			UI_VERSION, __DATE__, __TIME__, GIT_VERSION, pm_info);
+		
+		version->setText(info);
 	}
 
 public slots:
