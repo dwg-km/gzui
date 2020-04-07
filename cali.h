@@ -706,8 +706,10 @@ public:
 		toolLayout->addWidget(Tool->GetUpButton());
 		toolLayout->addWidget(Tool->GetDownButton());
 
+		/*
 		toolLayout->addWidget(Tool->GetPauseButton());
 		toolLayout->addWidget(Tool->GetAbortButton());
+		*/
 
 		//toolLayout->addWidget(Tool->GetNextButton());
 		//toolLayout->addWidget(Tool->GetPreviousButton());

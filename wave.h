@@ -29,8 +29,8 @@ public:
 			for(int i = 0; i < colnum; i++){
 				QLabel *label = new QLabel(this);
 				QString text = colorlist.at(i) + QString::number(j);
+				qDebug() << text;
 
-				label->setText(text);
 				//lineEdit->resize(40, 28);
 				//lineEdit1->setEnabled(false);
 				label->setAlignment(Qt::AlignCenter);
@@ -40,6 +40,12 @@ public:
 					IntLineEdit *lineEdit = new IntLineEdit(this);
 					horLayout->addWidget(lineEdit, (z + 1) * j + b + 1, i);
 					matrix.push_back(lineEdit);
+					
+					
+					if(b > 0)
+					{
+						//lineEdit->setEnabled(false);
+					}
 				}
 			}
 		}
@@ -106,6 +112,8 @@ public:
 
 		setLayout(layout);
 
+//		connect(QTabWidget,SIGNAL(widgetlist->currentIndex()),this,SLOT(m_TabIndex));
+
 		//GetRealTemp();
 		//GetTargetTemp();
 	}
@@ -140,10 +148,13 @@ private:
 	}
 public slots:
 	void GetRealTemp(){
-		float temp[64];	
-		int len = property.PrinterGroupNum * property.PrinterColorNum;
-		SendHbCmd(CMD_HB_TEMP_REAL, READ, temp, len);
-		RealTempGroup->UpdataContext(temp);
+		//if(m_TabIndex == 0)
+		{
+			float temp[64];	
+			int len = property.PrinterGroupNum * property.PrinterColorNum;
+			SendHbCmd(CMD_HB_TEMP_REAL, READ, temp, len);
+			RealTempGroup->UpdataContext(temp);
+		}
 	}
 public slots:
 	void SaveParam(){
@@ -395,13 +406,17 @@ public:
 		//pulse->Updata(WaveCurve[Index]);
 		//waveGroup->UpdataContext(WaveCurve[Index]);
 	}
+	
 	virtual void showEvent(QShowEvent * event){
 		event = event;
+		/*
 		int index = indexComBox->currentIndex();
 		SendHbCmd(CMD_HB_WAVE, READ, (float*)WaveCurve, Size);
 		waveGroup->UpdataContext(WaveCurve[index]);
 		pulse->Updata(WaveCurve[Index]);
+		*/
 	}
+	
 /*
 	virtual void hideEvent(QHideEvent * event){
 		event = event;
@@ -443,6 +458,13 @@ public slots:
 			}
 		}
 	}
+	void GetUpDate()
+	{
+		int index = indexComBox->currentIndex();
+		SendHbCmd(CMD_HB_WAVE, READ, (float*)WaveCurve, Size);
+		waveGroup->UpdataContext(WaveCurve[index]);
+		pulse->Updata(WaveCurve[Index]);
+	}
 private:
 	int Index;
 	int Size;
@@ -468,7 +490,7 @@ public:
 		toolLayout->addWidget(Tool->GetSaveButton());
 		toolLayout->addWidget(Tool->GetUpdateButton());
 		connect(Tool->GetExitButton(), SIGNAL(clicked()), this, SLOT(close()));
-
+		connect(Tool->GetUpdateButton(), SIGNAL(clicked()), this, SLOT(TabUpdate()));
 		statusLabel->setText("波形设置");
 
 
@@ -485,9 +507,11 @@ public:
 	void AddTempWaveWidget(){
 	        tempWidget = new TempWidget(property);
 		connect(Tool->GetSaveButton(), SIGNAL(clicked()), tempWidget, SLOT(SaveParam()));
-		connect(Tool->GetUpdateButton(), SIGNAL(clicked()), tempWidget, SLOT(GetRealTemp()));
+		//connect(Tool->GetUpdateButton(), SIGNAL(clicked()), tempWidget, SLOT(GetRealTemp()));
 
 		widgetlist->addTab(tempWidget, "Temp");
+		widgetlist->setCurrentIndex(1);
+
 	}
 	//void AddVoltageWidget(){
 	//	voltageWidget = new VoltageWidget(property);
@@ -501,7 +525,23 @@ public:
 
 
 		widgetlist->addTab(waveWidget, "Wave");
+		widgetlist->setCurrentIndex(0);
 	}
+
+public slots:
+	void TabUpdate()
+	{
+		if(widgetlist->currentIndex() == 1)
+		{
+			tempWidget->GetRealTemp();
+		}
+		else if(widgetlist->currentIndex() == 0)
+		{
+			waveWidget->GetUpDate();
+		}
+	}
+
+
 private:
 	TempWidget * tempWidget;
 
