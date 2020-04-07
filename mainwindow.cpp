@@ -271,7 +271,11 @@ void mainDialog::ProcessPrintStatus()
 				tr("ERROR"), info, QMessageBox::Cancel);
 			if (r == QMessageBox::Cancel) {
 				ClearPrinterStatus(status.error_code);
+			}else{
+				messageLabel->setText(info);
 			}
+		}else{
+			messageLabel->setText(info);
 		}
 		emit error(info);
 	}else if(s == OFFLINE){
@@ -334,7 +338,7 @@ private:
 void mainDialog::Flash()
 {
 	//SendMotionCmd(UI_CMD::CMD_MOTION_FLASH, 0);
-	SendHbCmd(UI_CMD::CMD_HB_FLASH, 1, 0, 0);
+	SendHbCmd(UI_CMD::CMD_HB_FLASH, WRITE, 0, 0);
 }
 void mainDialog::Print()
 {
