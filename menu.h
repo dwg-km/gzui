@@ -453,7 +453,7 @@ public:
 		GetPmVersion(pm_info);
 
 		QString info;
-		info.sprintf("UI INFO\nversion: %s\nbuild date: %sbuild time: %s\nsignature: %s\n\n%s",
+		info.sprintf("UI INFO\nversion: %s\nbuild date: %s\nbuild time: %s\nsignature: %s\n\n%s",
 			UI_VERSION, __DATE__, __TIME__, GIT_VERSION, pm_info);
 		
 		version->setText(info);
