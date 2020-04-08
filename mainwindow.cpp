@@ -442,13 +442,12 @@ void mainDialog::originChanged()
 		SetPrinterParam(UI_CMD::CMD_MODE_ORIGIN, &origin);
 	}
 }
+void mainDialog::LoadOrigin(){
+	GetPrinterParam(UI_CMD::CMD_MODE_ORIGIN, &Origin);
 
-void mainDialog::SetAsOrigin()
-{
-	qDebug() << "set as origiin";
-	int ret = SendMotionCmd(UI_CMD::CMD_MOTION_ORIGIN, NULL);
-	if(ret == 0){
-		qDebug() << "reload the origin";
-		LoadOrigin();	
+	if(Origin.GetMode < 2){
+		orgComBox->setCurrentIndex(Origin.GetMode);
 	}
+	originLineEdit->setText(QString::number(Origin.Coord));
 }
+

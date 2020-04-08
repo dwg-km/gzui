@@ -569,11 +569,13 @@ public:
 		QVector<QString> iconorigin = {
 			"resources/origin.png"
 		};
-		originButton = new iconButton(iconorigin);
+		if(originButton == NULL){
+			originButton = new iconButton(iconorigin);
+			connect(originButton, SIGNAL(clicked()), this, SLOT(SetAsOrigin()));
+		}
 	}
 	iconButton * GetOriginButton(){
-		if(originButton == NULL)
-		{
+		if(originButton == NULL){
 			AddOriginButton();
 		}
 		return originButton;
@@ -708,6 +710,18 @@ private slots:
 	void Abort(){
 		PrintAbort();
 	}
+
+	void SetAsOrigin()
+	{
+		qDebug() << "set as origiin";
+		int ret = SendMotionCmd(UI_CMD::CMD_MOTION_ORIGIN, NULL);
+		if(ret == 0){
+			//LoadOrigin();	
+			emit updateOrigin();
+		}
+	}
+signals:
+	void updateOrigin();
 };
 
 #endif

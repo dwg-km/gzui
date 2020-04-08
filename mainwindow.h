@@ -148,8 +148,9 @@ public:
 		toolBox->setLayout(menuLayout);
 		connect(Tool->GetPrintButton(),SIGNAL(clicked()), this, SLOT(Print()));
 		connect(Tool->GetFlashButton(),SIGNAL(clicked()), this, SLOT(Flash()));
-		connect(Tool->GetOriginButton(),SIGNAL(clicked()), this, SLOT(SetAsOrigin()));
+		//connect(Tool->GetOriginButton(),SIGNAL(clicked()), this, SLOT(SetAsOrigin()));
 		connect(Tool->GetNozzleButton(),SIGNAL(clicked()), this, SLOT(PrintNozzleCheck()));
+		connect(Tool,SIGNAL(updateOrigin()), this, SLOT(LoadOrigin()));
 	}
 	void LayoutMoveButtons(){
 		moveBox = new QGroupBox;
@@ -164,14 +165,6 @@ public:
 		moveLayout->addWidget(Tool->GetDownButton(),   2, 1);
 
 		moveBox->setLayout(moveLayout);
-	}
-	void LoadOrigin(){
-		GetPrinterParam(UI_CMD::CMD_MODE_ORIGIN, &Origin);
-
-		if(Origin.GetMode < 2){
-			orgComBox->setCurrentIndex(Origin.GetMode);
-		}
-		originLineEdit->setText(QString::number(Origin.Coord));
 	}
 	void LayoutSetting(){
 		setBox = new QGroupBox;
@@ -290,7 +283,8 @@ public slots:
 	void mediaChanged(const QString&);
 	void modelChanged(const QString&);
 	void originChanged();
-	void SetAsOrigin();
+	//void SetAsOrigin();
+	void LoadOrigin();
 
 	void Exit();
 	void Flash();

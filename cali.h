@@ -78,7 +78,7 @@ public:
 			for(int i = 0; i < colnum; i++){
 				int index = j * colnum + i;
 				int value = matrix[index]->text().toInt();
-				data[index] = Value[index];
+				data[index] = value;
 				if(Value[index] != value){
 					dirty = 1;
 				}
@@ -381,9 +381,10 @@ public:
 		connect(resComBox, SIGNAL(currentTextChanged(const QString&)),
 				this, SLOT(ResChanged(const QString&)));
 		
-		speedComBox->addItem("低速");
-		speedComBox->addItem("中速");
 		speedComBox->addItem("高速");
+		speedComBox->addItem("中速");
+		speedComBox->addItem("低速");
+
 		speed = speedComBox->currentIndex();
 		connect(speedComBox, SIGNAL(currentIndexChanged(int)), 
 				this, SLOT(SpeedChanged(int)));
@@ -443,7 +444,7 @@ public slots:
 	}
 	void PrintRightCali(){
 		int data[64];
-		if(leftGroup->CheckDirty(data)){
+		if(rightGroup->CheckDirty(data)){
 			SaveCalibrationParam(UI_CMD::CMD_CALI_HORIZON_RIGHT,
 				res, speed,  data, rightGroup->Size());
 		}
@@ -495,9 +496,9 @@ public:
 		connect(resComBox, SIGNAL(currentTextChanged(const QString&)),
 				this, SLOT(ResChanged(const QString&)));
 		
-		speedComBox->addItem("低速");
-		speedComBox->addItem("中速");
 		speedComBox->addItem("高速");
+		speedComBox->addItem("中速");
+		speedComBox->addItem("低速");
 		speed = speedComBox->currentIndex();
 		connect(speedComBox, SIGNAL(currentIndexChanged(int)), 
 				this, SLOT(SpeedChanged(int)));
@@ -565,7 +566,7 @@ public slots:
 	void PrintRightCali(){
 		int data[64];
 		int cmd = UI_CMD::CMD_CALI_HORIZON_RIGHT_SUB | (colorIndex & 0x0F);
-		if(leftGroup->CheckDirty(data)){
+		if(rightGroup->CheckDirty(data)){
 			SaveCalibrationParam(UI_CMD(cmd), res, speed,  data, rightGroup->Size());
 		}
 
@@ -621,9 +622,9 @@ public:
 		connect(resComBox, SIGNAL(currentTextChanged(const QString&)),
 				this, SLOT(ResChanged(const QString&)));
 		
-		speedComBox->addItem("低速");
-		speedComBox->addItem("中速");
 		speedComBox->addItem("高速");
+		speedComBox->addItem("中速");
+		speedComBox->addItem("低速");
 		speed = speedComBox->currentIndex();
 		connect(speedComBox, SIGNAL(currentIndexChanged(int)), 
 				this, SLOT(SpeedChanged(int)));
@@ -702,12 +703,12 @@ public:
 
 		toolLayout->addWidget(Tool->GetLeftButton());
 		toolLayout->addWidget(Tool->GetRightButton());
-		toolLayout->addWidget(Tool->GetOriginButton());
+		//toolLayout->addWidget(Tool->GetOriginButton());
 		toolLayout->addWidget(Tool->GetUpButton());
 		toolLayout->addWidget(Tool->GetDownButton());
 
-		toolLayout->addWidget(Tool->GetPauseButton());
-		toolLayout->addWidget(Tool->GetAbortButton());
+		//toolLayout->addWidget(Tool->GetPauseButton());
+		//toolLayout->addWidget(Tool->GetAbortButton());
 
 		//toolLayout->addWidget(Tool->GetNextButton());
 		//toolLayout->addWidget(Tool->GetPreviousButton());
@@ -789,8 +790,8 @@ public:
 public slots:
 	void SetReady(){
 		Tool->setMoveEnabled(true);
-		Tool->GetAbortButton()->setDisabled();
-		Tool->GetPauseButton()->setDisabled();
+		//Tool->GetAbortButton()->setDisabled();
+		//Tool->GetPauseButton()->setDisabled();
 		messageLabel->setText(tr("ready"));
 	}
 	void SetMoving(){
@@ -801,13 +802,13 @@ public slots:
 	}
 	void SetError(QString msg){
 		Tool->setMoveEnabled(false);
-		Tool->GetAbortButton()->setDisabled();
-		Tool->GetPauseButton()->setDisabled();
+		//Tool->GetAbortButton()->setDisabled();
+		//Tool->GetPauseButton()->setDisabled();
 		messageLabel->setText(msg);
 	}
 	void SetPrinting(QString msg){
-		Tool->GetAbortButton()->setEnabled();
-		Tool->GetPauseButton()->setEnabled();
+		//Tool->GetAbortButton()->setEnabled();
+		//Tool->GetPauseButton()->setEnabled();
 		Tool->setMoveEnabled(false);
 		messageLabel->setText(msg);
 	}

@@ -3,10 +3,11 @@ SOURCE="../lib/libpmd.so gz ../update.sh ../resume.sh setting hb_cfg.xml hb_desc
 INSTALL=
 DST_PATH=${INSTALL}${PACKAGE_NAME}
 
-make clean
-qmake ..
-make clean
+if [  "$1" = "debug" ];then 
+make debug -j4
+else
 make release -j4
+fi
 
 mkdir -p ${DST_PATH}
 cp -rf ${SOURCE} ${DST_PATH}
