@@ -7,7 +7,7 @@ DST_PATH=${HOME}/gzui/
 LIB="libpmd.so"
 EXE="gz update.sh resume.sh"
 SETTING="setting hb_cfg.xml"
-CONFIG="hb_descp.xml ph_descp.xml error_code.xml pass.bin resources cali_config.xml error_code.xml fonts"
+CONFIG="hb_descp.xml ph_descp.xml resources cali_config.xml error_code.xml fonts"
 
 if [ ! -d $SRC_PATH ];then
 	mkdir -p $SRC_PATH

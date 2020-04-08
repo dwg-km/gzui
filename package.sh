@@ -1,12 +1,7 @@
 PACKAGE_NAME=gzui
-SOURCE="../lib/libpmd.so gz ../update.sh ../resume.sh setting hb_cfg.xml hb_descp.xml ph_descp.xml cali_config.xml ../error_code.xml pass.bin ../resources fonts"
+SOURCE="../lib/libpmd.so gz ../update.sh ../resume.sh setting hb_cfg.xml hb_descp.xml ph_descp.xml cali_config.xml error_code.xml ../resources fonts"
 INSTALL=
 DST_PATH=${INSTALL}${PACKAGE_NAME}
-
-make clean
-qmake ..
-make clean
-make release -j4
 
 mkdir -p ${DST_PATH}
 cp -rf ${SOURCE} ${DST_PATH}
