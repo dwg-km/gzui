@@ -29,7 +29,6 @@ public:
 			for(int i = 0; i < colnum; i++){
 				QLabel *label = new QLabel(this);
 				QString text = colorlist.at(i) + QString::number(j);
-				qDebug() << text;
 
 				//lineEdit->resize(40, 28);
 				//lineEdit1->setEnabled(false);
@@ -112,7 +111,6 @@ public:
 
 		setLayout(layout);
 
-//		connect(QTabWidget,SIGNAL(widgetlist->currentIndex()),this,SLOT(m_TabIndex));
 
 		//GetRealTemp();
 		//GetTargetTemp();
@@ -409,12 +407,12 @@ public:
 	
 	virtual void showEvent(QShowEvent * event){
 		event = event;
-		/*
+		
 		int index = indexComBox->currentIndex();
 		SendHbCmd(CMD_HB_WAVE, READ, (float*)WaveCurve, Size);
 		waveGroup->UpdataContext(WaveCurve[index]);
 		pulse->Updata(WaveCurve[Index]);
-		*/
+		
 	}
 	
 /*
@@ -490,7 +488,10 @@ public:
 		toolLayout->addWidget(Tool->GetSaveButton());
 		toolLayout->addWidget(Tool->GetUpdateButton());
 		connect(Tool->GetExitButton(), SIGNAL(clicked()), this, SLOT(close()));
+
 		connect(Tool->GetUpdateButton(), SIGNAL(clicked()), this, SLOT(TabUpdate()));
+		connect(Tool->GetSaveButton(), SIGNAL(clicked()), this, SLOT(TabSavedate()));
+		
 		statusLabel->setText("波形设置");
 
 
@@ -506,7 +507,7 @@ public:
 	}
 	void AddTempWaveWidget(){
 	        tempWidget = new TempWidget(property);
-		connect(Tool->GetSaveButton(), SIGNAL(clicked()), tempWidget, SLOT(SaveParam()));
+		//connect(Tool->GetSaveButton(), SIGNAL(clicked()), tempWidget, SLOT(SaveParam()));
 		//connect(Tool->GetUpdateButton(), SIGNAL(clicked()), tempWidget, SLOT(GetRealTemp()));
 
 		widgetlist->addTab(tempWidget, "Temp");
@@ -521,7 +522,7 @@ public:
 	//}
 	void AddPulseWaveWidget(){
 		waveWidget = new WaveWidget(property);
-		connect(Tool->GetSaveButton(), SIGNAL(clicked()), waveWidget, SLOT(SaveParam()));
+		//connect(Tool->GetSaveButton(), SIGNAL(clicked()), waveWidget, SLOT(SaveParam()));
 
 
 		widgetlist->addTab(waveWidget, "Wave");
@@ -538,6 +539,18 @@ public slots:
 		else if(widgetlist->currentIndex() == 0)
 		{
 			waveWidget->GetUpDate();
+		}
+	}
+
+	void TabSavedate()
+	{
+		if(widgetlist->currentIndex() == 1)
+		{
+			tempWidget->SaveParam();
+		}
+		else if(widgetlist->currentIndex() == 0)
+		{
+			waveWidget->SaveParam();
 		}
 	}
 

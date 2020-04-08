@@ -50,4 +50,9 @@ DEFINES += GIT_VERSION=\\\"'$(shell git log -1 --format=%H)'\\\"
 
 DEFINES += UI_VERSION=\\\"v1.0.0\\\"
 
-unix:!macx: LIBS += ../lib/libpmd.so 
+#unix:!macx: LIBS += ../lib/libpmd.so
+
+unix:!macx: LIBS += -L$$PWD/lib/ -lpmd
+
+INCLUDEPATH += $$PWD/lib
+DEPENDPATH += $$PWD/lib
