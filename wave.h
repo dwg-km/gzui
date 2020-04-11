@@ -135,15 +135,17 @@ private:
 	void GetTargetTemp(){
 		float temp[64];	
 		int len = property.PrinterGroupNum * property.PrinterColorNum;
-		SendHbCmd(CMD_HB_TEMP_TARGET, READ, temp, len);
-		TargetTempGroup->UpdataContext(temp);
+		if(SendHbCmd(CMD_HB_TEMP_TARGET, READ, temp, len) == 0){
+			TargetTempGroup->UpdataContext(temp);
+		}
 	}
 public slots:
 	void GetRealTemp(){
 		float temp[64];	
 		int len = property.PrinterGroupNum * property.PrinterColorNum;
-		SendHbCmd(CMD_HB_TEMP_REAL, READ, temp, len);
-		RealTempGroup->UpdataContext(temp);
+		if(SendHbCmd(CMD_HB_TEMP_REAL, READ, temp, len) == 0){
+			RealTempGroup->UpdataContext(temp);
+		}
 	}
 public slots:
 	void SaveParam(){
@@ -398,9 +400,10 @@ public:
 	virtual void showEvent(QShowEvent * event){
 		event = event;
 		int index = indexComBox->currentIndex();
-		SendHbCmd(CMD_HB_WAVE, READ, (float*)WaveCurve, Size);
-		waveGroup->UpdataContext(WaveCurve[index]);
-		pulse->Updata(WaveCurve[Index]);
+		if(SendHbCmd(CMD_HB_WAVE, READ, (float*)WaveCurve, Size) == 0){
+			waveGroup->UpdataContext(WaveCurve[index]);
+			pulse->Updata(WaveCurve[Index]);
+		}
 	}
 /*
 	virtual void hideEvent(QHideEvent * event){
@@ -468,6 +471,7 @@ public:
 		toolLayout->addWidget(Tool->GetSaveButton());
 		toolLayout->addWidget(Tool->GetUpdateButton());
 		connect(Tool->GetExitButton(), SIGNAL(clicked()), this, SLOT(close()));
+		connect(Tool->GetSaveButton(), SIGNAL(clicked()), this, SLOT(SaveParam()));
 
 		statusLabel->setText("波形设置");
 
@@ -484,7 +488,7 @@ public:
 	}
 	void AddTempWaveWidget(){
 	        tempWidget = new TempWidget(property);
-		connect(Tool->GetSaveButton(), SIGNAL(clicked()), tempWidget, SLOT(SaveParam()));
+		//connect(Tool->GetSaveButton(), SIGNAL(clicked()), tempWidget, SLOT(SaveParam()));
 		connect(Tool->GetUpdateButton(), SIGNAL(clicked()), tempWidget, SLOT(GetRealTemp()));
 
 		widgetlist->addTab(tempWidget, "Temp");
@@ -497,10 +501,21 @@ public:
 	//}
 	void AddPulseWaveWidget(){
 		waveWidget = new WaveWidget(property);
-		connect(Tool->GetSaveButton(), SIGNAL(clicked()), waveWidget, SLOT(SaveParam()));
+		//connect(Tool->GetSaveButton(), SIGNAL(clicked()), waveWidget, SLOT(SaveParam()));
 
 
 		widgetlist->addTab(waveWidget, "Wave");
+	}
+	void SaveData(){
+		int index = widgetlist->currentIndex();
+		qDebug() << "save data";
+		if(widgetlist->tabText(index) == "Temp"){
+			qDebug() << "save temp";
+			//tempWidget->SaveParam();
+		}else if(widgetlist->tabText(index) == "Wave"){
+			qDebug() << "save wave";
+			//waveWidget->SaveParam();
+		}
 	}
 private:
 	TempWidget * tempWidget;
