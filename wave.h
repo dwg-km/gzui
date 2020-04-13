@@ -471,7 +471,7 @@ public:
 		toolLayout->addWidget(Tool->GetSaveButton());
 		toolLayout->addWidget(Tool->GetUpdateButton());
 		connect(Tool->GetExitButton(), SIGNAL(clicked()), this, SLOT(close()));
-		connect(Tool->GetSaveButton(), SIGNAL(clicked()), this, SLOT(SaveParam()));
+		connect(Tool->GetSaveButton(), SIGNAL(clicked()), this, SLOT(SaveData()));
 
 		statusLabel->setText("波形设置");
 
@@ -506,15 +506,16 @@ public:
 
 		widgetlist->addTab(waveWidget, "Wave");
 	}
+public slots:
 	void SaveData(){
 		int index = widgetlist->currentIndex();
 		qDebug() << "save data";
 		if(widgetlist->tabText(index) == "Temp"){
 			qDebug() << "save temp";
-			//tempWidget->SaveParam();
+			tempWidget->SaveParam();
 		}else if(widgetlist->tabText(index) == "Wave"){
 			qDebug() << "save wave";
-			//waveWidget->SaveParam();
+			waveWidget->SaveParam();
 		}
 	}
 private:
