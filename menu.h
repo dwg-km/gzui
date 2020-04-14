@@ -2,25 +2,50 @@
 #define		_SETTING_H
 
 #include <string.h>
+#include <netdb.h>
+#include <arpa/inet.h>
+#include <sys/socket.h>
+#include <unistd.h>
+#include <sys/ioctl.h>
+#include <net/if.h>
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <iostream>
+
 #include <QLabel>
 #include <QLineEdit>
+#include <QButtonGroup>
 
 #include <QDebug>
+#include "qdebug.h"
 #include <QGroupBox>
 #include <QComboBox>
 #include <QRadioButton>
+#include <QFileDialog>
 
 #include "wave.h"
 #include "cali.h"
 #include "toolbar.h"
 #include "motion.h"
 #include "UiTemplate.h"
+#include "iconbutton.h"
 
 #include "lineedit.h"
 
 #include "command.h"
 #include "ui_interface.h"
 #include "APIDataInterface.hpp"
+
+using namespace std;
+
+struct NetworkType
+{
+    bool IsStatic = false;
+    QString Address;
+    QString NetMask;
+    QString GateWay;
+};
 
 class GroupBox : public QGroupBox{
 	Q_OBJECT
@@ -341,6 +366,75 @@ private:
 	int Dirty;
 };
 
+class NetworkWidget :public QWidget
+{
+    Q_OBJECT
+
+public:
+
+    void getNetworkPort()
+    {
+        m_NetPort->addItem("eth0");
+        m_NetPort->addItem("eth1");
+    }
+
+    bool getNetworkConfig();
+    string getLocalIp(QString Gport);
+
+    NetworkWidget(QWidget *parent = NULL): QWidget(parent)
+    {
+        m_NetPort = new QComboBox;
+        m_ip = new TipLineEdit;
+        m_netmask = new TipLineEdit;
+        m_gateway = new TipLineEdit;
+        m_dhcp = new QRadioButton(tr("dhcp"));
+        m_static = new QRadioButton(tr("static"));
+        staticWidget = new QWidget;
+        m_RestarNet = new QPushButton(tr("OK"));
+
+        m_portButtonGroup = new QButtonGroup(this);
+        m_portButtonGroup->addButton(m_dhcp);
+        m_portButtonGroup->addButton(m_static);
+        m_dhcp->setChecked(true);
+
+        connect(this->m_RestarNet, SIGNAL(clicked()), this, SLOT(RestartNetwork()));
+        connect(m_portButtonGroup, SIGNAL(buttonClicked(int)), this, SLOT(SetPortState(int)));
+
+        getNetworkPort();
+
+        connect(m_NetPort, SIGNAL(currentIndexChanged(int)), this, SLOT(NetPortChange(int)));
+
+    }
+
+public slots:
+    void TabOpen();
+    void setButtonDisable(bool IsDisabel);
+    void SetPortState(int change);
+    void NetPortChange(int PortIndex);
+    void SaveNetWorkConfig(QString port);
+    void RestartNetwork();
+
+private:
+    QString m_path = "/etc/network/interfaces";
+
+    QComboBox * m_NetPort;
+    QRadioButton * m_dhcp;
+    QRadioButton * m_static;
+    QWidget * staticWidget;
+    QPushButton * m_RestarNet;
+    QButtonGroup * m_portButtonGroup;
+
+    TipLineEdit * m_ip;
+    TipLineEdit * m_netmask;
+    TipLineEdit * m_gateway;
+
+    NetworkType m_eth0;
+    NetworkType m_eth1;
+
+    QGridLayout * NetworkLayout;
+    QVBoxLayout * ConfigLayout;
+};
+
 class UiSetting : public UiTemplate
 {
 	Q_OBJECT
@@ -401,14 +495,15 @@ public:
 
 		widgetlist =  new QTabWidget;
 		
-		AddBaseSettingWidget();
+        AddBaseSettingWidget();
 		//AddInkWidget();
-		AddMechineWidget();
+        AddMechineWidget();
 		//AddCleanWidget();
 		//AddUVWidget();
 		//AddAdvanceWidget();
-		//AddWarningWidget();
-		AddVersionWidget();
+		//AddWarningWidget();		
+        AddSetNetworkWidget();
+        AddVersionWidget();
 
 		Layout(widgetlist);
 	}
@@ -459,11 +554,31 @@ public:
 		version->setText(info);
 	}
 
+    void AddSetNetworkWidget()
+    {
+        NetWidget = new NetworkWidget;
+        widgetlist->addTab(NetWidget, "network");
+
+        connect(widgetlist, SIGNAL(currentChanged(int)), this, SLOT(TabGetOpen(int)));
+    }
+
 public slots:
 	void Backup();
 	void Update();
+
+    void TabGetOpen(int TabIndex)
+    {
+        if(TabIndex == 2)
+        {
+            NetWidget->TabOpen();
+        }
+    }
+
 private:
 	QTabWidget * widgetlist;
+
+    NetworkWidget * NetWidget;
+    int m_NetWidgetIndex = -1;
 
 	CaliDialog * caliDialog;
 	WaveDialog * waveDialog;

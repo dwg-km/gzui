@@ -29,6 +29,12 @@ public:
 		m_buttons[10]->setEnabled(enable);
                 typefloat = enable;
 	}
+
+    void setIsNotString(bool state)
+    {
+        IsNotString = state;
+    }
+
 signals:
 	void ok();
 
@@ -44,6 +50,7 @@ private:
 	QPushButton * m_buttons[15];
 	QString str;
         bool typefloat;
+        bool IsNotString = true;
 	QLineEdit * label;
 	QLineEdit * m_edit;
 };

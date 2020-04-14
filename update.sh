@@ -53,14 +53,14 @@ if [ -d ${SRC_PATH}$i ];then
 fi
 done
 
-for i in $SETTING;
-do
-	if [ ! -f ${DST_PATH}$i ];then
-		if [ -d ${SRC_PATH}$i ];then
-			rm -rf ${DST_PATH}${i}
-		fi
-		mv ${SRC_PATH}$i $DST_PATH
-	fi
-done
+#for i in $SETTING;
+#do
+#	if [ ! -f ${DST_PATH}$i ];then
+#		if [ -d ${SRC_PATH}$i ];then
+#			rm -rf ${DST_PATH}${i}
+#		fi
+#		mv ${SRC_PATH}$i $DST_PATH
+#	fi
+#done
 
 rm -rf ${BIN}
