@@ -64,11 +64,11 @@ public:
 			for(int i = 0; i < colnum; i++){
 				int index = j * colnum + i;
 				int value = data[index];
-				if(Value[index] != value){
+				//if(Value[index] != value){
 					Value[index] = value;
 					QString text = QString::number(value);
 					matrix[j * colnum + i]->setText(text);
-				}
+				//}
 			}
 		}
 	}
@@ -316,8 +316,10 @@ public:
 		connect(overlapGroup->GetPrintButton(), SIGNAL(clicked()), this, SLOT(PrintOverlapCali()));
 
 		layout->addWidget(verticalGroup,0,1,1,3);
-		layout->addWidget(overlapGroup,1,1,1,3);
 
+		if(rownum > 1){
+			layout->addWidget(overlapGroup,1,1,1,3);
+		}
 		setLayout(layout);
 	}
 	void UpdateData(){

@@ -20,6 +20,7 @@ HEADERS       = mainwindow.h \
 		cali.h \
 		motion.h \
 		wave.h \
+		ip_cfg.hpp \
 		iconbutton.h\
 		toolbar.h \
 		UiTemplate.h \
@@ -32,6 +33,7 @@ HEADERS       = mainwindow.h \
 
 SOURCES       = main.cpp \
 		menu.cpp \ 
+		ip_cfg.cpp \
 		iconbutton.cpp \
 		mainwindow.cpp \
 		toolbar.cpp \ 
