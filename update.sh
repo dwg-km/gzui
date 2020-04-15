@@ -5,9 +5,9 @@ SRC_PATH=${BIN}
 DST_PATH=${HOME}/gzui/
 
 LIB="libpmd.so"
-EXE="gz update.sh resume.sh"
-SETTING="setting hb_cfg.xml"
-CONFIG="hb_descp.xml ph_descp.xml resources cali_config.xml error_code.xml fonts"
+EXE="gz update.sh resume.sh "
+SETTING="setting "
+CONFIG=" hb_descp.xml ph_descp.xml hb_cfg.xml error_code.xml cali_config.xml pass.bin resources  fonts "
 
 if [ ! -d $SRC_PATH ];then
 	mkdir -p $SRC_PATH
