@@ -40,12 +40,6 @@ public:
 					IntLineEdit *lineEdit = new IntLineEdit(this);
 					horLayout->addWidget(lineEdit, (z + 1) * j + b + 1, i);
 					matrix.push_back(lineEdit);
-					
-					
-					if(b > 0)
-					{
-						//lineEdit->setEnabled(false);
-					}
 				}
 			}
 		}
@@ -111,7 +105,6 @@ public:
 		layout->addWidget(RealTempGroup);
 
 		setLayout(layout);
-
 
 		//GetRealTemp();
 		//GetTargetTemp();
@@ -404,17 +397,14 @@ public:
 		//pulse->Updata(WaveCurve[Index]);
 		//waveGroup->UpdataContext(WaveCurve[Index]);
 	}
-	
 	virtual void showEvent(QShowEvent * event){
 		event = event;
-	
-		int index = indexComBox->currentIndex();	
+		int index = indexComBox->currentIndex();
 		if(SendHbCmd(CMD_HB_WAVE, READ, (float*)WaveCurve, Size) == 0){
 			waveGroup->UpdataContext(WaveCurve[index]);
 			pulse->Updata(WaveCurve[Index]);
 		}
 	}
-	
 /*
 	virtual void hideEvent(QHideEvent * event){
 		event = event;
@@ -456,13 +446,6 @@ public slots:
 			}
 		}
 	}
-	void GetUpDate()
-	{
-		int index = indexComBox->currentIndex();
-		SendHbCmd(CMD_HB_WAVE, READ, (float*)WaveCurve, Size);
-		waveGroup->UpdataContext(WaveCurve[index]);
-		pulse->Updata(WaveCurve[Index]);
-	}
 private:
 	int Index;
 	int Size;
@@ -490,9 +473,6 @@ public:
 		connect(Tool->GetExitButton(), SIGNAL(clicked()), this, SLOT(close()));
 		connect(Tool->GetSaveButton(), SIGNAL(clicked()), this, SLOT(SaveData()));
 
-		connect(Tool->GetUpdateButton(), SIGNAL(clicked()), this, SLOT(TabUpdate()));
-		connect(Tool->GetSaveButton(), SIGNAL(clicked()), this, SLOT(TabSavedate()));
-		
 		statusLabel->setText("波形设置");
 
 
@@ -509,10 +489,9 @@ public:
 	void AddTempWaveWidget(){
 	        tempWidget = new TempWidget(property);
 		//connect(Tool->GetSaveButton(), SIGNAL(clicked()), tempWidget, SLOT(SaveParam()));
+		connect(Tool->GetUpdateButton(), SIGNAL(clicked()), tempWidget, SLOT(GetRealTemp()));
 
 		widgetlist->addTab(tempWidget, "Temp");
-		widgetlist->setCurrentIndex(1);
-
 	}
 	//void AddVoltageWidget(){
 	//	voltageWidget = new VoltageWidget(property);
@@ -526,9 +505,7 @@ public:
 
 
 		widgetlist->addTab(waveWidget, "Wave");
-		widgetlist->setCurrentIndex(0);
 	}
-
 public slots:
 	void SaveData(){
 		int index = widgetlist->currentIndex();
