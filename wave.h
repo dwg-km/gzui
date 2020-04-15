@@ -30,6 +30,7 @@ public:
 				QLabel *label = new QLabel(this);
 				QString text = colorlist.at(i) + QString::number(j);
 
+				label->setText(text);
 				//lineEdit->resize(40, 28);
 				//lineEdit1->setEnabled(false);
 				label->setAlignment(Qt::AlignCenter);
@@ -147,17 +148,9 @@ private:
 	}
 public slots:
 	void GetRealTemp(){
-<<<<<<< HEAD
-		//if(m_TabIndex == 0)
-		{
-			float temp[64];	
-			int len = property.PrinterGroupNum * property.PrinterColorNum;
-			SendHbCmd(CMD_HB_TEMP_REAL, READ, temp, len);
-=======
 		float temp[64];	
 		int len = property.PrinterGroupNum * property.PrinterColorNum;
 		if(SendHbCmd(CMD_HB_TEMP_REAL, READ, temp, len) == 0){
->>>>>>> cbfa220ed56467bc1bd50ca70ccdf83fafe7dac0
 			RealTempGroup->UpdataContext(temp);
 		}
 	}
@@ -414,19 +407,12 @@ public:
 	
 	virtual void showEvent(QShowEvent * event){
 		event = event;
-		
-		int index = indexComBox->currentIndex();
-<<<<<<< HEAD
-		SendHbCmd(CMD_HB_WAVE, READ, (float*)WaveCurve, Size);
-		waveGroup->UpdataContext(WaveCurve[index]);
-		pulse->Updata(WaveCurve[Index]);
-		
-=======
+	
+		int index = indexComBox->currentIndex();	
 		if(SendHbCmd(CMD_HB_WAVE, READ, (float*)WaveCurve, Size) == 0){
 			waveGroup->UpdataContext(WaveCurve[index]);
 			pulse->Updata(WaveCurve[Index]);
 		}
->>>>>>> cbfa220ed56467bc1bd50ca70ccdf83fafe7dac0
 	}
 	
 /*
@@ -523,11 +509,6 @@ public:
 	void AddTempWaveWidget(){
 	        tempWidget = new TempWidget(property);
 		//connect(Tool->GetSaveButton(), SIGNAL(clicked()), tempWidget, SLOT(SaveParam()));
-<<<<<<< HEAD
-		//connect(Tool->GetUpdateButton(), SIGNAL(clicked()), tempWidget, SLOT(GetRealTemp()));
-=======
-		connect(Tool->GetUpdateButton(), SIGNAL(clicked()), tempWidget, SLOT(GetRealTemp()));
->>>>>>> cbfa220ed56467bc1bd50ca70ccdf83fafe7dac0
 
 		widgetlist->addTab(tempWidget, "Temp");
 		widgetlist->setCurrentIndex(1);
@@ -549,34 +530,6 @@ public:
 	}
 
 public slots:
-	void TabUpdate()
-	{
-		if(widgetlist->currentIndex() == 1)
-		{
-			tempWidget->GetRealTemp();
-		}
-		else if(widgetlist->currentIndex() == 0)
-		{
-			waveWidget->GetUpDate();
-		}
-	}
-<<<<<<< HEAD
-
-	void TabSavedate()
-	{
-		if(widgetlist->currentIndex() == 1)
-		{
-			tempWidget->SaveParam();
-		}
-		else if(widgetlist->currentIndex() == 0)
-		{
-			waveWidget->SaveParam();
-		}
-	}
-
-
-=======
-public slots:
 	void SaveData(){
 		int index = widgetlist->currentIndex();
 		qDebug() << "save data";
@@ -588,7 +541,6 @@ public slots:
 			waveWidget->SaveParam();
 		}
 	}
->>>>>>> cbfa220ed56467bc1bd50ca70ccdf83fafe7dac0
 private:
 	TempWidget * tempWidget;
 
