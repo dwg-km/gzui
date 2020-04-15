@@ -141,16 +141,23 @@ private:
 	void GetTargetTemp(){
 		float temp[64];	
 		int len = property.PrinterGroupNum * property.PrinterColorNum;
-		SendHbCmd(CMD_HB_TEMP_TARGET, READ, temp, len);
-		TargetTempGroup->UpdataContext(temp);
+		if(SendHbCmd(CMD_HB_TEMP_TARGET, READ, temp, len) == 0){
+			TargetTempGroup->UpdataContext(temp);
+		}
 	}
 public slots:
 	void GetRealTemp(){
+<<<<<<< HEAD
 		//if(m_TabIndex == 0)
 		{
 			float temp[64];	
 			int len = property.PrinterGroupNum * property.PrinterColorNum;
 			SendHbCmd(CMD_HB_TEMP_REAL, READ, temp, len);
+=======
+		float temp[64];	
+		int len = property.PrinterGroupNum * property.PrinterColorNum;
+		if(SendHbCmd(CMD_HB_TEMP_REAL, READ, temp, len) == 0){
+>>>>>>> cbfa220ed56467bc1bd50ca70ccdf83fafe7dac0
 			RealTempGroup->UpdataContext(temp);
 		}
 	}
@@ -409,10 +416,17 @@ public:
 		event = event;
 		
 		int index = indexComBox->currentIndex();
+<<<<<<< HEAD
 		SendHbCmd(CMD_HB_WAVE, READ, (float*)WaveCurve, Size);
 		waveGroup->UpdataContext(WaveCurve[index]);
 		pulse->Updata(WaveCurve[Index]);
 		
+=======
+		if(SendHbCmd(CMD_HB_WAVE, READ, (float*)WaveCurve, Size) == 0){
+			waveGroup->UpdataContext(WaveCurve[index]);
+			pulse->Updata(WaveCurve[Index]);
+		}
+>>>>>>> cbfa220ed56467bc1bd50ca70ccdf83fafe7dac0
 	}
 	
 /*
@@ -488,6 +502,7 @@ public:
 		toolLayout->addWidget(Tool->GetSaveButton());
 		toolLayout->addWidget(Tool->GetUpdateButton());
 		connect(Tool->GetExitButton(), SIGNAL(clicked()), this, SLOT(close()));
+		connect(Tool->GetSaveButton(), SIGNAL(clicked()), this, SLOT(SaveData()));
 
 		connect(Tool->GetUpdateButton(), SIGNAL(clicked()), this, SLOT(TabUpdate()));
 		connect(Tool->GetSaveButton(), SIGNAL(clicked()), this, SLOT(TabSavedate()));
@@ -508,7 +523,11 @@ public:
 	void AddTempWaveWidget(){
 	        tempWidget = new TempWidget(property);
 		//connect(Tool->GetSaveButton(), SIGNAL(clicked()), tempWidget, SLOT(SaveParam()));
+<<<<<<< HEAD
 		//connect(Tool->GetUpdateButton(), SIGNAL(clicked()), tempWidget, SLOT(GetRealTemp()));
+=======
+		connect(Tool->GetUpdateButton(), SIGNAL(clicked()), tempWidget, SLOT(GetRealTemp()));
+>>>>>>> cbfa220ed56467bc1bd50ca70ccdf83fafe7dac0
 
 		widgetlist->addTab(tempWidget, "Temp");
 		widgetlist->setCurrentIndex(1);
@@ -541,6 +560,7 @@ public slots:
 			waveWidget->GetUpDate();
 		}
 	}
+<<<<<<< HEAD
 
 	void TabSavedate()
 	{
@@ -555,6 +575,20 @@ public slots:
 	}
 
 
+=======
+public slots:
+	void SaveData(){
+		int index = widgetlist->currentIndex();
+		qDebug() << "save data";
+		if(widgetlist->tabText(index) == "Temp"){
+			qDebug() << "save temp";
+			tempWidget->SaveParam();
+		}else if(widgetlist->tabText(index) == "Wave"){
+			qDebug() << "save wave";
+			waveWidget->SaveParam();
+		}
+	}
+>>>>>>> cbfa220ed56467bc1bd50ca70ccdf83fafe7dac0
 private:
 	TempWidget * tempWidget;
 

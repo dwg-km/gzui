@@ -159,58 +159,31 @@ void FindErrorExplain(unsigned int err, QString& explain)
 int NetStateIsConnect()
 {
 	int fd0 = open("/sys/class/net/eth0/carrier",O_RDONLY);
-	if(0 > fd0){
-		return -1;
+	if(fd0 < 0){
+		return 1;
 	}
-	char str0[1] = {};
-	read(fd0,str0,1);
+	char eth0 = 0;
+	read(fd0, &eth0, 1);
 	close(fd0);
 
 	int fd1 = open("/sys/class/net/eth1/carrier",O_RDONLY);
-	if(0 > fd1){
-		return -1;
+	if(fd1 < 0){
+		return 1;
 	}
-	char str1[1] = {};
-	read(fd1,str1,1);
+	char eth1 = 0;
+	read(fd1, &eth1,1);
 	close(fd1);
 
-	if('0' == str0[0])
-	{
-		if('0' == str1[0])
-		{
-			return Eth00;
-		}
-		else
-		{
-			return Eth01;
-		}
+	if((eth0 == '1') && (eth1 == '1')){
+		return 0;
 	}
-	else
-	{
-		if('0' == str1[0])
-		{
-			return Eth10;
-		}
-		else 
-		{
-			return Eth11;
-		}	
-	}
-	
 
+	return 1;
 }
 
 void mainDialog::ProcessPrintStatus()
 {
-	switch(NetStateIsConnect())
-	{
-		case Eth00:Tool->GetNetworkButton()->SetStatus(NetOut);break;	//两个端口都没有连接
-		case Eth01:Tool->GetNetworkButton()->SetStatus(NetOut);break;	//eth0未连接eth1连接
-		case Eth10:Tool->GetNetworkButton()->SetStatus(NetOut);break;	//eth0连接eth1未连接
-		case Eth11:Tool->GetNetworkButton()->SetStatus(NetIn);break;	//两个端口都连接了
-		default:break;	//出错
-	}
-
+	Tool->GetNetworkButton()->SetStatus(NetStateIsConnect());
 /*
 	QNetworkConfigurationManager mgr;
 	if(mgr.isOnline())

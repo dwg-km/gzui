@@ -404,6 +404,24 @@ public:
 
         connect(m_NetPort, SIGNAL(currentIndexChanged(int)), this, SLOT(NetPortChange(int)));
 
+        ConfigLayout = new QVBoxLayout();
+        m_ip->setLab("IP:");
+        ConfigLayout->addWidget(m_ip);
+        m_netmask->setLab("NETMASK:");
+        ConfigLayout->addWidget(m_netmask);
+        m_gateway->setLab("GATEWAY:");
+        ConfigLayout->addWidget(m_gateway);
+        staticWidget->setLayout(ConfigLayout);
+
+        NetworkLayout = new QGridLayout();
+        NetworkLayout->addWidget(m_NetPort,0,0,1,1);
+        NetworkLayout->addWidget(m_dhcp,1,0,1,1);
+        NetworkLayout->addWidget(m_static,2,0,1,1);
+        NetworkLayout->addWidget(staticWidget,3,0,1,1);
+        NetworkLayout->addWidget(m_RestarNet,4,1,1,1);
+
+        setLayout(NetworkLayout);
+
     }
 
 public slots:
@@ -568,7 +586,8 @@ public slots:
 
     void TabGetOpen(int TabIndex)
     {
-        if(TabIndex == 2)
+        QString title = widgetlist->tabText(TabIndex);
+         if(title == QString::fromLocal8Bit("network"))
         {
             NetWidget->TabOpen();
         }
