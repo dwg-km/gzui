@@ -30,6 +30,7 @@ public:
 				QLabel *label = new QLabel(this);
 				QString text = colorlist.at(i) + QString::number(j);
 
+				label->setText(text);
 				//lineEdit->resize(40, 28);
 				//lineEdit1->setEnabled(false);
 				label->setAlignment(Qt::AlignCenter);
