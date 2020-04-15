@@ -503,18 +503,14 @@ public:
 		waveWidget = new WaveWidget(property);
 		//connect(Tool->GetSaveButton(), SIGNAL(clicked()), waveWidget, SLOT(SaveParam()));
 
-
 		widgetlist->addTab(waveWidget, "Wave");
 	}
 public slots:
 	void SaveData(){
 		int index = widgetlist->currentIndex();
-		qDebug() << "save data";
 		if(widgetlist->tabText(index) == "Temp"){
-			qDebug() << "save temp";
 			tempWidget->SaveParam();
 		}else if(widgetlist->tabText(index) == "Wave"){
-			qDebug() << "save wave";
 			waveWidget->SaveParam();
 		}
 	}
