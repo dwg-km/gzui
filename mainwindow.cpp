@@ -244,11 +244,7 @@ void mainDialog::ProcessPrintStatus()
 				tr("ERROR"), info, QMessageBox::Cancel);
 			if (r == QMessageBox::Cancel) {
 				ClearPrinterStatus(status.error_code);
-			}else{
-				messageLabel->setText(info);
 			}
-		}else{
-			messageLabel->setText(info);
 		}
 		emit error(info);
 	}else if(s == OFFLINE){
@@ -274,14 +270,12 @@ void mainDialog::ProcessPrintStatus()
 		//emit moving();
 	}else if(s == PAUSE){
 		Tool->GetPauseButton()->SetStatus(1);
-		qDebug() << "Print in Pause,the Button is Resune\n";
 		emit pause();
 	}
 
 	if(s != PAUSE)
 	{
 		Tool->GetPauseButton()->SetStatus(0);
-		qDebug() << "Print in not Pause,the Button is Pause\n";
 	}
 	//if(s == REMOTE){
 	//	Tool->GetNetworkButton()->SetStatus(2);
@@ -311,7 +305,7 @@ private:
 void mainDialog::Flash()
 {
 	//SendMotionCmd(UI_CMD::CMD_MOTION_FLASH, 0);
-	SendHbCmd(UI_CMD::CMD_HB_FLASH, WRITE, 0, 0);
+	SendHbCmd(UI_CMD::CMD_HB_FLASH, 1, 0, 0);
 }
 void mainDialog::Print()
 {

@@ -63,6 +63,12 @@ public:
 private:
 	int Dirty;
 */
+
+    TouchKey * getTouch()
+    {
+        return touchkey;
+    }
+
 private :
 	TouchKey *touchkey;
 };
@@ -86,6 +92,11 @@ public:
 		touchkey->exec();
 		clearFocus();
 	}
+
+    TouchKey * getTouch()
+    {
+        return touchkey;
+    }
 private :
 	TouchKey *touchkey;
 };

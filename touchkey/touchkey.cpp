@@ -57,10 +57,10 @@ void TouchKey::add()
 	//	label = NULL;
 	
 		bool ret = 1;
-		if(typefloat){
+        if(typefloat){
 			float num = 0.0;
 	 		num = str.toFloat(&ret);
-			if(!ret){
+            if(!ret && IsNotString){
 				QMessageBox  box;
 				box.setText("Please input a float number!");
 				box.exec();
@@ -69,19 +69,26 @@ void TouchKey::add()
 				m_edit->setText("0");
 			}
 			else{
-				QString data = QString::number(num,'g', 2);
+                if(IsNotString){
+                    QString data = QString::number(num,'g', 2);
 			       // QString data = QString("%1").arg(num);
-		 		label->setText(data);
+                    label->setText(data);
                			
-				label = NULL;
-				close();
+                    label = NULL;
+                    close();
+                }
+                else {
+                    label->setText(str);
+                    label = NULL;
+                    close();
+                }
 			}
 		}
 		else{
 			int num = 0;
         		num = str.toInt(&ret , 10);
 		      
-			if(!ret){
+            if(!ret && IsNotString){
 				QMessageBox  box;
 				box.setText("Please input a int number!");
 				box.exec();

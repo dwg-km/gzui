@@ -1,9 +1,15 @@
 #ifndef NEW_PUSH_BUTTON_H
 #define NEW_PUSH_BUTTON_H
 
+#include <QHBoxLayout>
+#include <QLineEdit>
+
 #include <QDebug>
 #include <QIcon>
 #include <QPushButton>
+
+#include "touchkey/touchkey.h"
+#include "touchkey/lineedit.h"
 /*
 class NewPushButton : public QPushButton {
 public:
@@ -17,6 +23,7 @@ private:
 #define CLOSEBUTTON_H
 
 #include <QLabel>
+#include <QString>
 #include <QPushButton>
 #include <QString>
 #include <QWidget>
@@ -94,7 +101,68 @@ protected:
 	virtual void mouseReleaseEvent ( QMouseEvent * event );
 	virtual  QSize sizeHint () const;									     
 };
+//将标签和输入框组成一个窗口类
+class TipLineEdit: public QWidget
+{
+    Q_OBJECT
+public:
+    TipLineEdit(QWidget *parent = NULL): QWidget(parent)
+    {
+        TipEdit = new QLabel;
+        LineEdit = new DoubleLineEdit;
+        TipLineLayout = new QGridLayout();
+        m_TipLineEdit = new QWidget;
+
+        LineEdit->getTouch()->setIsNotString(false);
+        TipLineLayout->addWidget(TipEdit,0,0,1,1);
+        TipLineLayout->addWidget(LineEdit,0,1,1,2);
+
+        //m_TipLineEdit->setLayout(TipLineLayout);
+        setLayout(TipLineLayout);
+
+    }
+
+public:
+
+    void setLab(QString list)
+    {
+        TipEdit->setText(list);
+    }
+
+    void setLine(QString list)
+    {
+        LineEdit->setText(list);
+    }
+
+    QString getLine()
+    {
+        return LineEdit->text();
+    }
+
+    void setLineDisabel(bool state)
+    {
+        LineEdit->setDisabled(state);
+    }
+
+    QLineEdit * GetLineEditReturn()
+    {
+        return LineEdit;
+    }
+
+
+private:
+    QLabel * TipEdit;
+    DoubleLineEdit * LineEdit;
+    QGridLayout * TipLineLayout;
+    QWidget * m_TipLineEdit;
+
+    TouchKey *touchkey;
+
+
+};
+
  
 #endif // CLOSEBUTTON_H
 
 #endif
+

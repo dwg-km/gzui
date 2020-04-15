@@ -5,6 +5,8 @@
 #include "menu.h"
 
 
+
+
 void UiSetting::Backup()
 {
 	system("./backup.sh");
@@ -48,3 +50,4 @@ void UiSetting::Update()
 		}
 	}
 }
+

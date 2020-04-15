@@ -2,25 +2,36 @@
 #define		_SETTING_H
 
 #include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+
 #include <QLabel>
 #include <QLineEdit>
+#include <QButtonGroup>
 
 #include <QDebug>
+#include "qdebug.h"
 #include <QGroupBox>
 #include <QComboBox>
 #include <QRadioButton>
+#include <QFileDialog>
 
 #include "wave.h"
 #include "cali.h"
 #include "toolbar.h"
 #include "motion.h"
 #include "UiTemplate.h"
+#include "iconbutton.h"
+#include "ip_cfg.hpp"
 
 #include "lineedit.h"
 
 #include "command.h"
 #include "ui_interface.h"
 #include "APIDataInterface.hpp"
+
+using namespace std;
+
 
 class GroupBox : public QGroupBox{
 	Q_OBJECT
@@ -341,6 +352,8 @@ private:
 	int Dirty;
 };
 
+
+
 class UiSetting : public UiTemplate
 {
 	Q_OBJECT
@@ -401,14 +414,15 @@ public:
 
 		widgetlist =  new QTabWidget;
 		
-		AddBaseSettingWidget();
+        AddBaseSettingWidget();
 		//AddInkWidget();
-		AddMechineWidget();
+        AddMechineWidget();
 		//AddCleanWidget();
 		//AddUVWidget();
 		//AddAdvanceWidget();
-		//AddWarningWidget();
-		AddVersionWidget();
+		//AddWarningWidget();		
+        AddSetNetworkWidget();
+        AddVersionWidget();
 
 		Layout(widgetlist);
 	}
@@ -459,11 +473,32 @@ public:
 		version->setText(info);
 	}
 
+    void AddSetNetworkWidget()
+    {
+        NetWidget = new NetworkWidget;
+        widgetlist->addTab(NetWidget, "network");
+
+        connect(widgetlist, SIGNAL(currentChanged(int)), this, SLOT(TabGetOpen(int)));
+    }
+
 public slots:
 	void Backup();
 	void Update();
+
+    void TabGetOpen(int TabIndex)
+    {
+        QString title = widgetlist->tabText(TabIndex);
+         if(title == QString::fromLocal8Bit("network"))
+        {
+            NetWidget->TabOpen();
+        }
+    }
+
 private:
 	QTabWidget * widgetlist;
+
+    NetworkWidget * NetWidget;
+    int m_NetWidgetIndex = -1;
 
 	CaliDialog * caliDialog;
 	WaveDialog * waveDialog;
