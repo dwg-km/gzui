@@ -14,7 +14,7 @@ void UiSetting::Backup()
 void UiSetting::Update()
 {
 	QFileDialog *fileDialog = new QFileDialog();
-	fileDialog->setWindowTitle("选择文件");
+    fileDialog->setWindowTitle(tr("Selection File"));
 	fileDialog->setDirectory(".");
 	fileDialog->setFileMode(QFileDialog::ExistingFiles);
 	

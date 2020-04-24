@@ -309,36 +309,36 @@ void mainDialog::Flash()
 }
 void mainDialog::Print()
 {
-	QFileDialog *fileDialog = new QFileDialog();
-	fileDialog->setWindowTitle("选择文件");
-	fileDialog->setNameFilter(tr("Images(*.prn *.prt)"));
-	fileDialog->setFileMode(QFileDialog::ExistingFiles);
+    QFileDialog *fileDialog = new QFileDialog();
+    fileDialog->setWindowTitle(tr("Selection File"));
+    fileDialog->setNameFilter(tr("Images(*.prn *.prt)"));
+    fileDialog->setFileMode(QFileDialog::ExistingFiles);
 
-	QDir dir("/media");
-	dir.setFilter(QDir::Dirs | QDir::Hidden | QDir::NoSymLinks | QDir::NoDotAndDotDot);
-	//dir.setSorting(QDir::Size | QDir::Reversed);
-	QFileInfoList list = dir.entryInfoList();
-	//for (int i = 0; i < list.size(); ++i) {
-	//	QFileInfo fileInfo = list.at(i);
-	//}
-	if(list.size() == 0){
-		fileDialog->setDirectory("/home");
-	}else if(list.size() == 1){
-		QString path = list.at(0).absoluteFilePath();
-		qDebug() << "file=" << path;
-		fileDialog->setDirectory(path);
-	}else{
-		fileDialog->setDirectory("/media");
-	}
+    QDir dir("/media");
+    dir.setFilter(QDir::Dirs | QDir::Hidden | QDir::NoSymLinks | QDir::NoDotAndDotDot);
+    //dir.setSorting(QDir::Size | QDir::Reversed);
+    QFileInfoList list = dir.entryInfoList();
+    //for (int i = 0; i < list.size(); ++i) {
+    //	QFileInfo fileInfo = list.at(i);
+    //}
+    if(list.size() == 0){
+        fileDialog->setDirectory("/home");
+    }else if(list.size() == 1){
+        QString path = list.at(0).absoluteFilePath();
+        qDebug() << "file=" << path;
+        fileDialog->setDirectory(path);
+    }else{
+        fileDialog->setDirectory("/media");
+    }
 
-	QString filename;
-	if(fileDialog->exec()){
-		filename = fileDialog->selectedFiles()[0];
-		qDebug() << "selected file is" << filename;
-	
-		PrintThread * thread = new PrintThread(filename);	
-		thread->start();
-	}
+    QString filename;
+    if(fileDialog->exec()){
+        filename = fileDialog->selectedFiles()[0];
+        qDebug() << "selected file is" << filename;
+
+        PrintThread * thread = new PrintThread(filename);
+        thread->start();
+    }
 }
 
 void mainDialog::PrintNozzleCheck()

@@ -1,8 +1,10 @@
 #include <unistd.h>
 #include <stdlib.h>
 
+#include <QDir>
 #include <QProcess>
 #include <QApplication>
+#include <QTranslator>
 
 #include "mainwindow.h"
 
@@ -40,7 +42,18 @@ int main(int argc, char *argv[])
 		return -1;	
 	}
 
-	QApplication app(argc, argv);
+    QApplication app(argc, argv);
+
+    QDir dir = QDir::currentPath();
+    dir.cdUp();
+    QString translatorFilePath = dir.absolutePath() + "/GZ_ChineseLange.qm";
+    //QString translatorFilePath = dir.absolutePath() + "/GZ_EnglishLange.qm";
+    QTranslator *translator = new QTranslator(&app);
+    if(translator->load(translatorFilePath))
+    {
+        app.installTranslator(translator);
+    }
+
 
 	mainDialog dialog;
 	dialog.show();

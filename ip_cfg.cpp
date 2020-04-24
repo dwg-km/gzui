@@ -1,4 +1,6 @@
 #include "./ip_cfg.hpp"
+#include "cali.h"
+#include "motion.h"
 
 #include <QMessageBox>
 
@@ -20,7 +22,7 @@ bool NetworkWidget::getNetworkConfig()
         if(Strline.contains("iface eth0 inet dhcp",Qt::CaseInsensitive))
         {
             m_eth0.IsStatic = false;
-            m_ip->setLine(QString::fromStdString(getLocalIp("eth0")));
+            m_LineIp->setText(QString::fromStdString(getLocalIp("eth0")));
         }
         else if (Strline.contains("iface eth0 inet static",Qt::CaseInsensitive))
         {
@@ -62,7 +64,7 @@ bool NetworkWidget::getNetworkConfig()
         else if (Strline.contains("iface eth1 inet dhcp",Qt::CaseInsensitive))
         {
             m_eth1.IsStatic = false;
-            m_ip->setLine(QString::fromStdString(getLocalIp("eth1")));
+            m_LineIp->setText(QString::fromStdString(getLocalIp("eth1")));
         }
         else if (Strline.contains("iface eth1 inet static",Qt::CaseInsensitive))
         {
@@ -131,15 +133,15 @@ void NetworkWidget::TabOpen()
         m_static->setChecked(true);
         setButtonDisable(false);
 
-        m_ip->setLine(m_eth0.Address);
-        m_netmask->setLine(m_eth0.NetMask);
-        m_gateway->setLine(m_eth0.GateWay);
+        m_LineIp->setText(m_eth0.Address);
+        m_LineNetmask->setText(m_eth0.NetMask);
+        m_LineGateway->setText(m_eth0.GateWay);
     }
     else
     {
         m_dhcp->setChecked(true);
         setButtonDisable(true);
-        m_ip->setLine(QString::fromStdString(getLocalIp("eth0")));
+        m_LineIp->setText(QString::fromStdString(getLocalIp("eth0")));
     }
 
     m_NetPort->setCurrentIndex(0);
@@ -148,9 +150,9 @@ void NetworkWidget::TabOpen()
 
 void NetworkWidget::setButtonDisable(bool IsDisabel)
 {
-    m_ip->setLineDisabel(IsDisabel);
-    m_netmask->setLineDisabel(IsDisabel);
-    m_gateway->setLineDisabel(IsDisabel);
+    m_LineIp->setDisabled(IsDisabel);
+    m_LineNetmask->setDisabled(IsDisabel);
+    m_LineGateway->setDisabled(IsDisabel);
 }
 
 void  NetworkWidget::SetPortState(int change)
@@ -176,16 +178,16 @@ void NetworkWidget::NetPortChange(int PortIndex)
 {
     if(PortIndex == 0)
     {
-        qDebug() << "in eth0";
+        //qDebug() << "in eth0";
 
-        m_ip->setLine(m_eth0.Address);
-        m_netmask->setLine(m_eth0.NetMask);
-        m_gateway->setLine(m_eth0.GateWay);
+        m_LineIp->setText(m_eth0.Address);
+        m_LineNetmask->setText(m_eth0.NetMask);
+        m_LineGateway->setText(m_eth0.GateWay);
         if(m_eth0.IsStatic == false)
         {
             setButtonDisable(true);
             m_dhcp->setChecked(true);
-            m_ip->setLine(QString::fromStdString(getLocalIp("eth0")));
+            m_LineIp->setText(QString::fromStdString(getLocalIp("eth0")));
         }
         else
         {
@@ -195,16 +197,16 @@ void NetworkWidget::NetPortChange(int PortIndex)
     }
     else
     {
-        qDebug() << "in eth1";
+        //qDebug() << "in eth1";
 
-        m_ip->setLine(m_eth1.Address);
-        m_netmask->setLine(m_eth1.NetMask);
-        m_gateway->setLine(m_eth1.GateWay);
+        m_LineIp->setText(m_eth1.Address);
+        m_LineNetmask->setText(m_eth1.NetMask);
+        m_LineGateway->setText(m_eth1.GateWay);
         if(m_eth1.IsStatic == false)
         {
             setButtonDisable(true);
             m_dhcp->setChecked(true);
-            m_ip->setLine(QString::fromStdString(getLocalIp("eth1")));
+            m_LineIp->setText(QString::fromStdString(getLocalIp("eth1")));
         }
         else
         {
@@ -222,21 +224,21 @@ void NetworkWidget::SaveNetWorkConfig(QString port)
         {
              m_eth0.IsStatic = true;
              m_eth0.Address.clear();
-             m_eth0.Address = m_ip->getLine();
+             m_eth0.Address = m_LineIp->text();
              m_eth0.NetMask.clear();
-             m_eth0.NetMask = m_netmask->getLine();
+             m_eth0.NetMask = m_LineNetmask->text();
              m_eth0.GateWay.clear();
-             m_eth0.GateWay = m_gateway->getLine();
-         }
+            m_eth0.GateWay = m_LineGateway->text();
+        }
          else
          {
             m_eth1.IsStatic = true;
             m_eth1.Address.clear();
-            m_eth1.Address = m_ip->getLine();
+            m_eth1.Address = m_LineIp->text();
             m_eth1.NetMask.clear();
-            m_eth1.NetMask = m_netmask->getLine();
+            m_eth1.NetMask = m_LineNetmask->text();
             m_eth1.GateWay.clear();
-            m_eth1.GateWay = m_gateway->getLine();
+            m_eth1.GateWay = m_LineGateway->text();
         }
     }
     else
@@ -245,24 +247,24 @@ void NetworkWidget::SaveNetWorkConfig(QString port)
         {
             m_eth0.IsStatic = false;
             m_eth0.Address.clear();
-            m_ip->setLine("");
+            m_LineIp->setText("");
             m_eth0.NetMask.clear();
-            m_netmask->setLine("");
+            m_LineNetmask->setText("");
             m_eth0.GateWay.clear();
-            m_gateway->setLine("");
-            m_ip->setLine(QString::fromStdString("eth0"));
+            m_LineGateway->setText("");
+            m_LineIp->setText(QString::fromStdString(getLocalIp("eth0")));
         }
         else
         {
            m_eth1.IsStatic = false;
            m_eth1.Address.clear();
-           m_ip->setLine("");
+           m_LineIp->setText("");
            m_eth1.NetMask.clear();
-           m_netmask->setLine("");
+           m_LineNetmask->setText("");
            m_eth1.GateWay.clear();
-           m_gateway->setLine("");
-           m_ip->setLine(QString::fromStdString("eth1"));
-       }
+           m_LineGateway->setText("");
+           m_LineIp->setText(QString::fromStdString(getLocalIp("eth1")));
+        }
         setButtonDisable(true);
     }
 }
@@ -316,10 +318,113 @@ void NetworkWidget::RestartNetwork()
    file.open(QIODevice::WriteOnly | QIODevice::Text);
    file.write(list.toUtf8());
    file.close();
-   system("/etc/init.d/networking restart");
+   //system("/etc/init.d/networking restart");
+   /*
+   system("ifdown eth0 && ifup eth0");
+   system("ifdown eth1 && ifup eth1");
+   */
+   /*
+   system("ifconfig eth0 down");
+   system("ifconfig eth1 down");
+   system("ifconfig eth0 up");
+   system("ifconfig eth1 up");
+   */
+
+   system("reboot");
    qDebug() << "Creat Success!";
 
    getNetworkConfig();
 
     }
+}
+
+LineEditGroup::LineEditGroup(QString name, int x, int y, QStringList * color, QWidget *parent)
+    : QGroupBox(name),
+    colnum(x),
+    rownum(y),
+    Value(x * y, -1000)
+{
+    QGridLayout * horLayout = new QGridLayout;
+
+    printButton = new QPushButton(this);
+    printButton->setText(QObject::tr("PRINT"));
+    //printButton->resize(72, 28);
+    //printButton->setStyleSheet("background-color: rgb(9, 148, 220)");
+    horLayout->addWidget(printButton, 0, 0, 1, 1);
+
+    for(int j = 0; j < rownum; j++){
+        QLabel *label = new QLabel(this);
+        label->setText(QString::number(j));
+        label->setAlignment(Qt::AlignCenter);
+        horLayout->addWidget(label, j + 1, 0);
+    }
+
+    for(int i = 0; i < colnum; i++){
+        QLabel *label = new QLabel(this);
+        //label->setFixedHeight(40);
+        if(color){
+            label->setText(color->at(i));
+        }else{
+            label->setText(QString::number(i));
+        }
+
+        label->setAlignment(Qt::AlignCenter);
+        horLayout->addWidget(label, 0, i + 2, 1, 1);
+    }
+
+    for(int j = 0; j < rownum; j++){
+        for(int i = 0; i < colnum; i++){
+            IntLineEdit  *lineEdit = new IntLineEdit(this);
+            //lineEdit->resize(40, 28);
+            horLayout->addWidget(lineEdit, j + 1, i + 2);
+            matrix.push_back(lineEdit);
+        }
+    }
+
+    setLayout(horLayout);
+}
+
+MoterParamGroupBox::MoterParamGroupBox(QString name, QWidget *parent) :
+    QGroupBox(name, parent)
+{
+    QLabel * highLabel = new QLabel(QObject::tr("High Speed"));
+    QLabel * midLabel = new QLabel(QObject::tr("Medium Speed"));
+    QLabel * lowLabel = new QLabel(QObject::tr("Low Speed"));
+
+    QLabel * speedLabel = new QLabel(QObject::tr("Speed(mm/s)"));
+    QLabel * accLabel = new QLabel(QObject::tr("Acc Distance(mm)"));
+
+    highspeedLineEdit = new IntLineEdit;
+    highaccLineEdit = new IntLineEdit;
+    midspeedLineEdit = new IntLineEdit;
+    midaccLineEdit = new IntLineEdit;
+    lowspeedLineEdit = new IntLineEdit;
+    lowaccLineEdit = new IntLineEdit;
+
+    QGridLayout * Layout = new QGridLayout;
+
+    int y = 0;
+    Layout->addWidget(speedLabel, 		y, 1);
+    Layout->addWidget(accLabel,	 	y, 2);
+
+    y++;
+    Layout->addWidget(highLabel, 		y, 0);
+    Layout->addWidget(highspeedLineEdit, 	y, 1);
+    Layout->addWidget(highaccLineEdit, 	y, 2);
+
+    y++;
+    Layout->addWidget(midLabel, 		y, 0);
+    Layout->addWidget(midspeedLineEdit, 	y, 1);
+    Layout->addWidget(midaccLineEdit, 	y, 2);
+
+    y++;
+    Layout->addWidget(lowLabel, 		y, 0);
+    Layout->addWidget(lowspeedLineEdit, 	y, 1);
+    Layout->addWidget(lowaccLineEdit, 	y, 2);
+
+    //Layout->addWidget(accLabel, 		3, 0);
+    //Layout->addWidget(accLineEdit, 		3, 1);
+    //Layout->addWidget(subdivLabel, 		4, 0);
+    //Layout->addWidget(subdivLineEdit, 	4, 1);
+    setLayout(Layout);
 }

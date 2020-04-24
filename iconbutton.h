@@ -114,10 +114,9 @@ public:
         m_TipLineEdit = new QWidget;
 
         LineEdit->getTouch()->setIsNotString(false);
+
         TipLineLayout->addWidget(TipEdit,0,0,1,1);
         TipLineLayout->addWidget(LineEdit,0,1,1,2);
-
-        //m_TipLineEdit->setLayout(TipLineLayout);
         setLayout(TipLineLayout);
 
     }

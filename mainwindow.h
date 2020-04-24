@@ -121,13 +121,13 @@ public:
 		toolBox = new QGroupBox;
 		QGridLayout *menuLayout = new QGridLayout;
 		
-		QLabel * homeLabel = new QLabel(tr("打印作业"));
-		QLabel * managerLabel = new QLabel(tr("测量纸宽"));
-		QLabel * originLabel = new QLabel(tr("设为原点"));
+        QLabel * homeLabel = new QLabel(tr("Print Job"));
+        QLabel * managerLabel = new QLabel(tr("Measure"));
+        QLabel * originLabel = new QLabel(tr("Set Origin"));
 
-		QLabel * nozzleLabel = new QLabel(tr("喷嘴检查"));
-		QLabel * cleanLabel = new QLabel(tr("喷头维护"));
-		QLabel * flashLabel = new QLabel(tr("喷嘴闪喷"));
+        QLabel * nozzleLabel = new QLabel(tr("Nozzle Check"));
+        QLabel * cleanLabel = new QLabel(tr("Nozzle Clean"));
+        QLabel * flashLabel = new QLabel(tr("Nozzle Flash"));
 
 		menuLayout->addWidget(Tool->GetPrintButton(),		0, 0, 2, 1);
 		menuLayout->addWidget(Tool->GetMeasureButton(),		0, 1, 2, 1);
@@ -146,7 +146,7 @@ public:
 		menuLayout->addWidget(flashLabel,			5, 2, 1, 1);
 
 		toolBox->setLayout(menuLayout);
-		connect(Tool->GetPrintButton(),SIGNAL(clicked()), this, SLOT(Print()));
+        connect(Tool->GetPrintButton(),SIGNAL(clicked()), this, SLOT(Print()));
 		connect(Tool->GetFlashButton(),SIGNAL(clicked()), this, SLOT(Flash()));
 		//connect(Tool->GetOriginButton(),SIGNAL(clicked()), this, SLOT(SetAsOrigin()));
 		connect(Tool->GetNozzleButton(),SIGNAL(clicked()), this, SLOT(PrintNozzleCheck()));
@@ -170,12 +170,12 @@ public:
 		setBox = new QGroupBox;
 		QGridLayout *setLayout = new QGridLayout;
 
-		QLabel *mediaLabel = new QLabel(tr("打印材料"));
-		QLabel *modelLabel = new QLabel(tr("生产模式"));
-		QLabel *stepLabel = new QLabel(tr("进步量"));
-		QLabel *bidLabel = new QLabel(tr("双向值"));
-		QLabel *cycleLabel = new QLabel(tr("循环压力"));
-		QLabel *pumpLabel = new QLabel(tr("供墨压力"));
+        QLabel *mediaLabel = new QLabel(tr("Material"));
+        QLabel *modelLabel = new QLabel(tr("Mode"));
+        QLabel *stepLabel = new QLabel(tr("Step Value"));
+        QLabel *bidLabel = new QLabel(tr("Bidirection"));
+        QLabel *cycleLabel = new QLabel(tr("Circulate"));
+        QLabel *pumpLabel = new QLabel(tr("Pump"));
 
 		IntLineEdit * stepLineEdit = new IntLineEdit;
 		IntLineEdit * bidLineEdit = new IntLineEdit;
@@ -210,14 +210,14 @@ public:
 		connect(modelBox, SIGNAL(currentTextChanged(const QString&)), 
 				this, SLOT(modelChanged(const QString&)));
 
-		orgBox = new QGroupBox(tr("打印原点"));
-		orgLabel = new QLabel(tr("获取原点"));
+        orgBox = new QGroupBox(tr("Print Origin"));
+        orgLabel = new QLabel(tr("Get Origin"));
 		orgComBox = new QComboBox();
-		getorgLabel = new QLabel(tr("打印原点"));
+        getorgLabel = new QLabel(tr("Print Origin"));
 		originLineEdit = new IntLineEdit;
 	
-		orgComBox->addItem(tr("手动"));
-		orgComBox->addItem(tr("自动"));
+        orgComBox->addItem(tr("Manual"));
+        orgComBox->addItem(tr("Automatic"));
 		connect(orgComBox, SIGNAL(currentIndexChanged(int)), 
 				this, SLOT(originChanged()));
 		connect(originLineEdit, SIGNAL(textChanged(const QString&)), 
@@ -288,7 +288,7 @@ public slots:
 
 	void Exit();
 	void Flash();
-	void Print();
+    void Print();
 	void ProcessPrintStatus();
 	void PrintNozzleCheck();
 

@@ -95,9 +95,9 @@ public:
 		int colnum = property.PrinterColorNum;
 		int rownum = property.PrinterGroupNum;
 
-		TargetTempGroup = new RateTimeGroup("设置温度", colnum, rownum, 1, property.PrintColor);
+        TargetTempGroup = new RateTimeGroup(tr("Set Temperature"), colnum, rownum, 1, property.PrintColor);
 
-		RealTempGroup = new RateTimeGroup("实时温度", colnum, rownum, 1, property.PrintColor);
+        RealTempGroup = new RateTimeGroup(tr("Realtime Temperature"), colnum, rownum, 1, property.PrintColor);
 		RealTempGroup->setEnabled(false);
 
 		QVBoxLayout *layout = new QVBoxLayout;
@@ -374,16 +374,16 @@ public:
 				this, SLOT(IndexChanged(int)));
 
 		grayComBox = new QComboBox;
-		for(int g = 1; g < 4; g++){
-			QString text = QString::number(g) + "级灰度";
-			grayComBox->addItem(text);
-		}
+        grayComBox->addItem(tr("1 Bit"));
+        grayComBox->addItem(tr("2 Bit"));
+        grayComBox->addItem(tr("3 Bit"));
+        grayComBox->addItem(tr("4 Bit"));
 
-		QPushButton * format = new QPushButton("copy to all head");
+        QPushButton * format = new QPushButton(tr("copy to all head"));
 		connect(format, SIGNAL(clicked()), 
 				this, SLOT(CpyToAllHead()));
 
-		waveGroup = new RateTimeGroup("脉宽", Col, 1, Row, name);
+        waveGroup = new RateTimeGroup(tr("Pulse Width"), Col, 1, Row, name);
 
 		layout->addWidget(pulse,		0, 0, 1, 2);
 		layout->addWidget(indexComBox,		2, 0, 1, 1);
@@ -473,7 +473,7 @@ public:
 		connect(Tool->GetExitButton(), SIGNAL(clicked()), this, SLOT(close()));
 		connect(Tool->GetSaveButton(), SIGNAL(clicked()), this, SLOT(SaveData()));
 
-		statusLabel->setText("波形设置");
+        statusLabel->setText(tr("Wave Setting"));
 
 
 		GetPrinterProperty(&property);
@@ -491,7 +491,7 @@ public:
 		//connect(Tool->GetSaveButton(), SIGNAL(clicked()), tempWidget, SLOT(SaveParam()));
 		connect(Tool->GetUpdateButton(), SIGNAL(clicked()), tempWidget, SLOT(GetRealTemp()));
 
-		widgetlist->addTab(tempWidget, "Temp");
+        widgetlist->addTab(tempWidget, tr("Temp"));
 	}
 	//void AddVoltageWidget(){
 	//	voltageWidget = new VoltageWidget(property);
@@ -503,14 +503,14 @@ public:
 		waveWidget = new WaveWidget(property);
 		//connect(Tool->GetSaveButton(), SIGNAL(clicked()), waveWidget, SLOT(SaveParam()));
 
-		widgetlist->addTab(waveWidget, "Wave");
+        widgetlist->addTab(waveWidget, tr("Wave"));
 	}
 public slots:
 	void SaveData(){
 		int index = widgetlist->currentIndex();
-		if(widgetlist->tabText(index) == "Temp"){
+        if(widgetlist->tabText(index) == tr("Temp")){
 			tempWidget->SaveParam();
-		}else if(widgetlist->tabText(index) == "Wave"){
+        }else if(widgetlist->tabText(index) == tr("Wave")){
 			waveWidget->SaveParam();
 		}
 	}

@@ -45,13 +45,10 @@ public:
 
     NetworkWidget()
     {
+        m_LabNetPort = new QLabel(tr("port:"));
         m_NetPort = new QComboBox;
-        m_ip = new TipLineEdit;
-        m_netmask = new TipLineEdit;
-        m_gateway = new TipLineEdit;
         m_dhcp = new QRadioButton(tr("dhcp"));
         m_static = new QRadioButton(tr("static"));
-        staticWidget = new QWidget;
         m_RestarNet = new QPushButton(tr("OK"));
 
         m_portButtonGroup = new QButtonGroup(this);
@@ -65,23 +62,36 @@ public:
         getNetworkPort();
         connect(m_NetPort, SIGNAL(currentIndexChanged(int)), this, SLOT(NetPortChange(int)));
 
-        ConfigLayout = new QVBoxLayout();
-        m_ip->setLab("IP:");
-        ConfigLayout->addWidget(m_ip);
-        m_netmask->setLab("NETMASK:");
-        ConfigLayout->addWidget(m_netmask);
-        m_gateway->setLab("GATEWAY:");
-        ConfigLayout->addWidget(m_gateway);
-        staticWidget->setLayout(ConfigLayout);
+        m_LabIp = new QLabel(tr("IP:"));
+        m_LineIp = new DoubleLineEdit;
+        m_LineIp->getTouch()->setIsNotString(false);
+        m_LabNetmask = new QLabel(tr("NETMASK:"));
+        m_LineNetmask = new DoubleLineEdit;
+        m_LineNetmask->getTouch()->setIsNotString(false);
+        m_LabGateway = new QLabel(tr("GATEWAY:"));
+        m_LineGateway = new DoubleLineEdit;
+        m_LineGateway->getTouch()->setIsNotString(false);
 
         NetworkLayout = new QGridLayout();
-        NetworkLayout->addWidget(m_NetPort,0,0,1,1);
-        NetworkLayout->addWidget(m_dhcp,1,0,1,1);
-        NetworkLayout->addWidget(m_static,2,0,1,1);
-        NetworkLayout->addWidget(staticWidget,3,0,1,1);
-        NetworkLayout->addWidget(m_RestarNet,4,1,1,1);
+        NetworkLayout->addWidget(m_LabNetPort,0,0,1,1);
+        NetworkLayout->addWidget(m_NetPort,0,1,1,1);
+        NetworkLayout->addWidget(m_dhcp,1,0,1,2);
+        NetworkLayout->addWidget(m_static,2,0,1,2);
+        NetworkLayout->addWidget(m_LabIp,3,0,1,1);
+        NetworkLayout->addWidget(m_LineIp,3,1,1,1);
+        NetworkLayout->addWidget(m_LabNetmask,4,0,1,1);
+        NetworkLayout->addWidget(m_LineNetmask,4,1,1,1);
+        NetworkLayout->addWidget(m_LabGateway,5,0,1,1);
+        NetworkLayout->addWidget(m_LineGateway,5,1,1,1);
+        NetworkLayout->addWidget(m_RestarNet,6,2,1,1);
+        m_AllWidget = new QWidget;
+        m_AllWidget->setLayout(NetworkLayout);
+        m_AllWidget->setFixedWidth(400);
 
-        setLayout(NetworkLayout);
+        NetAllLayout = new QHBoxLayout();
+        NetAllLayout->addWidget(m_AllWidget);
+        setLayout(NetAllLayout);
+
 
     }
 
@@ -96,20 +106,25 @@ public slots:
 private:
     QString m_path = "/etc/network/interfaces";
 
+    QLabel * m_LabNetPort;
     QComboBox * m_NetPort;
     QRadioButton * m_dhcp;
     QRadioButton * m_static;
-    QWidget * staticWidget;
     QPushButton * m_RestarNet;
     QButtonGroup * m_portButtonGroup;
 
-    TipLineEdit * m_ip;
-    TipLineEdit * m_netmask;
-    TipLineEdit * m_gateway;
+    QWidget * m_AllWidget;
+    QHBoxLayout * NetAllLayout;
+
+    QLabel * m_LabIp;
+    DoubleLineEdit * m_LineIp;
+    QLabel * m_LabNetmask;
+    DoubleLineEdit * m_LineNetmask;
+    QLabel * m_LabGateway;
+    DoubleLineEdit * m_LineGateway;
 
     NetworkType m_eth0;
     NetworkType m_eth1;
 
     QGridLayout * NetworkLayout;
-    QVBoxLayout * ConfigLayout;
 };

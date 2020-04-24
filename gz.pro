@@ -58,3 +58,7 @@ unix:!macx: LIBS += -L$$PWD/lib/ -lpmd
 
 INCLUDEPATH += $$PWD/lib
 DEPENDPATH += $$PWD/lib
+
+TRANSLATIONS =	GZ_EnglishLange.ts   \
+		GZ_ChineseLange.ts
+

@@ -61,18 +61,18 @@ public:
 	{
 
 		QGridLayout * dbgLayout = new QGridLayout;
-		pulsePushButton = new QPushButton("移动固定(脉冲)");
+        pulsePushButton = new QPushButton(tr("Move(pulse)"));
 	        pulseLineEdit = new IntLineEdit;
 
-	        movePushButton = new QPushButton("移动到(mm)");
+            movePushButton = new QPushButton(tr("Move To(mm)"));
 	        moveLineEdit = new IntLineEdit;
 
-	        posPushButton = new QPushButton("位置");
+            posPushButton = new QPushButton(tr("Position"));
 		posLineEdit = new QLineEdit;
 		posLineEdit->setEnabled(false);
 		
-		gearPushButton = new QPushButton("齿轮比");
-		resetPushButton = new QPushButton("reset");
+        gearPushButton = new QPushButton(tr("Gear ratio"));
+        resetPushButton = new QPushButton(tr("reset"));
 		gearLineEdit = new IntLineEdit;
 
 		dbgLayout->addWidget(pulsePushButton,	1, 0);
@@ -131,15 +131,16 @@ public:
 
 class MoterParamGroupBox : public QGroupBox{
 public:
-	MoterParamGroupBox(QString name, QWidget *parent = NULL) : 
-		QGroupBox(name, parent)
+    MoterParamGroupBox(QString name, QWidget *parent = NULL) ;
+        //QGroupBox(name, parent)
+      /*
 	{
-		QLabel * highLabel = new QLabel("高速");
-		QLabel * midLabel = new QLabel("中速");
-		QLabel * lowLabel = new QLabel("低速");
+        QLabel * highLabel = new QLabel(tr("High Speed"));
+        QLabel * midLabel = new QLabel(tr("Medium Speed"));
+        QLabel * lowLabel = new QLabel(tr("Low Speed"));
 
-		QLabel * speedLabel = new QLabel("运动速度(mm/s)");
-		QLabel * accLabel = new QLabel("加速距离(mm)");
+        QLabel * speedLabel = new QLabel(tr("Speed(mm/s)"));
+        QLabel * accLabel = new QLabel(tr("Acc Distance(mm)"));
 
 		highspeedLineEdit = new IntLineEdit;
 		highaccLineEdit = new IntLineEdit;
@@ -175,6 +176,7 @@ public:
 		//Layout->addWidget(subdivLineEdit, 	4, 1);
 		setLayout(Layout);
 	}
+      */
 
 public:
 	IntLineEdit * highspeedLineEdit;
@@ -197,27 +199,27 @@ public:
 		toolLayout->addWidget(Tool->GetUpdateButton());
 		connect(Tool->GetExitButton(), SIGNAL(clicked()), this, SLOT(close()));
 
-		statusLabel->setText("机械设置");
+        statusLabel->setText(tr("Mechanical Seting"));
 
 		GetPrinterProperty(&property);
 
-		QLabel *axisLabel = new QLabel(tr("移动轴"));
+        QLabel *axisLabel = new QLabel(tr("Axis"));
 		axisLabel->setFixedWidth(72);
 		//axisLabel->setFixedWidth(axisLabel->width());
 		axisBox = new QComboBox();
-		axisBox->addItem("x轴");
-		axisBox->addItem("y轴");
-		axisBox->addItem("z轴");
-		axisBox->addItem("4轴");
+        axisBox->addItem(tr("x Axis"));
+        axisBox->addItem(tr("y Axis"));
+        axisBox->addItem(tr("z Axis"));
+        axisBox->addItem(tr("4 Axis"));
 
-		QLabel *speedLabel = new QLabel(tr("移动速度"));
+        QLabel *speedLabel = new QLabel(tr("Speed"));
 		speedBox = new QComboBox();
 		for(int i = 0; i < 4; i++){
-			QString s = "Speed";
+            QString s = tr("Speed");
 			speedBox->addItem(s);
 		}
-		dir_positive = new QRadioButton(tr("正向"));
-		dir_reverse  = new QRadioButton(tr("反向"));
+        dir_positive = new QRadioButton(tr("Positive"));
+        dir_reverse  = new QRadioButton(tr("Negative"));
 		dir_positive->setChecked(true);
 
 		QGroupBox * paramGroupBox = new QGroupBox("");
@@ -230,11 +232,11 @@ public:
 		paramLayout->addWidget(dir_reverse, 	2, 1);
 		paramGroupBox->setLayout(paramLayout);	
 
-		rasterPushButton = new QPushButton(tr("分辨率"));
+        rasterPushButton = new QPushButton(tr("Resolution"));
 
-		resetPushButton = new QPushButton("reset");
+        resetPushButton = new QPushButton(tr("reset"));
 		rasterLineEdit = new IntLineEdit;
-		rasterGroup = new QGroupBox("光栅/编码器");
+        rasterGroup = new QGroupBox(tr("Raster/Encode"));
 
 		QGridLayout *rasterLayout = new QGridLayout();
 		rasterLayout->addWidget(rasterPushButton, 0, 0);
@@ -242,8 +244,8 @@ public:
 		rasterLayout->addWidget(resetPushButton, 0, 2);
 		rasterGroup->setLayout(rasterLayout);
 		
-		moter = new MoveDbgGroupBox("运动调试");
-		param = new MoterParamGroupBox("运动参数");
+        moter = new MoveDbgGroupBox(tr("Motion Debug"));
+        param = new MoterParamGroupBox(tr("Motion Paramter"));
 
 		connect(moter->movePushButton, SIGNAL(clicked()), this, SLOT(MoveTo()));
 		connect(moter->pulsePushButton, SIGNAL(clicked()), this, SLOT(MovePulse()));

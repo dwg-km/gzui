@@ -12,8 +12,8 @@
 
 class LineEditGroup : public QGroupBox {
 public:
-	LineEditGroup(QString name, int x, int y, QStringList * color = NULL, QWidget *parent = NULL) 
-		: QGroupBox(name),
+    LineEditGroup(QString name, int x, int y, QStringList * color = NULL, QWidget *parent = NULL) ;
+    /*	: QGroupBox(name),
 		colnum(x),
 		rownum(y),
 		Value(x * y, -1000)
@@ -57,6 +57,7 @@ public:
 		
 		setLayout(horLayout);
 	}
+    */
 	void UpdateContext(int * data){
 		//int colnum = property->PrinterColorNum;   //列数
 		//int rownum = property->PrinterGroupNum; //行数
@@ -113,14 +114,14 @@ public:
 		Value = -1000;
 		QGridLayout * layout = new QGridLayout;
 
-		QLabel * caliLabel = new QLabel("步进值");
+        QLabel * caliLabel = new QLabel(tr("Step Value"));
 		caliLineEdit =  new IntLineEdit;
 		caliButton = new QPushButton;
 		caliButton->setText(name);
 		//caliButton->resize(72, 28);
 		connect(caliButton, SIGNAL(clicked()), this, SLOT(Print()));
 	
-		QLabel *adjustLabel = new QLabel(tr("校准值"));
+        QLabel *adjustLabel = new QLabel(tr("Adjust"));
 		adjustLineEdit = new DoubleLineEdit;
 		adjustButton = new QPushButton("=>");
 		adjustButton->setStyleSheet("background-color: rgb(9, 148, 220)");
@@ -226,8 +227,8 @@ public:
 	{
 		QGridLayout * gridLayout = new QGridLayout;
 
-		baseGroupBox = new StepGroupBox(tr("基准步进"), property->yResolution);
-		passGroupBox = new StepGroupBox(tr("精细步进"), property->yResolution);
+        baseGroupBox = new StepGroupBox(tr("Base Step"), property->yResolution);
+        passGroupBox = new StepGroupBox(tr("Pass Step"), property->yResolution);
 
 		char buf[256];
 		int pass = 0;
@@ -309,10 +310,10 @@ public:
 		int colnum = property->PrinterColorNum;
 		int rownum =property->PrinterGroupNum;
 	
-		verticalGroup = new LineEditGroup("Vertical", colnum, 1, &colorList, this);
+        verticalGroup = new LineEditGroup(tr("Vertical"), colnum, 1, &colorList, this);
 		connect(verticalGroup->GetPrintButton(), SIGNAL(clicked()), this, SLOT(PrintVerticalCali()));
 
-		overlapGroup = new LineEditGroup("Overlap", colnum, rownum - 1, &colorList, this);
+        overlapGroup = new LineEditGroup(tr("Overlap"), colnum, rownum - 1, &colorList, this);
 		connect(overlapGroup->GetPrintButton(), SIGNAL(clicked()), this, SLOT(PrintOverlapCali()));
 
 		layout->addWidget(verticalGroup,0,1,1,3);
@@ -383,9 +384,9 @@ public:
 		connect(resComBox, SIGNAL(currentTextChanged(const QString&)),
 				this, SLOT(ResChanged(const QString&)));
 		
-		speedComBox->addItem("高速");
-		speedComBox->addItem("中速");
-		speedComBox->addItem("低速");
+        speedComBox->addItem(tr("High Speed"));
+        speedComBox->addItem(tr("Medium Speed"));
+        speedComBox->addItem(tr("Low Speed"));
 
 		speed = speedComBox->currentIndex();
 		connect(speedComBox, SIGNAL(currentIndexChanged(int)), 
@@ -396,8 +397,8 @@ public:
 		int colnum = property->PrinterColorNum;
 		int rownum = property->PrinterGroupNum;
 	
-		leftGroup = new LineEditGroup("left", colnum, rownum, &colorlist, this);
-		rightGroup = new LineEditGroup("right",  colnum, rownum, &colorlist, this);
+        leftGroup = new LineEditGroup(tr("left"), colnum, rownum, &colorlist, this);
+        rightGroup = new LineEditGroup(tr("right"),  colnum, rownum, &colorlist, this);
 		connect(leftGroup->GetPrintButton(), SIGNAL(clicked()), this, SLOT(PrintLeftCali()));
 		connect(rightGroup->GetPrintButton(), SIGNAL(clicked()), this, SLOT(PrintRightCali()));
 
@@ -498,9 +499,9 @@ public:
 		connect(resComBox, SIGNAL(currentTextChanged(const QString&)),
 				this, SLOT(ResChanged(const QString&)));
 		
-		speedComBox->addItem("高速");
-		speedComBox->addItem("中速");
-		speedComBox->addItem("低速");
+        speedComBox->addItem(tr("High Speed"));
+        speedComBox->addItem(tr("Medium Speed"));
+        speedComBox->addItem(tr("Low Speed"));
 		speed = speedComBox->currentIndex();
 		connect(speedComBox, SIGNAL(currentIndexChanged(int)), 
 				this, SLOT(SpeedChanged(int)));
@@ -517,8 +518,8 @@ public:
 		connect(colorComBox, SIGNAL(currentIndexChanged(int)),
 				this, SLOT(ColorChanged(int)));
 	
-		leftGroup = new LineEditGroup("left", colnum, rownum, NULL, this);
-		rightGroup = new LineEditGroup("right",  colnum, rownum, NULL, this);
+        leftGroup = new LineEditGroup(tr("left"), colnum, rownum, NULL, this);
+        rightGroup = new LineEditGroup(tr("right"),  colnum, rownum, NULL, this);
 		connect(leftGroup->GetPrintButton(), SIGNAL(clicked()), this, SLOT(PrintLeftCali()));
 		connect(rightGroup->GetPrintButton(), SIGNAL(clicked()), this, SLOT(PrintRightCali()));
 
@@ -624,9 +625,9 @@ public:
 		connect(resComBox, SIGNAL(currentTextChanged(const QString&)),
 				this, SLOT(ResChanged(const QString&)));
 		
-		speedComBox->addItem("高速");
-		speedComBox->addItem("中速");
-		speedComBox->addItem("低速");
+        speedComBox->addItem(tr("High Speed"));
+        speedComBox->addItem(tr("Medium Speed"));
+        speedComBox->addItem(tr("Low Speed"));
 		speed = speedComBox->currentIndex();
 		connect(speedComBox, SIGNAL(currentIndexChanged(int)), 
 				this, SLOT(SpeedChanged(int)));
@@ -635,7 +636,7 @@ public:
 		int rownum = 1;
 		QList<QString>::iterator iter;
 	
-		bidirectionGroup = new LineEditGroup("bidirection", colnum, rownum, NULL, this);
+        bidirectionGroup = new LineEditGroup(tr("bidirection"), colnum, rownum, NULL, this);
 		connect(bidirectionGroup->GetPrintButton(), SIGNAL(clicked()), this, SLOT(PrintBiDirection()));
 
 		gridLayout->addWidget(resComBox,	0, 0, 1, 1);
@@ -717,7 +718,7 @@ public:
 		
 		connect(Tool->GetExitButton(), SIGNAL(clicked()), this, SLOT(close()));
 
-		statusLabel->setText("Calibration");
+        statusLabel->setText(tr("Calibration"));
 
 		/*
 		QLabel *  = new QLabel;
@@ -746,10 +747,10 @@ public:
 		Layout(widgetlist);
 	}
 	void AddMachineCheckWidget(){
-		QPushButton *angleButton = new QPushButton("Angle");
-		QPushButton *stepButton = new QPushButton("Step");
-		QPushButton *verticalButton = new QPushButton("Vertical");
-		QPushButton *overlapButton = new QPushButton("Overlap");
+        QPushButton *angleButton = new QPushButton(tr("Angle"));
+        QPushButton *stepButton = new QPushButton(tr("Step"));
+        QPushButton *verticalButton = new QPushButton(tr("Vertical"));
+        QPushButton *overlapButton = new QPushButton(tr("Overlap"));
 		
 		connect(stepButton, SIGNAL(clicked()), this, SLOT(PrintStepCheck()));
 		connect(angleButton, SIGNAL(clicked()), this, SLOT(PrintAngleCheck()));
@@ -764,29 +765,29 @@ public:
 		QWidget * widget = new QWidget;
 		widget->setLayout(mainLayout);
 
-		widgetlist->addTab(widget, "Mechanical");
+        widgetlist->addTab(widget, tr("Mechanical"));
 	}
 	void AddStepCaliWidget(){
 		QWidget * widget = new StepcalWidget(&property);
-		widgetlist->addTab(widget, "Step");
+        widgetlist->addTab(widget, tr("Step"));
 	}
 	void AddHorizontalCaliWidget(){
 		QWidget * horWidget = new HorizontalWidget(&property);
-		widgetlist->addTab(horWidget, "Horizontal");
+        widgetlist->addTab(horWidget, tr("Horizontal"));
 	}
 	void AddHeadHorizonCaliWidget(){
 		QWidget * headWidget = new HeadHorizonWidget(&property);
-		widgetlist->addTab(headWidget, "HeadHorizontal");
+        widgetlist->addTab(headWidget, tr("HeadHorizontal"));
 	}
 	void AddBidirectonCaliWidget(){
 	
 		QWidget * widget = new BiDirectionWidget(&property);
-		widgetlist->addTab(widget, "Bidrection");
+        widgetlist->addTab(widget, tr("Bidrection"));
 	}
 	void AddVerticalCaliWidget(){
 	
 		QWidget * widget = new VerticalWidget(&property);
-		widgetlist->addTab(widget, "Vertical");
+        widgetlist->addTab(widget, tr("Vertical"));
 	}
 	
 public slots:

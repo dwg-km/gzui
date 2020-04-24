@@ -65,9 +65,9 @@ class BaseWidget : public QWidget
 	Q_OBJECT
 public:
 	void LayoutPrintDir(){
-		dirBox = new QGroupBox(tr("双向"));
-		radio_unidir = new QRadioButton(tr("单向"));
-		radio_bidir = new QRadioButton(tr("双向"));
+        dirBox = new QGroupBox(tr("Bidirection"));
+        radio_unidir = new QRadioButton(tr("Unidirection"));
+        radio_bidir = new QRadioButton(tr("Bidirection"));
 
 		QHBoxLayout * hbox = new QHBoxLayout;
 		hbox->addWidget(radio_unidir);
@@ -91,10 +91,10 @@ public:
 		}
 	}
 	void LayoutPrintReverse(){
-		revBox = new QGroupBox(tr("反向打印"));
+        revBox = new QGroupBox(tr("Reverse Print"));
 		
-	       	xCheckBox = new QCheckBox(tr("扫描"));
-		yCheckBox = new QCheckBox(tr("步进"));
+            xCheckBox = new QCheckBox(tr("X Dir"));
+        yCheckBox = new QCheckBox(tr("Y Dir"));
 
 		QHBoxLayout * hbox = new QHBoxLayout;
 		hbox->addWidget(xCheckBox);
@@ -103,15 +103,15 @@ public:
 		revBox->setLayout(hbox);
 	}
 	void LayoutPrintSpeed(){
-		speedBox = new QGroupBox("Speed");
-		speedLabel = new QLabel(tr("扫描速度"));
+        speedBox = new QGroupBox(tr("Speed"));
+        speedLabel = new QLabel(tr("Scanning Speed"));
 		speedComBox = new QComboBox();
 
 		QGridLayout * layout = new QGridLayout;
 
-		speedComBox->addItem(tr("高速"));
-		speedComBox->addItem(tr("中速"));
-		speedComBox->addItem(tr("低速"));
+        speedComBox->addItem(tr("High Speed"));
+        speedComBox->addItem(tr("Medium Speed"));
+        speedComBox->addItem(tr("Low Speed"));
 
 		layout->addWidget(speedLabel, 0, 0);
 		layout->addWidget(speedComBox, 0, 1);
@@ -125,22 +125,22 @@ public:
 	}
 
 	void LayoutStrip(){
-		stripBox = new QGroupBox(tr("彩条"));
+        stripBox = new QGroupBox(tr("Color Bar"));
 
 		QGridLayout * stripLayout = new QGridLayout;
 
-		typeLabel = new QLabel(tr("彩条位置"));
+        typeLabel = new QLabel(tr("Position"));
 		typeBox = new QComboBox();
-		widthLabel = new QLabel(tr("彩条宽度"));
-		offsetLabel = new QLabel(tr("彩条间距"));
+        widthLabel = new QLabel(tr("Width"));
+        offsetLabel = new QLabel(tr("Interval"));
 		widthLineEdit = new DoubleLineEdit;
 		offsetLineEdit = new DoubleLineEdit;
 
 
-		typeBox->addItem("无彩条");
-		typeBox->addItem("左侧彩条");
-		typeBox->addItem("右侧彩条");
-		typeBox->addItem("双边彩条");
+        typeBox->addItem(tr("None"));
+        typeBox->addItem(tr("Left Side"));
+        typeBox->addItem(tr("Right Side"));
+        typeBox->addItem(tr("Both Side"));
 
 		stripLayout->addWidget(typeLabel, 0, 0);
 		stripLayout->addWidget(typeBox, 0, 1);
@@ -160,14 +160,14 @@ public:
 		offsetLineEdit->setText(QString::number(Strip.Offset));
 		}
 	void LayoutFeatherCfg(){
-		featherBox = new QGroupBox(tr("羽化"));
+        featherBox = new QGroupBox(tr("Feather"));
 
 		QGridLayout * featherLayout = new QGridLayout;
 
-		hugeLabel = new QLabel(tr("强"));
-		middleLabel = new QLabel(tr("中"));
-		smallLabel = new QLabel(tr("弱"));
-		fastLabel = new QLabel(tr("快速"));
+        hugeLabel = new QLabel(tr("Powerful"));
+        middleLabel = new QLabel(tr("Medium"));
+        smallLabel = new QLabel(tr("Low"));
+        fastLabel = new QLabel(tr("Fast"));
 
 		hugeLabelEdit = new IntLineEdit;
 		middleLabelEdit = new IntLineEdit;
@@ -197,9 +197,9 @@ public:
 		fastLabelEdit->setText(QString::number(FeatherCfg.Percent[Quick]));
 	}
 	void LayoutFlash(){
-		flashBox = new QGroupBox(tr("闪喷"));
-		flashRadio = new QRadioButton(tr("空闲闪喷"));
-		flashLabel = new QLabel(tr("闪喷周期"));
+        flashBox = new QGroupBox(tr("Flash"));
+        flashRadio = new QRadioButton(tr("Idle Flash"));
+        flashLabel = new QLabel(tr("Flash Period"));
 		flashLineEdit = new IntLineEdit;
 	
 		QGridLayout * flashLayout = new QGridLayout;
@@ -365,7 +365,7 @@ public:
 		waveDialog = new WaveDialog();
 		motionDialog = new MotionDialog();
 
-		statusLabel->setText("Menu");
+        statusLabel->setText(tr("Menu"));
 
 		//layout tool bar
 		toolLayout->addWidget(Tool->GetHomeButton());
@@ -416,7 +416,7 @@ public:
 		
         AddBaseSettingWidget();
 		//AddInkWidget();
-        AddMechineWidget();
+        //AddMechineWidget();
 		//AddCleanWidget();
 		//AddUVWidget();
 		//AddAdvanceWidget();
@@ -430,35 +430,35 @@ public:
 		QWidget * widget = new BaseWidget;
 		//connect(this, SIGNAL(clicked()), this, SLOT(close()));
 
-		widgetlist->addTab(widget, "Base");
+        widgetlist->addTab(widget, tr("Base"));
 	}
 	void AddMechineWidget(){
 		QWidget * widget = new QWidget;
-		widgetlist->addTab(widget, "Mechine");
+        widgetlist->addTab(widget, tr("Mechine"));
 	}
 	void AddCleanWidget(){
 		QWidget * widget = new QWidget;
-		widgetlist->addTab(widget, "Clean");
+        widgetlist->addTab(widget, tr("Clean"));
 	}
 	void AddUVWidget(){
 		QWidget * widget = new QWidget;
-		widgetlist->addTab(widget, "UV");
+        widgetlist->addTab(widget, tr("UV"));
 	}
 	void AddAdvanceWidget(){
 		QWidget * widget = new QWidget;
-		widgetlist->addTab(widget, "Advance");
+        widgetlist->addTab(widget, tr("Advance"));
 	}
 	void AddWarningWidget(){
 		QWidget * widget = new QWidget;
-		widgetlist->addTab(widget, "Warning");
+        widgetlist->addTab(widget, tr("Warning"));
 	}
 	void AddInkWidget(){
 		QWidget * widget = new QWidget;
-		widgetlist->addTab(widget, "Ink");
+        widgetlist->addTab(widget, tr("Ink"));
 	}
 	void AddVersionWidget(){
 		QWidget * widget = new QWidget;
-		widgetlist->addTab(widget, "version");
+        widgetlist->addTab(widget, tr("version"));
 
 		QLabel * version = new QLabel(widget);
 		version->setWordWrap(true);
@@ -476,7 +476,7 @@ public:
     void AddSetNetworkWidget()
     {
         NetWidget = new NetworkWidget;
-        widgetlist->addTab(NetWidget, "network");
+        widgetlist->addTab(NetWidget, tr("network"));
 
         connect(widgetlist, SIGNAL(currentChanged(int)), this, SLOT(TabGetOpen(int)));
     }
@@ -488,7 +488,7 @@ public slots:
     void TabGetOpen(int TabIndex)
     {
         QString title = widgetlist->tabText(TabIndex);
-         if(title == QString::fromLocal8Bit("network"))
+         if(title == tr("network"))
         {
             NetWidget->TabOpen();
         }
