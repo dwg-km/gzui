@@ -22,7 +22,7 @@
 #include "motion.h"
 #include "UiTemplate.h"
 #include "iconbutton.h"
-#include "ip_cfg.hpp"
+#include "ip_cfg.h"
 
 #include "lineedit.h"
 
@@ -481,6 +481,8 @@ public:
         connect(widgetlist, SIGNAL(currentChanged(int)), this, SLOT(TabGetOpen(int)));
     }
 
+    bool CopyTheFile(QString FilePath, QString BuildPath);
+
 public slots:
 	void Backup();
 	void Update();
@@ -504,5 +506,6 @@ private:
 	WaveDialog * waveDialog;
 	MotionDialog * motionDialog;
 };
+
 
 #endif

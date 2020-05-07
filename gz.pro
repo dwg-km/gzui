@@ -20,9 +20,10 @@ HEADERS       = mainwindow.h \
 		cali.h \
 		motion.h \
 		wave.h \
-		ip_cfg.hpp \
+		ip_cfg.h \
 		iconbutton.h\
 		toolbar.h \
+		sha256.h \
 		UiTemplate.h \
 		touchkey/lineedit.h \
 		touchkey/touchkey.h \
@@ -36,7 +37,8 @@ SOURCES       = main.cpp \
 		ip_cfg.cpp \
 		iconbutton.cpp \
 		mainwindow.cpp \
-		toolbar.cpp \ 
+		toolbar.cpp \
+		sha256.cpp	\
 		UiTemplate.cpp \
 		touchkey/linedit.cpp \
 		touchkey/touchkey.cpp \

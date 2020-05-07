@@ -1,4 +1,4 @@
-#include "./ip_cfg.hpp"
+#include "ip_cfg.h"
 #include "cali.h"
 #include "motion.h"
 
