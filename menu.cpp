@@ -263,7 +263,7 @@ void UiSetting::Update()
         //FILE *fp = fopen("update.gz","rb");
         FILE *fp = fopen(filename.toStdString().c_str(),"rb");
         fseek(fp,0,SEEK_SET);
-        fread(&date,sizeof(date)+1,6,fp);
+        fread(&date,sizeof(date)+1,1,fp);
 
         /*
         cout << date.Header << endl
