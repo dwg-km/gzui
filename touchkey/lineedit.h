@@ -45,6 +45,9 @@ public:
 		
 		touchkey->setPointEnable(false);
 		touchkey->setRet(this);
+		touchkey->setWindowFlags(Qt::FramelessWindowHint | Qt::Dialog);
+		//touchkey->setWindowModality(Qt::WindowModal);
+		touchkey->setWindowModality(Qt::ApplicationModal);
 		touchkey->exec();
 		clearFocus();
 	}
@@ -89,6 +92,9 @@ public:
 		//}
 		touchkey->setPointEnable(true);
 		touchkey->setRet(this);
+		touchkey->setWindowFlags(Qt::FramelessWindowHint | Qt::Dialog);
+		touchkey->setWindowModality(Qt::ApplicationModal);
+
 		touchkey->exec();
 		clearFocus();
 	}

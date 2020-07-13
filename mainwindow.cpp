@@ -219,7 +219,7 @@ void mainDialog::ProcessPrintStatus()
 
 	QString info;
 	FindErrorExplain(status.error_code, info);
-	if(s > 0 && s != ERROR){
+	if(s > 0){
 		messageLabel->setText(info);
 	}
 	if((s != PRINTING) && (s != PAUSE) /* || (s == ABORT) */){
@@ -245,11 +245,6 @@ void mainDialog::ProcessPrintStatus()
 			if (r == QMessageBox::Cancel) {
 				ClearPrinterStatus(status.error_code);
 			}
-		}
-		emit error(info);
-	}else if(s == OFFLINE){
-		if(status.error_code & MOTION_BOARD){
-			Tool->setMoveEnabled(false);
 		}else if (status.error_code & HEAD_BOARD){
 			int r = QMessageBox::critical(NULL, 
 				tr("ERROR"), info, QMessageBox::Cancel | QMessageBox::Yes);
@@ -259,6 +254,10 @@ void mainDialog::ProcessPrintStatus()
 				Tool->setMoveEnabled(false);
 			}
 		}
+		Tool->setMoveEnabled(false);
+		emit error(info);
+	}else if(s == OFFLINE){
+		Tool->setMoveEnabled(false);
 		emit error(info);
 	}else if(s == PRINTING){
 		Tool->GetAbortButton()->setEnabled();

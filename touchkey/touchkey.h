@@ -5,6 +5,9 @@
 #include <QDialog>
 #include <QLineEdit>
 #include <QPushButton>
+#include <QMessageBox>
+#include <QDebug>
+#include <QTimer>
 
 //#include "lineedit.h"
 
@@ -41,11 +44,31 @@ signals:
 public slots:
 	void onCalculate();
 	void add();
+	void KillTouchkey(){
+		if(++timer > 3){
+			close();
+			killTimer->stop();
+		}
+	}
 	
 private:
 	TouchKey();
 	bool Construct();
-	
+
+private:
+
+	QTimer * killTimer;
+	unsigned int timer = 0;
+/*
+	virtual void focusOutEvent(QFocusEvent *event){
+		//qDebug() << "focus out event";
+		//touchkey->setWindowFlags(Qt::WindowStaysOnTopHint);
+	}
+	virtual void hideEvent(QHideEvent * event){
+		qDebug() << "hide event";
+		//close();
+	}
+*/
 private:
 	QPushButton * m_buttons[15];
 	QString str;

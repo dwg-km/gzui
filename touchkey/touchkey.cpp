@@ -8,7 +8,7 @@ TouchKey::TouchKey() :
 	str("")
 {
 	label = NULL;
-	
+
 	m_edit = new QLineEdit(this);
 	
 	if (m_edit != NULL){
@@ -17,6 +17,9 @@ TouchKey::TouchKey() :
 		m_edit->setReadOnly(true);
 	}
 	Construct();
+
+	killTimer = new QTimer(this);
+	connect(killTimer, SIGNAL(timeout()), this,  SLOT(KillTouchkey()));
 }
 
 TouchKey* TouchKey::newInstance()
@@ -38,11 +41,15 @@ void TouchKey::setRet(QLineEdit * line){
 		str = "";
 		str = label->text();
 		m_edit->setText(str);
+		
+		timer = 0;
+		killTimer->start(1000);
 	}
 }
 
 void TouchKey::add()
 {
+	timer = 0;
 	if(label){
 		if(str == "")
 			str = "0";
@@ -117,6 +124,7 @@ void TouchKey::show()
 */
 bool TouchKey::Construct()
 {
+	timer = 0;
 	const char *buttontext[15] = {
 		"7", "8", "9",
 		"4", "5", "6",
@@ -155,6 +163,7 @@ bool TouchKey::Construct()
 
 void TouchKey::onCalculate()
 {
+	timer = 0;
 	QPushButton* button = dynamic_cast<QPushButton*>(sender());//判断有哪一个按钮按下
 	if (button != NULL){
 		QString buttontext = button->text();
@@ -178,3 +187,4 @@ void TouchKey::onCalculate()
 		m_edit->setText(str);
 	}
 }
+
