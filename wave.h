@@ -5,6 +5,7 @@
 #include <QGroupBox>
 #include <QComboBox>
 #include <QPainter>
+#include <QTableWidget>
 
 #include "command.h"
 #include "ui_interface.h"
@@ -85,6 +86,30 @@ public:
 	QVector<QLineEdit *> matrix;
 };
 
+class RealTimeTable : public QTableWidget {
+public:
+	RealTimeTable(QString name, int x, int y, int z, char * c, QWidget *parent = NULL) 
+		: QTableWidget(this)
+	{
+		setRowCount(y);    //设置行数
+		setColumnCount(x); //设置列数
+	}
+	void UpdataContext(float * data){
+		//table->setHorizontalHeaderLabels(QStringList()<<"column1"<<"column2"); //设置行头
+	}
+	int CheckDirty(float * data){
+		return 0;	
+	}
+	int Size(){
+	
+		return 0;
+	}
+
+	int colnum;
+	int rownum;
+	int block;
+};
+
 class TempWidget : public QWidget {
 	Q_OBJECT
 public:
@@ -161,7 +186,7 @@ private:
 	RateTimeGroup * TargetTempGroup;  
 };
 
-/*
+
 class VoltageWidget : public QWidget {
 	Q_OBJECT
 public :
@@ -172,8 +197,8 @@ public :
 		int colnum = property.PrinterColorNum;
 		int rownum = property.PrinterGroupNum;
 
-		baseVoltageGroup = new RateTimeGroup("基准电压", colnum, rownum, 1, property.PrintColor);
-		adjustVoltageGroup = new RateTimeGroup("矫正电压", colnum, rownum, 1, property.PrintColor);
+		baseVoltageGroup = new RealTimeTable("基准电压", colnum, rownum, 1, property.PrintColor);
+		adjustVoltageGroup = new RealTimeTable("矫正电压", colnum, rownum, 1, property.PrintColor);
 		//RateTimeGroup * realvol = new RateTimeGroup("实时电压", colnum, rownum, 2, color);
 		//realvol->setEnabled(false);
 
@@ -235,10 +260,10 @@ public slots:
 	}
 private:
 	struct MECHAINE property;
-	RateTimeGroup *	baseVoltageGroup;
-	RateTimeGroup *	adjustVoltageGroup;
+	RealTimeTable *	baseVoltageGroup;
+	RealTimeTable *	adjustVoltageGroup;
 };
-*/
+
 class pulseWidget : public QWidget {
 public:
 	pulseWidget(QWidget *parent = NULL) : QWidget(parent)
@@ -481,7 +506,7 @@ public:
 		widgetlist =  new QTabWidget;
 
 		AddTempWaveWidget();
-		//AddVoltageWidget();
+		AddVoltageWidget();
 		AddPulseWaveWidget();
 
 		Layout(widgetlist);
@@ -493,12 +518,12 @@ public:
 
 		widgetlist->addTab(tempWidget, "Temp");
 	}
-	//void AddVoltageWidget(){
-	//	voltageWidget = new VoltageWidget(property);
-	//	connect(Tool->GetSaveButton(), SIGNAL(clicked()), voltageWidget, SLOT(SaveParam()));
-	//
-	//	widgetlist->addTab(voltageWidget, "Voltage");
-	//}
+	void AddVoltageWidget(){
+		voltageWidget = new VoltageWidget(property);
+		connect(Tool->GetSaveButton(), SIGNAL(clicked()), voltageWidget, SLOT(SaveParam()));
+	
+		widgetlist->addTab(voltageWidget, "Voltage");
+	}
 	void AddPulseWaveWidget(){
 		waveWidget = new WaveWidget(property);
 		//connect(Tool->GetSaveButton(), SIGNAL(clicked()), waveWidget, SLOT(SaveParam()));
@@ -517,7 +542,7 @@ public slots:
 private:
 	TempWidget * tempWidget;
 
-	//VoltageWidget * voltageWidget; 
+	VoltageWidget * voltageWidget; 
 	
 	WaveWidget * waveWidget;
 	
