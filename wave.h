@@ -1,6 +1,7 @@
 #ifndef WAVE_H
 #define	WAVE_H
 
+#include <QHeaderView>
 #include <QMessageBox>
 #include <QGroupBox>
 #include <QComboBox>
@@ -88,14 +89,47 @@ public:
 
 class RealTimeTable : public QTableWidget {
 public:
-	RealTimeTable(QString name, int x, int y, int z, char * c, QWidget *parent = NULL) 
-		: QTableWidget(this)
+	RealTimeTable(int x, char * c, QWidget *parent = NULL) 
+		: QTableWidget(parent), colnum(x)
 	{
-		setRowCount(y);    //设置行数
+		QString color(c);
+		QStringList header = color.split(";");
+		
+		rownum = header.size();
+
+		setRowCount(rownum);    //设置行数
 		setColumnCount(x); //设置列数
+
+		QStringList h_header;
+		for(int i = 0; i < x; i++){
+			QString s = "JCOM" + QString::number(i);
+			h_header << s;
+		}
+		setHorizontalHeaderLabels(h_header);
+
+		QFont font;
+
+		//font = horizontalHeader()->font();
+		//font.setBold(true);					//设置表头字体加粗
+		//horizontalHeader()->setFont(font);
+		horizontalHeader()->setHighlightSections(false);	////点击表时不对表头行光亮（获取焦点）
+		//horizontalHeader()->setResizeMode(QHeaderView::Stretch);
+		horizontalHeader()->setStretchLastSection(true);
+
+		setVerticalHeaderLabels(header);
+
+		font = verticalHeader()->font();
+		font.setBold(true);					//设置表头字体加粗
+		verticalHeader()->setFont(font);
+		verticalHeader()->setHighlightSections(false);	////点击表时不对表头行光亮（获取焦点）
 	}
 	void UpdataContext(float * data){
-		//table->setHorizontalHeaderLabels(QStringList()<<"column1"<<"column2"); //设置行头
+		for(int j = 0; j < rownum; j++){
+			for(int i = 0; i < colnum; i++){
+				QString text = QString::number(data[j * colnum + i], 'f', 2);
+				setItem(j, i, new QTableWidgetItem(text));
+			}
+		}
 	}
 	int CheckDirty(float * data){
 		return 0;	
@@ -194,23 +228,31 @@ public :
 		QWidget(parent),
 		property(p)
 	{
-		int colnum = property.PrinterColorNum;
+		//int colnum = property.PrinterColorNum;
+		int colnum = 8;
 		int rownum = property.PrinterGroupNum;
 
-		baseVoltageGroup = new RealTimeTable("基准电压", colnum, rownum, 1, property.PrintColor);
-		adjustVoltageGroup = new RealTimeTable("矫正电压", colnum, rownum, 1, property.PrintColor);
-		//RateTimeGroup * realvol = new RateTimeGroup("实时电压", colnum, rownum, 2, color);
-		//realvol->setEnabled(false);
+		realVolLabel = new QLabel("实时电压");
+		baseVolLabel = new QLabel("基准电压");
+		adjustVolLabel = new QLabel("矫正电压");
+		baseVoltageGroup = new RealTimeTable(colnum, property.PrintColor, this);
+		adjustVoltageGroup = new RealTimeTable(colnum, property.PrintColor, this);
+		realVoltageGroup = new RealTimeTable(colnum, property.PrintColor, this);
+		realVoltageGroup->setEditTriggers(QTableWidget::NoEditTriggers);
 
 		QVBoxLayout *layout = new QVBoxLayout;
+		layout->addWidget(realVolLabel);
+		layout->addWidget(realVoltageGroup);
+		layout->addWidget(baseVolLabel);
 		layout->addWidget(baseVoltageGroup);
+		layout->addWidget(adjustVolLabel);
 		layout->addWidget(adjustVoltageGroup);
-		//layout->addWidget(realvol);
 
 		setLayout(layout);
 	}
 	virtual void showEvent(QShowEvent * event){
 		event = event;
+		GetRealVoltage();
 		GetBaseVoltage();
 		GetAdjustVoltage();
 	}
@@ -229,29 +271,40 @@ public :
 		}
 	}
 private:
+	void GetRealVoltage(){
+		float temp[64];	
+		memset(temp, 0x00, sizeof(temp));
+		int len = property.PrinterGroupNum * property.PrinterColorNum;
+		SendHbCmd(CMD_HB_VOL_REAL, 0, temp, len);
+		realVoltageGroup->UpdataContext(temp);
+	}
 	void GetBaseVoltage(){
 		float temp[64];	
+		memset(temp, 0x00, sizeof(temp));
 		int len = property.PrinterGroupNum * property.PrinterColorNum;
 		SendHbCmd(CMD_HB_VOL_BASE, 0, temp, len);
 		baseVoltageGroup->UpdataContext(temp);
 	}
 	void GetAdjustVoltage(){
 		float temp[64];	
+		memset(temp, 0x00, sizeof(temp));
 		int len = property.PrinterGroupNum * property.PrinterColorNum;
 		SendHbCmd(CMD_HB_VOL_ADJUST, 0, temp, len);
 		adjustVoltageGroup->UpdataContext(temp);
 	}
 	void SetBaseVoltage(){
 		float temp[64];	
+		memset(temp, 0x00, sizeof(temp));
 		if(baseVoltageGroup->CheckDirty(temp)){
 			SendHbCmd(CMD_HB_VOL_BASE, 1, temp, baseVoltageGroup->Size());
-		}	
+		}
 	}
 	void SetAdjustVoltage(){
 		float temp[64];	
+		memset(temp, 0x00, sizeof(temp));
 		if(adjustVoltageGroup->CheckDirty(temp)){
 			SendHbCmd(CMD_HB_VOL_ADJUST, 1, temp, adjustVoltageGroup->Size());
-		}	
+		}
 	}
 public slots:
 	void SaveParam(){
@@ -262,6 +315,11 @@ private:
 	struct MECHAINE property;
 	RealTimeTable *	baseVoltageGroup;
 	RealTimeTable *	adjustVoltageGroup;
+	RealTimeTable *	realVoltageGroup;
+
+	QLabel * realVolLabel;
+	QLabel * baseVolLabel;
+	QLabel * adjustVolLabel;
 };
 
 class pulseWidget : public QWidget {
@@ -507,7 +565,17 @@ public:
 
 		AddTempWaveWidget();
 		AddVoltageWidget();
-		AddPulseWaveWidget();
+		//AddPulseWaveWidget();
+
+		if(0)
+		{
+			QTableWidget * tableWidget;
+			tableWidget = new QTableWidget(this);
+			tableWidget->setRowCount(10);
+			tableWidget->setColumnCount(5);
+
+			widgetlist->addTab(tableWidget, "table");
+		}
 
 		Layout(widgetlist);
 	}
