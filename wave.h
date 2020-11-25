@@ -53,7 +53,7 @@ public:
 			for(int i = 0; i < colnum; i++){
 				for(int b = 0; b < block; b++){
 					int index = j * colnum * block + i * block + b;
-					QString text = QString::number(data[index]);
+					QString text = QString::number(data[index], 'f', 2);
 					matrix[index]->setText(text);
 				}
 			}
