@@ -22,7 +22,7 @@ enum PARAM_DIR{
 
 enum MOTION_DIR{
 	POSITIVE,
-	FORWARD
+	NEGATIVE
 };
 
 enum FeatherLevel{
