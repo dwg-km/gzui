@@ -275,35 +275,35 @@ private:
 		float temp[64];	
 		memset(temp, 0x00, sizeof(temp));
 		int len = property.PrinterGroupNum * property.PrinterColorNum;
-		SendHbCmd(CMD_HB_VOL_REAL, 0, temp, len);
+		SendHbCmd(CMD_HB_VOL_REAL, READ, temp, len);
 		realVoltageGroup->UpdataContext(temp);
 	}
 	void GetBaseVoltage(){
 		float temp[64];	
 		memset(temp, 0x00, sizeof(temp));
 		int len = property.PrinterGroupNum * property.PrinterColorNum;
-		SendHbCmd(CMD_HB_VOL_BASE, 0, temp, len);
+		SendHbCmd(CMD_HB_VOL_BASE, READ, temp, len);
 		baseVoltageGroup->UpdataContext(temp);
 	}
 	void GetAdjustVoltage(){
 		float temp[64];	
 		memset(temp, 0x00, sizeof(temp));
 		int len = property.PrinterGroupNum * property.PrinterColorNum;
-		SendHbCmd(CMD_HB_VOL_ADJUST, 0, temp, len);
+		SendHbCmd(CMD_HB_VOL_ADJUST, READ, temp, len);
 		adjustVoltageGroup->UpdataContext(temp);
 	}
 	void SetBaseVoltage(){
 		float temp[64];	
 		memset(temp, 0x00, sizeof(temp));
 		if(baseVoltageGroup->CheckDirty(temp)){
-			SendHbCmd(CMD_HB_VOL_BASE, 1, temp, baseVoltageGroup->Size());
+			SendHbCmd(CMD_HB_VOL_BASE, WRITE, temp, baseVoltageGroup->Size());
 		}
 	}
 	void SetAdjustVoltage(){
 		float temp[64];	
 		memset(temp, 0x00, sizeof(temp));
 		if(adjustVoltageGroup->CheckDirty(temp)){
-			SendHbCmd(CMD_HB_VOL_ADJUST, 1, temp, adjustVoltageGroup->Size());
+			SendHbCmd(CMD_HB_VOL_ADJUST, WRITE, temp, adjustVoltageGroup->Size());
 		}
 	}
 public slots:
