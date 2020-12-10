@@ -301,4 +301,10 @@ struct USER_DEFINED{
 };
 
 
+struct STATUS{
+    unsigned int error_code;
+    char context[60];
+};
+
+
 #endif
