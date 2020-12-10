@@ -200,9 +200,9 @@ void mainDialog::ProcessPrintStatus()
 
 	}
 
-	static STATUS  oldstatus = {(unsigned int)~0, {0}};
+	static STATUS_REPORT  oldstatus = {(unsigned int)~0, {0}};
 
-	STATUS  status;
+	STATUS_REPORT  status;
 	GetPrinterStatus(&status);
 	if(status.error_code == oldstatus.error_code){
 		return;

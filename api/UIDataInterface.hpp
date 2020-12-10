@@ -301,7 +301,7 @@ struct USER_DEFINED{
 };
 
 
-struct STATUS{
+struct STATUS_REPORT{
     unsigned int error_code;
     char context[60];
 };
