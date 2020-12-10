@@ -21,7 +21,6 @@
 //#include "usbmanager.h"
 
 #include "ui_interface.h"
-#include "APIDataInterface.hpp"
 
 class QCheckBox;
 class QLabel;

@@ -17,7 +17,6 @@
 #include "mainwindow.h"
 
 #include "ui_interface.h"
-#include "APIDataInterface.hpp"
 
 enum ColorIndex {
 	BLACK		= 0,

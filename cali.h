@@ -8,7 +8,7 @@
 #include "UiTemplate.h"
 
 #include "ui_interface.h"
-#include "APIDataInterface.hpp"
+#include "UIDataInterface.hpp"
 
 class LineEditGroup : public QGroupBox {
 public:

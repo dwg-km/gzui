@@ -11,7 +11,7 @@ CONFIG(debug, debug|release): {
 
 #CONFIG		+= debug
 
-INCLUDEPATH	= lib \
+INCLUDEPATH	= api \
 		touchkey
 
 TEMPLATE      = app
@@ -24,12 +24,13 @@ HEADERS       = mainwindow.h \
 		iconbutton.h\
 		toolbar.h \
 		UiTemplate.h \
+		StripDataInterface.hpp\
 		touchkey/lineedit.h \
 		touchkey/touchkey.h \
-		lib/ui_interface.h \
-		lib/APIDataInterface.hpp \
-		lib/Error.h \
-		lib/command.h 
+		api/ui_interface.h \
+		api/UIDataInterface.hpp \
+		api/Error.h \
+		api/command.h 
 
 SOURCES       = main.cpp \
 		menu.cpp \ 

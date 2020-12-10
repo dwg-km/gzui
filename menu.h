@@ -28,7 +28,7 @@
 
 #include "command.h"
 #include "ui_interface.h"
-#include "APIDataInterface.hpp"
+#include "StripDataInterface.hpp"
 
 using namespace std;
 
