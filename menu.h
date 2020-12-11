@@ -463,7 +463,7 @@ public:
 		QLabel * version = new QLabel(widget);
 		version->setWordWrap(true);
 
-		char pm_info[128];
+		char pm_info[512];
 		GetPmVersion(pm_info);
 
 		QString info;
