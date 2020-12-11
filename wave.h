@@ -227,8 +227,7 @@ public :
 		QWidget(parent),
 		property(p)
 	{
-		//int colnum = property.PrinterColorNum;
-		int colnum = 8;
+		int colnum = property.PrinterColorNum;
 		int rownum = property.PrinterGroupNum;
 
 		realVolLabel = new QLabel("实时电压");
@@ -565,16 +564,6 @@ public:
 		AddTempWaveWidget();
 		AddVoltageWidget();
 		//AddPulseWaveWidget();
-
-		if(0)
-		{
-			QTableWidget * tableWidget;
-			tableWidget = new QTableWidget(this);
-			tableWidget->setRowCount(10);
-			tableWidget->setColumnCount(5);
-
-			widgetlist->addTab(tableWidget, "table");
-		}
 
 		Layout(widgetlist);
 	}

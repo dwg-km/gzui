@@ -200,22 +200,28 @@ public:
 		flashBox = new QGroupBox(tr("闪喷"));
 		flashRadio = new QRadioButton(tr("空闲闪喷"));
 		flashLabel = new QLabel(tr("闪喷周期"));
+		firecntLabel = new QLabel(tr("闪喷强度"));
 		flashLineEdit = new IntLineEdit;
+		firecntLineEdit = new IntLineEdit;
 	
 		QGridLayout * flashLayout = new QGridLayout;
 		flashLayout->addWidget(flashRadio, 0, 0);
 		flashLayout->addWidget(flashLabel, 1, 0);
 		flashLayout->addWidget(flashLineEdit, 1, 1);
+		flashLayout->addWidget(firecntLabel, 2, 0);
+		flashLayout->addWidget(firecntLineEdit, 2, 1);
 
 		flashBox->setLayout(flashLayout);
 	}
 	void LoadFlash(){
-		GetPrinterParam(UI_CMD::CMD_MAINTAIN_FLASH, &Flash);
+		//GetPrinterParam(UI_CMD::CMD_MAINTAIN_FLASH, &Flash);
+		SendHbCmd(CMD_HB_FLASH, READ, &Flash, sizeof(FLASH));
 	
 		if(Flash.Open){
 			flashRadio->setChecked(true);
 		}
 		flashLineEdit->setText(QString::number(Flash.Period));
+		firecntLineEdit->setText(QString::number(Flash.FireCnt));
 	}
 
 	BaseWidget(QWidget *parent = NULL) : QWidget(parent)
@@ -285,8 +291,10 @@ public:
 		//memset(&flash, 0, sizeof(FLASH));
 		flash.Open = flashRadio->isChecked();
 		flash.Period = flashLineEdit->text().toInt();
+		flash.FireCnt = firecntLineEdit->text().toInt();
 		if(memcmp(&flash, &Flash, sizeof(FLASH))){
-			SetPrinterParam(UI_CMD::CMD_MAINTAIN_FLASH, &flash);
+			//SetPrinterParam(UI_CMD::CMD_MAINTAIN_FLASH, &flash);
+			SendHbCmd(CMD_HB_FLASH, WRITE, &flash, sizeof(FLASH));
 		}
 
 		BASE_SETTING basesetting = BaseSetting;
@@ -345,7 +353,9 @@ private:
 	QGroupBox * flashBox;
 	QRadioButton * flashRadio;
 	QLabel *flashLabel;
+	QLabel *firecntLabel;
 	IntLineEdit *flashLineEdit;
+	IntLineEdit *firecntLineEdit;
 
 	QGridLayout * grid;
 

@@ -221,9 +221,10 @@ struct PRINT_MOVE{
 };
 
 struct FLASH{
-	unsigned int	Open;					//
-	unsigned int	Pwm;					//
+	unsigned int	Open;					//idle flash
+	unsigned int	FireCnt;				//
 	unsigned int	Period;					//
+
 	unsigned int	SprayTimeBeforePrint;			//	
 
 	int rev[12];
